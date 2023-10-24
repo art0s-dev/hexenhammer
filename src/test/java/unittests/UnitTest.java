@@ -31,7 +31,7 @@ class UnitTest {
 	
 	private Equipment testEquipment = new Equipment(bolter, 1);
 
-	@Test @Disabled
+	@Test
 	void WhenUnitWithNoWeaponAttacks_ItMakesNoDamage() {
 		var unit = new Unit();
 		double damage = unit.attack(guardsmen);
@@ -81,7 +81,7 @@ class UnitTest {
 	}
 	
 	@Test
-	void whenUnitHasSomeWeapons_AndAttacksATarget_ItMakesDamage() {
+	void spaceMarines_against_guardsmen() {
 		//So lets say we have a unit with a simple space marine 
 		//This marine shall attack a guardsman
 		var spaceMarines = new Unit();
@@ -91,6 +91,44 @@ class UnitTest {
 		double hits = 10 * Probability.THREE_UP;
 		double wounds = hits * Probability.THREE_UP;
 		double expectedDamage = wounds * Probability.FIVE_UP; 
+		assertEquals(expectedDamage, damage);
+	}
+	
+	@Test @Disabled
+	void spaceMarines_against_deamonettes() {
+		//Lets take a test for the invul save
+		//so we take some deamons of slaanesh - these have an invul save
+		
+		var eldarRangers = Profile.builder()
+				.toughness(3)
+				.armorSave(Probability.FIVE_UP)
+				.invulnerableSave(Probability.FIVE_UP)
+				.build();
+		
+		//Lets test if they use the invul save correctly
+		//to test this we take a weapon that loweres the armour save 
+		//below the invul
+		
+		var heavyBolter = Weapon.builder()
+				.attacks(3)
+				.toHit(Probability.THREE_UP)
+				.strength(5)
+				.armorPenetration(2)
+				.damage(2)
+				.build();
+		
+		var spaceMarines = new Unit();
+		spaceMarines.add(new Equipment(heavyBolter, 4));
+		double damage = spaceMarines.attack(eldarRangers);
+		
+		double hits = 12 * Probability.THREE_UP;
+		double wounds = hits * Probability.THREE_UP;
+		double expectedDamage = wounds * Probability.FIVE_UP; 
+		
+		//Der Test failt momentan, weil ich damage so implentiert habe,
+		//dass jedes Modell als Multi wound model eingetragen wird.
+		//Das muss mit wound capping implementiert werden.
+		
 		assertEquals(expectedDamage, damage);
 	}
 	

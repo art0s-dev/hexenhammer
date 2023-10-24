@@ -16,18 +16,62 @@ public class Unit {
 			new HashMap<Integer, Equipment>();
 
 	public double attack(Profile enemy) {
-		double damage = 0;
-		for (Map.Entry<Integer, Equipment> equipment : weapons.entrySet()) {
-			Weapon weapon = equipment.getValue().weapon();
-			int quantity = equipment.getValue().quantity();
+		return BattleSequence.resolve(weapons, enemy);
+	}
+
+	public int add(Equipment equipment) {
+		int savedIndex = index;
+		weapons.put(index, equipment);
+		index++;
+		return savedIndex;
+	}
+
+	public void remove(int key) {
+		weapons.remove(key);
+	}
+	
+	private class BattleSequence{
+		public Profile enemy;
+		public Weapon weapon;
+		public int quantity;
+		public BattleSequence() {}
+		
+		/**
+		 * resolve
+		 * this method shall resolve the combat round 
+		 * only this method shall be used to set the fields from above
+		 */
+		public static double resolve(HashMap<Integer, Equipment> weapons, Profile enemy) {
+			double damage = 0;
+			var battleSequence = new Unit().new BattleSequence();
+			battleSequence.enemy = enemy;
 			
-			//calculate to hit
-			double attacks = (weapon.getAttacks() * quantity);
-			double hits = attacks * weapon.getToHit();
+			for (Map.Entry<Integer, Equipment> equipment : weapons.entrySet()) {
+				battleSequence.weapon = equipment.getValue().weapon();
+				battleSequence.quantity = equipment.getValue().quantity();
+				
+				var hits = battleSequence.calculateHits();
+				var wounds = battleSequence.calculateWounds(hits);
+				var save = battleSequence.calculateSave();
+				damage += battleSequence.calculateDamage(wounds, save);
+			}
 			
-			//calculate to wound 
+			return damage;
+		}
+		
+		private double calculateHits() {
+			//TODO: Implement Rerolling the Hit roll
+			//TODO: Implement Sustained Hits
+			//TODO: Implement 6es Autowound
+			
+			var attacks = (double) weapon.getAttacks() * quantity;
+			return attacks * weapon.getToHit();
+		}
+		
+		private double calculateWounds(double hits) {
 			int strength = weapon.getStrength();
 			int toughness = enemy.getToughness();
+	
 			//default case is strength is lower than toughness 
 			double probabilityToWound = Probability.FIVE_UP;
 			if(strength >= toughness * 2) {
@@ -39,8 +83,15 @@ public class Unit {
 			} else if(strength < toughness * 2) {
 				probabilityToWound = Probability.SIX_UP;
 			}
-			double savesToBeMade = hits * probabilityToWound;
 			
+			//TODO:Implement Reroll to Wound
+			//TODO: Implement Devastating Wounds
+			//TODO: Implement ANTI
+			
+			return hits * probabilityToWound;
+		}
+		
+		private double calculateSave() {
 			//calculate save
 			//Calculate the armour penetration
 			double armourSave = enemy.getArmorSave();
@@ -61,25 +112,20 @@ public class Unit {
 			if(modifiedArmourSave <= 0 || enemy.getInvulnerableSave() > probabilityToSave) {
 				probabilityToSave = enemy.getInvulnerableSave();
 			} 
-			
-			//Calculate Damage and add FNP
-			double damageBeforeFeelNoPain = savesToBeMade * probabilityToSave * weapon.getDamage();
-			double damageAfterFeelNoPain = damageBeforeFeelNoPain * enemy.getFeelNoPain();
-			damage += damageBeforeFeelNoPain - damageAfterFeelNoPain;
-		} 
+			return probabilityToSave;
+		}
 		
-		return damage;
-	}
-
-	public int add(Equipment equipment) {
-		int savedIndex = index;
-		weapons.put(index, equipment);
-		index++;
-		return savedIndex;
-	}
-
-	public void remove(int key) {
-		weapons.remove(key);
+		private double calculateDamage(double wounds, double save) {
+			//Calculate Damage and add FNP
+			//TODO: implement wound capping and mortal wound jumping
+			//Also wenn ein schwerer Bolter z.B eine Wunde verursacht, das Modell aber nur einen Lebenspunkt hat,
+			//(der schwere Bolter aber 3 Schadenspunkte macht), soll nur so viel schaden an einem
+			//Modell gemacht werden, wie das Modell Lebenspunkte hat. 
+			//Kann ich das kalkulieren ohne eine Schleife oder muss ich das mit schleife machen??
+			double damageBeforeFeelNoPain = wounds * save * weapon.getDamage();
+			double damageAfterFeelNoPain = damageBeforeFeelNoPain * enemy.getFeelNoPain();
+			return damageBeforeFeelNoPain - damageAfterFeelNoPain;
+		}
 	}
 	
 }
