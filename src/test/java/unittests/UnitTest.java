@@ -16,7 +16,7 @@ import core.entitys.Weapon;
 
 class UnitTest {
 	
-	private Weapon bolter = Weapon.builder()
+	Weapon bolter = Weapon.builder()
 			.attacks(2)
 			.toHit(Probability.THREE_UP)
 			.strength(4)
@@ -24,10 +24,25 @@ class UnitTest {
 			.damage(1)
 			.build();
 	
-	private Profile guardsmen = Profile.builder()
+	Weapon heavyBolter = Weapon.builder()
+			.attacks(3)
+			.toHit(Probability.THREE_UP)
+			.strength(5)
+			.armorPenetration(2)
+			.damage(2)
+			.build();
+	
+	Profile guardsmen = Profile.builder()
 			.toughness(3)
 			.armorSave(Probability.FIVE_UP)
 			.build();
+	
+	Profile eldarRangers = Profile.builder()
+			.toughness(3)
+			.armorSave(Probability.FIVE_UP)
+			.invulnerableSave(Probability.FIVE_UP)
+			.build();
+	
 	
 	private Equipment testEquipment = new Equipment(bolter, 1);
 
@@ -64,10 +79,6 @@ class UnitTest {
 	
 	@Test
 	void someModelsJoin_someModelsLeave_KeysStayTheSame() {
-		//This is for later usage in the gui so we can edit 
-		//The unit profiles directly and operate on the
-		//data structure more direct
-		
 		var unit = new Unit();
 		//The Index starts couting from 0
 		int key1 = unit.add(testEquipment);
@@ -94,41 +105,55 @@ class UnitTest {
 		assertEquals(expectedDamage, damage);
 	}
 	
-	@Test @Disabled
-	void spaceMarines_against_deamonettes() {
+	@Test
+	void spaceMarines_against_eldarRangers() {
 		//Lets take a test for the invul save
-		//so we take some deamons of slaanesh - these have an invul save
-		
-		var eldarRangers = Profile.builder()
-				.toughness(3)
-				.armorSave(Probability.FIVE_UP)
-				.invulnerableSave(Probability.FIVE_UP)
-				.build();
-		
-		//Lets test if they use the invul save correctly
-		//to test this we take a weapon that loweres the armour save 
-		//below the invul
-		
-		var heavyBolter = Weapon.builder()
-				.attacks(3)
-				.toHit(Probability.THREE_UP)
-				.strength(5)
-				.armorPenetration(2)
-				.damage(2)
-				.build();
-		
+		//we expect the probability to save to stay constant		
 		var spaceMarines = new Unit();
 		spaceMarines.add(new Equipment(heavyBolter, 4));
 		double damage = spaceMarines.attack(eldarRangers);
-		
 		double hits = 12 * Probability.THREE_UP;
 		double wounds = hits * Probability.THREE_UP;
 		double expectedDamage = wounds * Probability.FIVE_UP; 
+		assertEquals(expectedDamage, damage);
+	}
+	
+	@Test
+	void spaceMarines_against_other_spaceMarines() {
+		var spaceMarines = new Unit();
+		spaceMarines.add(new Equipment(heavyBolter, 4));
+		var otherSpaceMarines = Profile.builder()
+				.toughness(4)
+				.armorSave(Probability.THREE_UP)
+				.hitPoints(2)
+				.build();
 		
-		//Der Test failt momentan, weil ich damage so implentiert habe,
-		//dass jedes Modell als Multi wound model eingetragen wird.
-		//Das muss mit wound capping implementiert werden.
+		double damage = spaceMarines.attack(otherSpaceMarines);
+		double hits = 12 * Probability.THREE_UP;
+		double wounds = hits * Probability.THREE_UP;
+		double saves = wounds * Probability.FIVE_UP;
+		//the damage is capped to the maximum of hitpoints on the target
+		double expectedDamage = saves * otherSpaceMarines.getHitPoints();
+		assertEquals(expectedDamage, damage);
+	}
+	
+	@Test 
+	void spaceMarines_verus_abberants() {
+		var spaceMarines = new Unit();
+		spaceMarines.add(new Equipment(bolter, 5));
+		var abberants = Profile.builder()
+				.toughness(6)
+				.armorSave(Probability.FIVE_UP)
+				.hitPoints(3)
+				.feelNoPain(Probability.FOUR_UP)
+				.build();
 		
+		double damage = spaceMarines.attack(abberants);
+		double hits = 10 * Probability.THREE_UP;
+		double wounds = hits * Probability.FIVE_UP;
+		double missedSaves = wounds * Probability.FIVE_UP;
+		//Feel no pain wound migitation
+		double expectedDamage = missedSaves * Probability.FOUR_UP;
 		assertEquals(expectedDamage, damage);
 	}
 	

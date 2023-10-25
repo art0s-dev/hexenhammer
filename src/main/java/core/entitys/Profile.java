@@ -13,6 +13,7 @@ public class Profile {
 	private int toughness;
 	private int wounds;
 	private double armorSave;
+	@Builder.Default private int hitPoints = 1;
 	@Builder.Default private double invulnerableSave = Probability.NONE;
 	@Builder.Default private double feelNoPain = Probability.NONE;
 }
