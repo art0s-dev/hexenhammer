@@ -1,5 +1,6 @@
 package core.entitys;
 
+import java.util.HashSet;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Generated;
@@ -18,10 +19,25 @@ public class Weapon {
 	private int strength;
 	private int armorPenetration;
 	private double damage;
-	@Builder.Default private Phase phase = Phase.SHOOTING;
+	@Builder.Default private Phase phase = Phase.SHOOTING; 
+	
+	private HashSet<SpecialRuleWeapon> specialRules;
+	public enum SpecialRuleWeapon{
+		REROLL_ONES_TO_HIT
+	}
 	
 	public enum Phase {
 		SHOOTING,
 		FIGHT
+	}
+	
+	public void add(SpecialRuleWeapon specialRule) {
+		this.specialRules.add(specialRule);
+	}
+	public void remove(SpecialRuleWeapon specialRule) {
+		this.remove(specialRule);
+	}
+	public boolean has(SpecialRuleWeapon specialRule) {
+		return this.specialRules.contains(specialRule);
 	}
 }

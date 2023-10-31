@@ -5,13 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import core.entitys.Probability;
 import core.entitys.Profile;
 import core.entitys.Unit;
 import core.entitys.Unit.Equipment;
+import core.entitys.Unit.SpecialRuleUnit;
 import core.entitys.Weapon;
 
 class UnitTest {
@@ -101,7 +101,7 @@ class UnitTest {
 		//10 Attacks with 3+ to hit, 3+ to wound and a 5up save
 		double hits = 10 * Probability.THREE_UP;
 		double wounds = hits * Probability.THREE_UP;
-		double expectedDamage = wounds * Probability.FIVE_UP; 
+		double expectedDamage = Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
 		assertEquals(expectedDamage, damage);
 	}
 	
@@ -114,7 +114,8 @@ class UnitTest {
 		double damage = spaceMarines.attack(eldarRangers);
 		double hits = 12 * Probability.THREE_UP;
 		double wounds = hits * Probability.THREE_UP;
-		double expectedDamage = wounds * Probability.FIVE_UP; 
+		double missedSaves = Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
+		double expectedDamage = missedSaves * eldarRangers.getHitPoints();
 		assertEquals(expectedDamage, damage);
 	}
 	
@@ -131,13 +132,16 @@ class UnitTest {
 		double damage = spaceMarines.attack(otherSpaceMarines);
 		double hits = 12 * Probability.THREE_UP;
 		double wounds = hits * Probability.THREE_UP;
-		double saves = wounds * Probability.FIVE_UP;
+		double failedSaves = wounds - (wounds * Probability.FIVE_UP); 
 		//the damage is capped to the maximum of hitpoints on the target
-		double expectedDamage = saves * otherSpaceMarines.getHitPoints();
+		//For every full wound (pessimisticly rounding down) we deal damage
+		//The heavy Bolter does 2 damage so we can take only 2 damage 
+		int hitPoints = otherSpaceMarines.getHitPoints();
+		double expectedDamage = Math.floor(failedSaves) * hitPoints;
 		assertEquals(expectedDamage, damage);
 	}
 	
-	@Test 
+	@Test
 	void spaceMarines_verus_abberants() {
 		var spaceMarines = new Unit();
 		spaceMarines.add(new Equipment(bolter, 5));
@@ -151,9 +155,27 @@ class UnitTest {
 		double damage = spaceMarines.attack(abberants);
 		double hits = 10 * Probability.THREE_UP;
 		double wounds = hits * Probability.FIVE_UP;
-		double missedSaves = wounds * Probability.FIVE_UP;
+		double missedSaves = Math.floor(wounds - (wounds * Probability.FIVE_UP));
 		//Feel no pain wound migitation
 		double expectedDamage = missedSaves * Probability.FOUR_UP;
+		assertEquals(expectedDamage, damage);
+	}
+	
+	@Test
+	void SpaceMarinesWithACaptian_AttackGuardsmen_RerollOnesToHit() {
+		var spaceMarines = new Unit();
+		spaceMarines.add(SpecialRuleUnit.REROLL_ONES_TO_HIT);
+		spaceMarines.add(new Equipment(bolter, 5));
+		var damage = spaceMarines.attack(guardsmen);
+		//We implement the reroll
+		var hits = 10 * Probability.THREE_UP;
+		var missedHits = 10 - hits;
+		//We reroll only ones
+		hits += (missedHits / 6) * Probability.THREE_UP;
+		
+		var wounds = hits * Probability.THREE_UP;
+		//but we also redefined the formula for the wound roll
+		var expectedDamage = Math.floor(wounds - (wounds * Probability.FIVE_UP));
 		assertEquals(expectedDamage, damage);
 	}
 	
