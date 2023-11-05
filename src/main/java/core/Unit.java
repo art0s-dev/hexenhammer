@@ -1,15 +1,19 @@
-package core.entitys;
+package core;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
-import core.entitys.Weapon.SpecialRuleWeapon;
+import core.Weapon.SpecialRuleWeapon;
 
 /**
  * This is the cornerstone of the software
  * Each unit represents a bunch of weapons that will be rolled
- * against another unit    
+ * against another unit. In Order to calculate the damage Outcome of a Unit
+ * you will have to:
+ * - create some weapons, a unit and a target profile
+ * - equip() the weapons and maybe add() some special rules
+ * - attack() the enemy profile
  */
 public class Unit {
 	
@@ -17,7 +21,7 @@ public class Unit {
 	 * With this method we add, delete and edit the weapons of a unit.
 	 * @param Weapon - The weapon we want to edit
 	 * @param quantity - The quantity the weapns shall recieve   
-	 * @apiNote Quantity negative or zero deletes the weapon
+	 * @implNote Quantity negative or zero deletes the weapon
 	 */
 	public void equip(int quantity, Weapon weapon) {
 		
@@ -37,7 +41,7 @@ public class Unit {
 	}
 	
 	/**
-	 * The SpecialRuleUnit builds an api for editing special cases in our unit
+	 * The SpecialRuleUnit builds an API for editing special cases in our unit
 	 * these rules apply to the battle sequence in global. There is also
 	 * a SpecialRuleWeapon which will be applied before the global rule if it is better 
 	 */
@@ -65,6 +69,8 @@ public class Unit {
 	 */
 	public int attack(Profile enemy) {
 		int damage = 0;
+		
+		//Iterates through all weapons and calculates damage for each weapon
 		for (Entry<Weapon, Integer> set : weapons.entrySet()) {
 			Weapon weapon = set.getKey();
 			
@@ -128,8 +134,20 @@ public class Unit {
 		return damage;
 	}
 	
+	/**
+	 * This is the register of weapons a unit has.
+	 * This register can be edited via the equip method.
+	 * It contains the signature of the object as a key
+	 * and a quantity as the value.
+	 */
 	private HashMap<Weapon, Integer> weapons = new HashMap<>();
+	
+	/**
+	 * The Set of special rules each unit has.
+	 * @see SpecialRuleUnit
+	 */
 	private HashSet<SpecialRuleUnit> specialRules = new HashSet<>();
+	
 	private boolean has(SpecialRuleUnit specialRule) {
 		return this.specialRules.contains(specialRule);
 	}

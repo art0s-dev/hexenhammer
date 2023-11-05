@@ -1,4 +1,4 @@
-package core.entitys;
+package core;
 
 import java.util.HashSet;
 import lombok.Builder;
@@ -21,8 +21,9 @@ public class Weapon {
 	private double damage;
 	@Builder.Default private Phase phase = Phase.SHOOTING; 
 	
-	
-	
+	/**
+	 * Distinguishes the weapon between a combat and a shooting weapon
+	 */
 	public enum Phase {
 		SHOOTING,
 		FIGHT
@@ -39,18 +40,6 @@ public class Weapon {
 		HEAVY_AND_UNIT_REMAINED_STATIONARY
 	}
 	
-	/**
-	 * The Builder pattern that can be used to create Weapons
-	 */
-	public static class WeaponBuilder{
-		public WeaponBuilder add(SpecialRuleWeapon specialRule) {
-			var set = new HashSet<SpecialRuleWeapon>();
-			set.add(specialRule);
-			this.specialRules(set);
-			return this;
-		}
-	}
-	
 	public void add(SpecialRuleWeapon specialRule) {
 		this.specialRules.add(specialRule);
 	}
@@ -61,5 +50,17 @@ public class Weapon {
 	
 	public boolean has(SpecialRuleWeapon specialRule) {
 		return this.specialRules.contains(specialRule);
+	}
+	
+	/**
+	 * The Builder pattern that can be used to create Weapons
+	 */
+	public static class WeaponBuilder{
+		public WeaponBuilder add(SpecialRuleWeapon specialRule) {
+			var set = new HashSet<SpecialRuleWeapon>();
+			set.add(specialRule);
+			this.specialRules(set);
+			return this;
+		}
 	}
 }

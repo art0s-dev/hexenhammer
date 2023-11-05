@@ -1,7 +1,4 @@
-package core.entitys;
-
-import java.util.HashMap;
-import java.util.function.Function;
+package core;
 
 /*
  * Those are the Probs we use to calculate everything
@@ -19,7 +16,8 @@ public final class Probability {
 	public final static double NONE = 0.00;
 	
 	/**
-	 * recreates a dice roll with a determenistic result
+	 * recreates a dice roll with a deterministic result
+	 * @param quantity the number of d6 that that be rolled
 	 */
 	public final static double d6(int quantity) {
 		return quantity * MEDIAN_D6;
@@ -33,6 +31,7 @@ public final class Probability {
 	
 	/**
 	 * recreates a halved dice roll wih deterministic result
+	 * @param quantity the number of d3 that shall be rolled
 	 */
 	public final static double d3(int quantity) {
 		return quantity * MEDIAN_D3;
@@ -46,6 +45,8 @@ public final class Probability {
 	
 	/**
 	 * modifies the roll + or - one result
+	 * @param probability - the probability given (1 - 0.277)
+	 * @param operator - char the operator - (+ OR -)
 	 */
 	public static double modifyRoll(double probability, char operator) {
 		//+ makes the roll better (Five up -> four up)

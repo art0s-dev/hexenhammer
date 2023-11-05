@@ -1,29 +1,22 @@
 package unittests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static unittests.Weaponry.*;
 
 import org.junit.jupiter.api.Test;
 
-import core.entitys.Probability;
-import core.entitys.Profile;
-import core.entitys.Unit;
-import core.entitys.Unit.SpecialRuleUnit;
-import core.entitys.Weapon;
-import core.entitys.Weapon.SpecialRuleWeapon;
+import core.Probability;
+import core.Profile;
+import core.Unit;
+import core.Weapon;
+import core.Unit.SpecialRuleUnit;
+import core.Weapon.SpecialRuleWeapon;
 
-class UnitTest {
-	/**
-	 * TODO: 
-	 * 3 Groups can have modificators: Weapons, Units and profiles.
-	 * test each group and each possibile modifier
-	 * (+ 1 unit, +1 weapon, -1 profile -> +1 to hit)
-	 * with all combinations in a seperated test
-	 * refactor the tests into 3 groupes
-	 * UnitTests(which can be calles Battle Simulations)
-	 * ModifierTests(which contain our +1 , -1 tests)
-	 * And a static class that is calles weaponry 
-	 * with just the profiles
-	 */
+/**
+ * These are our battle simulations to test the unit API.
+ * 
+ */
+class BattleSimulations {
 	
 	/**
 	 * In our next case we bring something interesting intrducing the flameThrower
@@ -197,53 +190,5 @@ class UnitTest {
 		
 		assertEquals(expectedDamage, damage);
 	}
-	
-	Weapon flameThrower = Weapon.builder()
-			.attacks(Probability.d6(1))
-			.add(SpecialRuleWeapon.TORRENT)
-			.strength(4)
-			.armorPenetration(0)
-			.damage(1)
-			.build();
-	
-	Weapon bolter = Weapon.builder()
-			.attacks(2)
-			.toHit(Probability.THREE_UP)
-			.strength(4)
-			.armorPenetration(0)
-			.damage(1)
-			.build();
-	
-	Weapon heavyBolter = Weapon.builder()
-			.attacks(3)
-			.toHit(Probability.THREE_UP)
-			.add(SpecialRuleWeapon.HEAVY_AND_UNIT_REMAINED_STATIONARY)
-			.strength(5)
-			.armorPenetration(2)
-			.damage(2)
-			.build();
-	
-	Profile guardsmen = Profile.builder()
-			.toughness(3)
-			.armorSave(Probability.FIVE_UP)
-			.build();
-	
-	Profile eldarRangers = Profile.builder()
-			.toughness(3)
-			.armorSave(Probability.FIVE_UP)
-			.invulnerableSave(Probability.FIVE_UP)
-			.build();
-	
-	Profile otherSpaceMarines = Profile.builder()
-			.toughness(4)
-			.armorSave(Probability.THREE_UP)
-			.hitPoints(2)
-			.build();
-	
-	Profile abberants = Profile.builder()
-			.toughness(6)
-			.armorSave(Probability.FIVE_UP)
-			.hitPoints(3)
-			.feelNoPain(Probability.FOUR_UP)
-			.build();
+
 }

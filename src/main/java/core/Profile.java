@@ -1,4 +1,4 @@
-package core.entitys;
+package core;
 
 import lombok.Builder;
 import lombok.Data;
