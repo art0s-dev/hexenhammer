@@ -2,7 +2,6 @@ package unittests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import core.entitys.Probability;
@@ -10,8 +9,91 @@ import core.entitys.Profile;
 import core.entitys.Unit;
 import core.entitys.Unit.SpecialRuleUnit;
 import core.entitys.Weapon;
+import core.entitys.Weapon.SpecialRuleWeapon;
 
 class UnitTest {
+	/**
+	 * TODO: 
+	 * 3 Groups can have modificators: Weapons, Units and profiles.
+	 * test each group and each possibile modifier
+	 * (+ 1 unit, +1 weapon, -1 profile -> +1 to hit)
+	 * with all combinations in a seperated test
+	 * refactor the tests into 3 groupes
+	 * UnitTests(which can be calles Battle Simulations)
+	 * ModifierTests(which contain our +1 , -1 tests)
+	 * And a static class that is calles weaponry 
+	 * with just the profiles
+	 */
+	
+	/**
+	 * In our next case we bring something interesting intrducing the flameThrower
+	 * the flamethrowers gain a quantity like w6 -> 2,5 and then autohit
+	 */
+	@Test
+	void spaceMarines_withFlamethrowers_againstGuardsmen() {
+		var spaceMarines = new Unit();
+		spaceMarines.equip(4, flameThrower);
+		var damage = spaceMarines.attack(guardsmen);
+		var wounds = Probability.d6(4) * Probability.THREE_UP;
+		double expectedDamage = Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * In the next case we have brought fancy special rules with us
+	 * that allow our space marines to reroll the whole wound roll.
+	 */
+	@Test
+	void spaceMarines_withRerollWoundRoll_againstGuardsmen() {
+		var spaceMarines = new Unit();
+		spaceMarines.equip(4, heavyBolter);
+		spaceMarines.add(SpecialRuleUnit.REROLL_WOUND_ROLL);
+		var damage = spaceMarines.attack(guardsmen);
+		var hits = 12 * Probability.THREE_UP;
+		var wounds = hits * Probability.THREE_UP;
+		var rerolls = (hits - wounds) * Probability.THREE_UP;
+		wounds += rerolls;
+		
+		double expectedDamage = Math.floor(wounds); 
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * In this case we let our space marines reroll ones to wound 
+	 * (they've got a lieutenant or smth idk)
+	 */
+	@Test
+	void spaceMarines_withRerollOnesToWound_againstGuardsment() {
+		var spaceMarines = new Unit();
+		spaceMarines.equip(5, bolter);
+		spaceMarines.add(SpecialRuleUnit.REROLL_ONES_TO_WOUND);
+		var damage = spaceMarines.attack(guardsmen);
+		var hits = 10 * Probability.THREE_UP;
+		var wounds = hits * Probability.THREE_UP;
+		var rerolls = ((hits - wounds) / 6) * Probability.THREE_UP;
+		wounds += rerolls;
+		
+		double expectedDamage = Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * In this scenario we let our space marines use oath of the moment
+	 * so they can fully reroll the hit roll
+	 */
+	@Test 
+	void spaceMarines_withRerollHit_against_guardsmen() {
+		var spaceMarines = new Unit();
+		spaceMarines.equip(5, bolter);
+		spaceMarines.add(SpecialRuleUnit.REROLL_HIT_ROLL);
+		var damage = spaceMarines.attack(guardsmen);
+		var hits = 10 * Probability.THREE_UP;
+		var rerolls = (10 - hits) * Probability.THREE_UP;
+		hits += rerolls;
+		var wounds = hits * Probability.THREE_UP;
+		double expectedDamage = Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
+		assertEquals(expectedDamage, damage);
+	}
 	
 	/**
 	 * We test the equipment of the units,
@@ -92,8 +174,8 @@ class UnitTest {
 		double wounds = hits * Probability.FIVE_UP;
 		double missedSaves = Math.floor(wounds - (wounds * Probability.FIVE_UP));
 		//Feel no pain wound migitation
-		double expectedDamage = missedSaves * Probability.FOUR_UP;
-		assertEquals(0, damage);
+		double expectedDamage = Math.floor(missedSaves * Probability.FOUR_UP);
+		assertEquals(expectedDamage, damage);
 	}
 	
 	/**
@@ -101,7 +183,7 @@ class UnitTest {
 	 * A special rule allows our models to reroll ones on the hit roll
 	 */
 	@Test
-	void SpaceMarinesWithACaptian_AttackGuardsmen_RerollOnesToHit() {
+	void SpaceMarines_WithRerollOnesToHit_RerollOnesToHit() {
 		var spaceMarines = new Unit();
 		spaceMarines.add(SpecialRuleUnit.REROLL_ONES_TO_HIT);
 		spaceMarines.equip(5, bolter);
@@ -116,6 +198,14 @@ class UnitTest {
 		assertEquals(expectedDamage, damage);
 	}
 	
+	Weapon flameThrower = Weapon.builder()
+			.attacks(Probability.d6(1))
+			.add(SpecialRuleWeapon.TORRENT)
+			.strength(4)
+			.armorPenetration(0)
+			.damage(1)
+			.build();
+	
 	Weapon bolter = Weapon.builder()
 			.attacks(2)
 			.toHit(Probability.THREE_UP)
@@ -127,6 +217,7 @@ class UnitTest {
 	Weapon heavyBolter = Weapon.builder()
 			.attacks(3)
 			.toHit(Probability.THREE_UP)
+			.add(SpecialRuleWeapon.HEAVY_AND_UNIT_REMAINED_STATIONARY)
 			.strength(5)
 			.armorPenetration(2)
 			.damage(2)

@@ -21,22 +21,44 @@ public class Weapon {
 	private double damage;
 	@Builder.Default private Phase phase = Phase.SHOOTING; 
 	
-	private HashSet<SpecialRuleWeapon> specialRules;
-	public enum SpecialRuleWeapon{
-		REROLL_ONES_TO_HIT
-	}
+	
 	
 	public enum Phase {
 		SHOOTING,
 		FIGHT
 	}
 	
+	/**
+	 * The Set of special rules each weapon can have
+	 * it applies after the global unit special rules
+	 */
+	@Builder.Default
+	private HashSet<SpecialRuleWeapon> specialRules = new HashSet<>();
+	public enum SpecialRuleWeapon{
+		TORRENT,
+		HEAVY_AND_UNIT_REMAINED_STATIONARY
+	}
+	
+	/**
+	 * The Builder pattern that can be used to create Weapons
+	 */
+	public static class WeaponBuilder{
+		public WeaponBuilder add(SpecialRuleWeapon specialRule) {
+			var set = new HashSet<SpecialRuleWeapon>();
+			set.add(specialRule);
+			this.specialRules(set);
+			return this;
+		}
+	}
+	
 	public void add(SpecialRuleWeapon specialRule) {
 		this.specialRules.add(specialRule);
 	}
+	
 	public void remove(SpecialRuleWeapon specialRule) {
 		this.remove(specialRule);
 	}
+	
 	public boolean has(SpecialRuleWeapon specialRule) {
 		return this.specialRules.contains(specialRule);
 	}

@@ -4,17 +4,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+import core.entitys.Weapon.SpecialRuleWeapon;
+
 /**
  * This is the cornerstone of the software
  * Each unit represents a bunch of weapons that will be rolled
- * against another unit   
+ * against another unit    
  */
 public class Unit {
 	
 	/**
 	 * With this method we add, delete and edit the weapons of a unit.
 	 * @param Weapon - The weapon we want to edit
-	 * @param quantity - The quantity the weapns shall recieve  
+	 * @param quantity - The quantity the weapns shall recieve   
 	 * @apiNote Quantity negative or zero deletes the weapon
 	 */
 	public void equip(int quantity, Weapon weapon) {
@@ -40,7 +42,10 @@ public class Unit {
 	 * a SpecialRuleWeapon which will be applied before the global rule if it is better 
 	 */
 	public enum SpecialRuleUnit{
-		REROLL_ONES_TO_HIT
+		REROLL_ONES_TO_HIT,
+		REROLL_HIT_ROLL,
+		REROLL_ONES_TO_WOUND,
+		REROLL_WOUND_ROLL
 	}
 	public void add(SpecialRuleUnit specialRule) {
 		this.specialRules.add(specialRule);
@@ -55,8 +60,8 @@ public class Unit {
 	 * aswell as the fight phase and all the generic special rules
 	 * 
 	 * @see https://www.warhammer-community.com/2023/06/02/download-the-new-warhammer-40000-rules-for-free-right-here/ 
-	 * @param Profile - The Profile the Unit shall attack
-	 * @return Int - The damage done to the profile unit
+	 * @param Profile - The Profile the Unit shall attack  
+	 * @return Int - The damage done to the profile unit 
 	 */
 	public int attack(Profile enemy) {
 		int damage = 0;
@@ -64,13 +69,20 @@ public class Unit {
 			Weapon weapon = set.getKey();
 			
 			//calculate the hits
-			double attacks = weapon.getAttacks() * set.getValue();
+			int quantity = set.getValue();
+			double attacks = weapon.getAttacks() * quantity;
 			double hits = (double) attacks  * weapon.getToHit();
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT)) {
 				hits += ((attacks - hits) / 6) * weapon.getToHit(); 
 			}
+			if(this.has(SpecialRuleUnit.REROLL_HIT_ROLL)) {
+				hits += (attacks - hits) * weapon.getToHit(); 
+			}
+			if(weapon.has(SpecialRuleWeapon.TORRENT)) {
+				hits = weapon.getAttacks() * quantity;
+			}
 			
-			//calculate the wound roll
+			//calculate the wound roll 
 			int strength = weapon.getStrength();
 			int toughness = enemy.getToughness();
 			double probabilityToWound = Probability.SIX_UP;
@@ -79,6 +91,12 @@ public class Unit {
 			if(strength == toughness) { probabilityToWound = Probability.FOUR_UP;}
 			if(strength < toughness) { probabilityToWound = Probability.FIVE_UP; }
 			double wounds = hits * probabilityToWound;
+			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND)) {
+				wounds += ((hits - wounds) / 6) * probabilityToWound; 
+			}
+			if(this.has(SpecialRuleUnit.REROLL_WOUND_ROLL)) {
+				wounds += (hits - wounds) * probabilityToWound; 
+			}
 			
 			//determine armour
 			double armourSave = enemy.getArmorSave();
