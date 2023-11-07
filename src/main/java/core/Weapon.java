@@ -37,7 +37,8 @@ public class Weapon {
 	private HashSet<SpecialRuleWeapon> specialRules = new HashSet<>();
 	public enum SpecialRuleWeapon{
 		TORRENT,
-		HEAVY_AND_UNIT_REMAINED_STATIONARY
+		HEAVY_AND_UNIT_REMAINED_STATIONARY,
+		REROLL_WOUND_ROLL
 	}
 	
 	public void add(SpecialRuleWeapon specialRule) {

@@ -100,11 +100,13 @@ public class Unit {
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND)) {
 				wounds += ((hits - wounds) / 6) * probabilityToWound; 
 			}
-			if(this.has(SpecialRuleUnit.REROLL_WOUND_ROLL)) {
+			boolean rerollWoundRoll = this.has(SpecialRuleUnit.REROLL_WOUND_ROLL) 
+					|| weapon.has(SpecialRuleWeapon.REROLL_WOUND_ROLL);
+			if(rerollWoundRoll) {
 				wounds += (hits - wounds) * probabilityToWound; 
 			}
 			
-			//determine armour
+			//determine Armour
 			double armourSave = enemy.getArmorSave();
 			HashMap<Double,Integer> symbolicArmourSave = new HashMap<>();
 			symbolicArmourSave.put(Probability.SIX_UP, 1);
@@ -127,8 +129,9 @@ public class Unit {
 				damageMultiplier = enemy.getHitPoints();
 			}
 			
-			double woundsAfterFeelNoPain = (missedSaves * damageMultiplier) * enemy.getFeelNoPain();
-			damage += (missedSaves * damageMultiplier) - woundsAfterFeelNoPain;
+			double damagePotential = missedSaves * damageMultiplier;
+			double woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
+			damage += Math.floor(damagePotential - woundsAfterFeelNoPain);
 		}
 		
 		return damage;

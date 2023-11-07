@@ -1,16 +1,19 @@
 package unittests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static unittests.Weaponry.*;
+import static unittests.Weaponry.abberants;
+import static unittests.Weaponry.bolter;
+import static unittests.Weaponry.eldarRangers;
+import static unittests.Weaponry.flameThrower;
+import static unittests.Weaponry.guardsmen;
+import static unittests.Weaponry.heavyBolter;
+import static unittests.Weaponry.otherSpaceMarines;
 
 import org.junit.jupiter.api.Test;
 
 import core.Probability;
-import core.Profile;
 import core.Unit;
-import core.Weapon;
 import core.Unit.SpecialRuleUnit;
-import core.Weapon.SpecialRuleWeapon;
 
 /**
  * These are our battle simulations to test the unit API.
