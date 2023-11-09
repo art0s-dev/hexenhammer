@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+import core.Profile.SpecialRuleProfile;
 import core.Weapon.SpecialRuleWeapon;
 
 /**
@@ -49,7 +50,8 @@ public class Unit {
 		REROLL_ONES_TO_HIT,
 		REROLL_HIT_ROLL,
 		REROLL_ONES_TO_WOUND,
-		REROLL_WOUND_ROLL
+		REROLL_WOUND_ROLL,
+		ADD_ONE_TO_HIT
 	}
 	public void add(SpecialRuleUnit specialRule) {
 		this.specialRules.add(specialRule);
@@ -61,7 +63,7 @@ public class Unit {
 	/**
 	 * The attack method is an implementation of the combat sequence of the 
 	 * warhammer 40k rulebook it should cover the shooting phase,  
-	 * aswell as the fight phase and all the generic special rules
+	 * aswell as the fight phase and all the generic special rules 
 	 * 
 	 * @see https://www.warhammer-community.com/2023/06/02/download-the-new-warhammer-40000-rules-for-free-right-here/ 
 	 * @param Profile - The Profile the Unit shall attack  
@@ -77,7 +79,15 @@ public class Unit {
 			//calculate the hits
 			int quantity = set.getValue();
 			double attacks = weapon.getAttacks() * quantity;
-			double hits = (double) attacks  * weapon.getToHit();
+			double chanceToHit = weapon.getToHit();
+			if(this.has(SpecialRuleUnit.ADD_ONE_TO_HIT)) {
+				chanceToHit = Probability.modifyRoll(chanceToHit, '+');
+			}
+			if(enemy.has(SpecialRuleProfile.SUBSTRACT_ONE_FROM_HIT_ROLL)) {
+				chanceToHit = Probability.modifyRoll(chanceToHit, '-');
+			}
+			
+			double hits = (double) attacks  * chanceToHit;
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT)) {
 				hits += ((attacks - hits) / 6) * weapon.getToHit(); 
 			}
@@ -131,7 +141,7 @@ public class Unit {
 			
 			double damagePotential = missedSaves * damageMultiplier;
 			double woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
-			damage += Math.floor(damagePotential - woundsAfterFeelNoPain);
+			damage += damagePotential - woundsAfterFeelNoPain;
 		}
 		
 		return damage;
@@ -141,7 +151,7 @@ public class Unit {
 	 * This is the register of weapons a unit has.
 	 * This register can be edited via the equip method.
 	 * It contains the signature of the object as a key
-	 * and a quantity as the value.
+	 * and a quantity as the value. 
 	 */
 	private HashMap<Weapon, Integer> weapons = new HashMap<>();
 	
