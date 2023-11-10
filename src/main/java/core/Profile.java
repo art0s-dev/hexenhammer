@@ -28,7 +28,8 @@ public class Profile {
 	@Builder.Default
 	private HashSet<SpecialRuleProfile> specialRules = new HashSet<>();
 	public enum SpecialRuleProfile{
-		SUBSTRACT_ONE_FROM_HIT_ROLL
+		SUBTRACT_ONE_FROM_HIT_ROLL,
+		SUBTRACT_ONE_FROM_WOUND_ROLL
 	}
 	
 	public void add(SpecialRuleProfile specialRule) {
@@ -43,15 +44,4 @@ public class Profile {
 		return this.specialRules.contains(specialRule);
 	}
 	
-	/**
-	 * The Builder pattern that can be used to create Profiles
-	 */
-	public static class ProfileBuilder{
-		public ProfileBuilder add(SpecialRuleProfile specialRule) {
-			var set = new HashSet<SpecialRuleProfile>();
-			set.add(specialRule);
-			this.specialRules(set);
-			return this;
-		}
-	}
 }

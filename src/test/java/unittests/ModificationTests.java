@@ -28,9 +28,81 @@ import core.Weapon.SpecialRuleWeapon;
  */
 class ModificationTests {
 	
+	@BeforeEach
+	void setup() {
+		scorpionTank = new Unit();
+		scorpionTank.equip(1, scorpionPulsar);
+	}
+	
+	@Test
+	void BaseCaseToAttackMortarion_WithoutModifiers() {		
+		var damage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
+		assertEquals(damage, scorpionTank.attack(mortarion));
+	}
+	
+	@Test
+	void ScorpionTankGetsOneToHit_AgainstMortarion() {
+		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
+		var damage = calculateScorpionDamage(Probability.TWO_UP,Probability.THREE_UP);
+		assertEquals(damage, scorpionTank.attack(mortarion));
+	}
+	
+	@Test
+	void ScorpionTankGetsMinusOneToHit_AgainstMortarion() {
+		mortarion.add(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL);
+		var damage = calculateScorpionDamage(Probability.FOUR_UP,Probability.THREE_UP);
+		assertEquals(damage, scorpionTank.attack(mortarion));
+	}
+	
+	@Test 
+	void ScorpionTankGetsPlusOneToHit_AndMinusOneToHit_AgainstMorty() {
+		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
+		mortarion.add(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL);
+		var damage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
+		assertEquals(damage, scorpionTank.attack(mortarion));
+	}
+	
+	@Test
+	void ScorpionTankGetsPlusOneToWound_AgainstMortarion() {
+		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_WOUND);
+		var damage = calculateScorpionDamage(Probability.THREE_UP,Probability.TWO_UP);
+		assertEquals(damage, scorpionTank.attack(mortarion));
+	}
+	
+	@Test
+	void ScorpionTankGetsMinusOneToWound_AgainstMortarion() {
+		mortarion.add(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL);
+		var damage = calculateScorpionDamage(Probability.THREE_UP, Probability.FOUR_UP);
+		assertEquals(damage, scorpionTank.attack(mortarion));
+	}
+	
+	@Test
+	void ScorpionTankGetsMinusOneToWoundAndPlusOneToWound_AgainstMortarion() {
+		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_WOUND);
+		mortarion.add(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL);
+		var damage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
+		assertEquals(damage, scorpionTank.attack(mortarion));
+	}
+	
+	private double calculateScorpionDamage(double toHit, double toWound) {
+		double hits = scorpionPulsar.getAttacks() * toHit;
+		double wounds = hits * toWound;
+		wounds += (hits - wounds) * toWound; 
+		int missedSaves = (int) Math.floor(wounds * Probability.FOUR_UP);
+		
+		double damagePotential = missedSaves * scorpionPulsar.getDamage();
+		double damageAfterFeelNoPain = damagePotential - (damagePotential * Probability.FIVE_UP);
+		return damageAfterFeelNoPain = Math.floor(damageAfterFeelNoPain);
+	}
+	
 	Unit scorpionTank = new Unit();
+	
+	/**
+	 * We exaggerate The attacks of the weapon so we dont fail the tests in
+	 * the math.floor() > 1 spectrum. 
+	 */
 	Weapon scorpionPulsar = Weapon.builder()
-			.attacks(6)
+			.attacks(100)
 			.toHit(Probability.THREE_UP)
 			.strength(18)
 			.armorPenetration(3)
@@ -45,55 +117,5 @@ class ModificationTests {
 			.invulnerableSave(Probability.FOUR_UP)
 			.feelNoPain(Probability.FIVE_UP)
 			.build();
-	
-	@BeforeEach
-	void setup() {
-		scorpionTank = new Unit();
-		scorpionTank.equip(1, scorpionPulsar);
-	}
-	
-	@Test
-	void BaseCaseToAttackMortarion_WithoutModifiers() {
-		double hits = 6 * Probability.THREE_UP;
-		double wounds = hits * Probability.THREE_UP;
-		wounds += (hits - wounds) * Probability.THREE_UP; 
-		
-		int missedSaves = (int) Math.floor(wounds * Probability.FOUR_UP);
-		double damagePotential = missedSaves * scorpionPulsar.getDamage(); 
-		double damageAfterFeelNoPain = damagePotential - (damagePotential * Probability.FIVE_UP);
-		damageAfterFeelNoPain = Math.floor(damageAfterFeelNoPain);
-		
-		assertEquals(damageAfterFeelNoPain, scorpionTank.attack(mortarion));
-	}
-	
-	@Test
-	void ScorpionTankGetsOneToHit_AgainstMortarion() {
-		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
-		double hits = 6 * Probability.TWO_UP; //4.998
-		double wounds = hits * Probability.THREE_UP; //3.29
-		wounds += (hits - wounds) * Probability.THREE_UP; 
-		int missedSaves = (int) Math.floor(wounds * Probability.FOUR_UP); //1
-		
-		double damagePotential = missedSaves * scorpionPulsar.getDamage(); //5
-		double damageAfterFeelNoPain = damagePotential - (damagePotential * Probability.FIVE_UP);
-		damageAfterFeelNoPain = Math.floor(damageAfterFeelNoPain);
-		
-		assertEquals(damageAfterFeelNoPain, scorpionTank.attack(mortarion));
-	}
-	
-	@Test @Disabled("Test is Flaky and runs green - i suspect the hits are the same")
-	void ScorpionTankGetsMinusOneToHit_AgainstMortarion() {
-		mortarion.add(SpecialRuleProfile.SUBSTRACT_ONE_FROM_HIT_ROLL);
-		double hits = 6 * Probability.FOUR_UP;
-		double wounds = hits * Probability.THREE_UP;
-		wounds += (hits - wounds) * Probability.THREE_UP; 
-		int missedSaves = (int) Math.floor(wounds * Probability.FOUR_UP); //1
-		
-		double damagePotential = missedSaves * scorpionPulsar.getDamage(); //5
-		double damageAfterFeelNoPain = damagePotential - (damagePotential * Probability.FIVE_UP);
-		damageAfterFeelNoPain = Math.floor(damageAfterFeelNoPain);
-		
-		assertEquals(damageAfterFeelNoPain, scorpionTank.attack(mortarion));
-	}
 
 }

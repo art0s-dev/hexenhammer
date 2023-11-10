@@ -51,7 +51,8 @@ public class Unit {
 		REROLL_HIT_ROLL,
 		REROLL_ONES_TO_WOUND,
 		REROLL_WOUND_ROLL,
-		ADD_ONE_TO_HIT
+		ADD_ONE_TO_HIT,
+		ADD_ONE_TO_WOUND
 	}
 	public void add(SpecialRuleUnit specialRule) {
 		this.specialRules.add(specialRule);
@@ -83,7 +84,7 @@ public class Unit {
 			if(this.has(SpecialRuleUnit.ADD_ONE_TO_HIT)) {
 				chanceToHit = Probability.modifyRoll(chanceToHit, '+');
 			}
-			if(enemy.has(SpecialRuleProfile.SUBSTRACT_ONE_FROM_HIT_ROLL)) {
+			if(enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL)) {
 				chanceToHit = Probability.modifyRoll(chanceToHit, '-');
 			}
 			
@@ -106,6 +107,13 @@ public class Unit {
 			if(strength > toughness) { probabilityToWound = Probability.THREE_UP;}
 			if(strength == toughness) { probabilityToWound = Probability.FOUR_UP;}
 			if(strength < toughness) { probabilityToWound = Probability.FIVE_UP; }
+			if(this.has(SpecialRuleUnit.ADD_ONE_TO_WOUND)) {
+				probabilityToWound = Probability.modifyRoll(probabilityToWound, '+'); 
+			}
+			if(enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL)) {
+				probabilityToWound = Probability.modifyRoll(probabilityToWound, '-');
+			}
+			
 			double wounds = hits * probabilityToWound;
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND)) {
 				wounds += ((hits - wounds) / 6) * probabilityToWound; 
@@ -149,8 +157,8 @@ public class Unit {
 	
 	/**
 	 * This is the register of weapons a unit has.
-	 * This register can be edited via the equip method.
-	 * It contains the signature of the object as a key
+	 * This register can be edited via the equip method. 
+	 * It contains the signature of the object as a key 
 	 * and a quantity as the value. 
 	 */
 	private HashMap<Weapon, Integer> weapons = new HashMap<>();
