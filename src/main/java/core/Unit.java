@@ -99,7 +99,7 @@ public class Unit {
 				hits = weapon.getAttacks() * quantity;
 			}
 			
-			//calculate the wound roll 
+			//calculate the wound roll  
 			int strength = weapon.getStrength();
 			int toughness = enemy.getToughness();
 			double probabilityToWound = Probability.SIX_UP;
@@ -149,7 +149,9 @@ public class Unit {
 			
 			double damagePotential = missedSaves * damageMultiplier;
 			double woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
-			damage += damagePotential - woundsAfterFeelNoPain;
+			//We dont deal 0.35 damage to a Model, Go Full or go home
+			int damageDone = (int) Math.floor(damagePotential - woundsAfterFeelNoPain);
+			damage += damageDone;
 		}
 		
 		return damage;

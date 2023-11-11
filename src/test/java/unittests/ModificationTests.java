@@ -1,6 +1,7 @@
 package unittests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,8 @@ class ModificationTests {
 	void GivenIsAScorpionTank_WhenItAttacksMortarion_ThenTheCalculationIsCorrect() {		
 		var damage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
 		assertEquals(damage, scorpionTank.attack(mortarion));
+		//The Damage Done can only be a multiple of the hit points
+		assertTrue(scorpionTank.attack(mortarion) % mortarion.getHitPoints() == 0);
 	}
 	
 	
