@@ -22,7 +22,7 @@ public class Unit {
 	 * With this method we add, delete and edit the weapons of a unit.
 	 * @param Weapon - The weapon we want to edit
 	 * @param quantity - The quantity the weapns shall recieve   
-	 * @implNote Quantity negative or zero deletes the weapon
+	 * @implNote Quantity negative or zero deletes the weapon 
 	 */
 	public void equip(int quantity, Weapon weapon) {
 		
@@ -66,7 +66,7 @@ public class Unit {
 	 * warhammer 40k rulebook it should cover the shooting phase,  
 	 * aswell as the fight phase and all the generic special rules 
 	 * 
-	 * @see https://www.warhammer-community.com/2023/06/02/download-the-new-warhammer-40000-rules-for-free-right-here/ 
+	 * @see Design docs - core
 	 * @param Profile - The Profile the Unit shall attack  
 	 * @return Int - The damage done to the profile unit 
 	 */
