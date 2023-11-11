@@ -2,10 +2,8 @@ package unittests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import core.Probability;
 import core.Profile;
@@ -34,28 +32,33 @@ class ModificationTests {
 		scorpionTank.equip(1, scorpionPulsar);
 	}
 	
+	
+	/**
+	 * Base Case Test without modifiers 
+	 */
 	@Test
-	void BaseCaseToAttackMortarion_WithoutModifiers() {		
+	void GivenIsAScorpionTank_WhenItAttacksMortarion_ThenTheCalculationIsCorrect() {		
 		var damage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
 		assertEquals(damage, scorpionTank.attack(mortarion));
 	}
 	
+	
 	@Test
-	void ScorpionTankGetsOneToHit_AgainstMortarion() {
+	void GivenScorpionTank_WhenPlusOneToHit_ThenTheDamageIsHigher() {
 		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
 		var damage = calculateScorpionDamage(Probability.TWO_UP,Probability.THREE_UP);
 		assertEquals(damage, scorpionTank.attack(mortarion));
 	}
 	
 	@Test
-	void ScorpionTankGetsMinusOneToHit_AgainstMortarion() {
+	void GivenScorpionTank_WhenSubtractToHit_ThenTheDamageIsLower() {
 		mortarion.add(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL);
 		var damage = calculateScorpionDamage(Probability.FOUR_UP,Probability.THREE_UP);
 		assertEquals(damage, scorpionTank.attack(mortarion));
 	}
 	
 	@Test 
-	void ScorpionTankGetsPlusOneToHit_AndMinusOneToHit_AgainstMorty() {
+	void GivenScorpionBothModifiers_WhenItAttacks_ThenDamageIsSameAsBaseCase() {
 		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
 		mortarion.add(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL);
 		var damage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
@@ -63,21 +66,21 @@ class ModificationTests {
 	}
 	
 	@Test
-	void ScorpionTankGetsPlusOneToWound_AgainstMortarion() {
+	void GivenScorpionTank_WhenPlusOneToWound_ThenTheDamageIsHigher() {
 		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_WOUND);
 		var damage = calculateScorpionDamage(Probability.THREE_UP,Probability.TWO_UP);
 		assertEquals(damage, scorpionTank.attack(mortarion));
 	}
 	
 	@Test
-	void ScorpionTankGetsMinusOneToWound_AgainstMortarion() {
+	void GivenScorpionTank_WhenSubtractToWound_ThenTheDamageIsLower() {
 		mortarion.add(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL);
 		var damage = calculateScorpionDamage(Probability.THREE_UP, Probability.FOUR_UP);
 		assertEquals(damage, scorpionTank.attack(mortarion));
 	}
 	
 	@Test
-	void ScorpionTankGetsMinusOneToWoundAndPlusOneToWound_AgainstMortarion() {
+	void GivenScorpionTank_WhenBothModifiersApply_ThenTheDamageIsSameAsBaseCase() {
 		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_WOUND);
 		mortarion.add(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL);
 		var damage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
