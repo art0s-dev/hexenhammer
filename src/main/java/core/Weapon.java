@@ -1,6 +1,9 @@
 package core;
 
 import java.util.HashSet;
+import java.util.Optional;
+
+import core.Profile.Type;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Generated;
@@ -22,6 +25,13 @@ public class Weapon {
 	@Builder.Default private Phase phase = Phase.SHOOTING; 
 	
 	/**
+	 * This is a tuple explains the specific efficiency for wound rolls
+	 * against a certain profile type.
+	 */
+	public record AntiType(Type type, Double probability) {};
+	@Builder.Default private Optional<AntiType> antiType = Optional.empty();
+	
+	/**
 	 * Distinguishes the weapon between a combat and a shooting weapon
 	 */
 	public enum Phase {
@@ -38,7 +48,8 @@ public class Weapon {
 	public enum SpecialRuleWeapon{
 		TORRENT,
 		HEAVY_AND_UNIT_REMAINED_STATIONARY,
-		REROLL_WOUND_ROLL
+		REROLL_WOUND_ROLL,
+		ANTI
 	}
 	
 	public void add(SpecialRuleWeapon specialRule) {
@@ -60,7 +71,13 @@ public class Weapon {
 		public WeaponBuilder add(SpecialRuleWeapon specialRule) {
 			var set = new HashSet<SpecialRuleWeapon>();
 			set.add(specialRule);
+			set.addAll(this.build().getSpecialRules());
 			this.specialRules(set);
+			return this;
+		}
+		
+		public WeaponBuilder setAntiType(Type type, double probability) {
+			this.antiType(Optional.of(new AntiType(type, probability)));
 			return this;
 		}
 	}

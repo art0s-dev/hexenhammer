@@ -12,14 +12,90 @@ import static unittests.Weaponry.otherSpaceMarines;
 import org.junit.jupiter.api.Test;
 
 import core.Probability;
+import core.Profile;
+import core.Profile.Type;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
+import core.Weapon;
 
 /**
  * These are our battle simulations to test the unit API.
  * The Test cases ensure that the attack sequence is ruled correctly
  */
 class BattleSimulations {
+	
+	/**
+	 * This Test shall just test the simple combat mechanic
+	 * of hit, wound and damage
+	 */
+	@Test
+	void GivenSpaceMarinesWithBolders_WhenAttack_ThenDamageIsCalculatedCorrect() {
+		var spaceMarines = new Unit();
+		spaceMarines.equip(5, bolter);
+		
+		var damage = spaceMarines.attack(guardsmen);
+		//10 Attacks with 3+ to hit, 3+ to wound and a 5up save
+		var hits = 10 * Probability.THREE_UP;
+		var wounds = hits * Probability.THREE_UP;
+		int expectedDamage = (int) Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
+		
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * We test the equipment of the units,
+	 * we arm a space marine unit with bolters and withdraw the bolters
+	 */
+	@Test
+	void GivenSpaceWithdifferentEquipmentQuantity_WhenEquipped_ThenEquipMethodBehavesCorrect() {
+		var spaceMarines = new Unit();
+		spaceMarines.equip(420, bolter);//Add as much as you want
+		spaceMarines.equip(0, bolter);//You can set it to 0 - That deletes the item
+		spaceMarines.equip(69, bolter);
+		spaceMarines.equip(2, bolter);
+		spaceMarines.equip(-9999, bolter);//Withdrawing more than quantity deletes the item
+		//No Weapons - No cookies!
+		int damage = 0;
+		
+		assertEquals(damage, spaceMarines.attack(guardsmen));
+	}
+	
+	/**
+	 * Here we shall test, if the dodge save of our rangers will be taken
+	 * instead of the armor save
+	 */
+	@Test
+	void GivenEldarRangerAsTarget_WhenArmorSaveIsLoweThanInvulSave_ThenTakeInvulSave() {	
+		var spaceMarines = new Unit();
+		spaceMarines.equip(4, heavyBolter);
+		
+		var damage = spaceMarines.attack(eldarRangers);
+		var hits = 12 * Probability.THREE_UP;
+		var wounds = hits * Probability.THREE_UP;
+		var missedSaves = (int) Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
+		int expectedDamage = missedSaves * eldarRangers.getHitPoints();
+		
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * Here we test the damage - we expect the maximum number 
+	 * of damage to be equal to the number of hitpoints * missed Saves
+	 */
+	@Test
+	void GivenMultiWoundTarget_ThenDamageOfASingleShotDoesNotExceedHitPoints() {
+		var spaceMarines = new Unit();
+		spaceMarines.equip(4, heavyBolter);
+		
+		var damage = spaceMarines.attack(otherSpaceMarines);
+		var hits = 12 * Probability.THREE_UP;
+		var wounds = hits * Probability.THREE_UP;
+		var failedSaves = wounds - (wounds * Probability.FIVE_UP); 
+		int hitPoints = otherSpaceMarines.getHitPoints();
+		int expectedDamage = (int) Math.floor(failedSaves) * hitPoints;
+		
+		assertEquals(expectedDamage, damage);
+	}
 	
 	/**
 	 * In our next case we bring something interesting intrducing the flameThrower
@@ -32,7 +108,7 @@ class BattleSimulations {
 		
 		var damage = spaceMarines.attack(guardsmen);
 		var wounds = Probability.d6(4) * Probability.THREE_UP;
-		double expectedDamage = Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
+		int expectedDamage = (int)Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -52,7 +128,7 @@ class BattleSimulations {
 		var wounds = hits * Probability.THREE_UP;
 		var rerolls = (hits - wounds) * Probability.THREE_UP;
 		wounds += rerolls;
-		double expectedDamage = Math.floor(wounds); 
+		int expectedDamage = (int) Math.floor(wounds); 
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -72,7 +148,7 @@ class BattleSimulations {
 		var wounds = hits * Probability.THREE_UP;
 		var rerolls = ((hits - wounds) / 6) * Probability.THREE_UP;
 		wounds += rerolls;
-		double expectedDamage = Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
+		int expectedDamage = (int)Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -92,78 +168,7 @@ class BattleSimulations {
 		var rerolls = (10 - hits) * Probability.THREE_UP;
 		hits += rerolls;
 		var wounds = hits * Probability.THREE_UP;
-		double expectedDamage = Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
-		
-		assertEquals(expectedDamage, damage);
-	}
-	
-	/**
-	 * We test the equipment of the units,
-	 * we arm a space marine unit with bolters and withdraw the bolters
-	 */
-	@Test
-	void GivenSpaceWithdifferentEquipmentQuantity_WhenEquipped_ThenEquipMethodBehavesCorrect() {
-		var spaceMarines = new Unit();
-		spaceMarines.equip(420, bolter);//Add as much as you want
-		spaceMarines.equip(0, bolter);//You can set it to 0 - That deletes the item
-		spaceMarines.equip(69, bolter);
-		spaceMarines.equip(-9999, bolter);//Withdrawing more than quantity deletes the item
-		//No Weapons - No cookies!
-		
-		assertEquals(0, spaceMarines.attack(guardsmen));
-	}
-	
-	/**
-	 * This Test shall just test the simple combat mechanic
-	 * of hit, wound and damage
-	 */
-	@Test
-	void GivenSpaceMarinesWithBolders_WhenAttack_ThenDamageIsCalculatedCorrect() {
-		var spaceMarines = new Unit();
-		spaceMarines.equip(5, bolter);
-		
-		var damage = spaceMarines.attack(guardsmen);
-		//10 Attacks with 3+ to hit, 3+ to wound and a 5up save
-		var hits = 10 * Probability.THREE_UP;
-		var wounds = hits * Probability.THREE_UP;
-		double expectedDamage = Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
-		
-		assertEquals(expectedDamage, damage);
-	}
-	
-	/**
-	 * Here we shall test, if the dodge save of our rangers will be taken
-	 * instead of the armor save
-	 */
-	@Test
-	void GivenEldarRangerAsTarget_WhenArmorSaveIsLoweThanInvulSave_ThenTakeInvulSave() {	
-		var spaceMarines = new Unit();
-		spaceMarines.equip(4, heavyBolter);
-		
-		double damage = spaceMarines.attack(eldarRangers);
-		double hits = 12 * Probability.THREE_UP;
-		double wounds = hits * Probability.THREE_UP;
-		double missedSaves = Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
-		double expectedDamage = missedSaves * eldarRangers.getHitPoints();
-		
-		assertEquals(expectedDamage, damage);
-	}
-	
-	/**
-	 * Here we test the damage - we expect the maximum number 
-	 * of damage to be equal to the number of hitpoints * missed Saves
-	 */
-	@Test
-	void GivenMultiWoundTarget_ThenDamageOfASingleShotDoesNotExceedHitPoints() {
-		var spaceMarines = new Unit();
-		spaceMarines.equip(4, heavyBolter);
-		
-		var damage = spaceMarines.attack(otherSpaceMarines);
-		var hits = 12 * Probability.THREE_UP;
-		var wounds = hits * Probability.THREE_UP;
-		var failedSaves = wounds - (wounds * Probability.FIVE_UP); 
-		int hitPoints = otherSpaceMarines.getHitPoints();
-		double expectedDamage = Math.floor(failedSaves) * hitPoints;
+		int expectedDamage = (int)Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -177,12 +182,12 @@ class BattleSimulations {
 		var spaceMarines = new Unit();
 		spaceMarines.equip(5, bolter);
 		
-		double damage = spaceMarines.attack(abberants);
-		double hits = 10 * Probability.THREE_UP;
-		double wounds = hits * Probability.FIVE_UP;
-		double missedSaves = Math.floor(wounds - (wounds * Probability.FIVE_UP));
+		var damage = spaceMarines.attack(abberants);
+		var hits = 10 * Probability.THREE_UP;
+		var wounds = hits * Probability.FIVE_UP;
+		var missedSaves = Math.floor(wounds - (wounds * Probability.FIVE_UP));
 		//Feel no pain wound migitation
-		double expectedDamage = Math.floor(missedSaves * Probability.FOUR_UP);
+		int expectedDamage = (int)Math.floor(missedSaves * Probability.FOUR_UP);
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -203,7 +208,45 @@ class BattleSimulations {
 		//We reroll only ones
 		hits += (missedHits / 6) * Probability.THREE_UP;
 		var wounds = hits * Probability.THREE_UP;
-		var expectedDamage = Math.floor(wounds - (wounds * Probability.FIVE_UP));
+		int expectedDamage = (int)Math.floor(wounds - (wounds * Probability.FIVE_UP));
+		
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * Here we test Anti-X weapons. They always wound a certain type of
+	 * profile on the given probability.
+	 */
+	@Test
+	void GivenAntiWeapons_WhenAttack_ThenWoundProbabiltyIsHigherThanNaturalStrengthComparison() {
+		Weapon haywireCannon = Weapon.builder()
+				.attacks(2)
+				.toHit(Probability.THREE_UP)
+				.setAntiType(Type.VEHICLE, Probability.FOUR_UP)
+				.strength(3)
+				.armorPenetration(1)
+				.damage(3)
+				.build();
+		
+		Profile lemanRussTank = Profile.builder()
+				.toughness(11)
+				.armorSave(Probability.TWO_UP)
+				.type(Type.VEHICLE)
+				.wounds(13)
+				.build();
+		
+		var harlequinBiker = new Unit();
+		//Normally those haywire cannons have devastating wounds
+		//we don't add that here for now
+		int quantity = 5;
+		harlequinBiker.equip(quantity, haywireCannon);
+		
+		var damage = harlequinBiker.attack(lemanRussTank);
+		var hits = quantity * haywireCannon.getToHit();
+		//shall return an optional of a double a <enum, double)(probability)
+		var wounds = hits * haywireCannon.getAntiType().orElseThrow().probability(); 
+		var missedSaves = wounds * Probability.THREE_UP; //That can differ from the real save -just for now
+		int expectedDamage = (int) Math.floor((wounds - missedSaves) * haywireCannon.getDamage());
 		
 		assertEquals(expectedDamage, damage);
 	}

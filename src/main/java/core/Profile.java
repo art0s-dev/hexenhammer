@@ -2,8 +2,6 @@ package core;
 
 import java.util.HashSet;
 
-import core.Weapon.SpecialRuleWeapon;
-import core.Weapon.WeaponBuilder;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Generated;
@@ -20,6 +18,17 @@ public class Profile {
 	@Builder.Default private int hitPoints = 1;
 	@Builder.Default private double invulnerableSave = Probability.NONE;
 	@Builder.Default private double feelNoPain = Probability.NONE;
+	@Builder.Default private Type type = Type.INFANTRY;
+	
+	/**
+	 * The Type a profile has.
+	 * It is used to determine wounds for anti weapon capabilities.
+	 */
+	public enum Type{
+		INFANTRY,
+		MONSTER,
+		VEHICLE
+	}
 	
 	/**
 	 * The Set of special rules the profile can have

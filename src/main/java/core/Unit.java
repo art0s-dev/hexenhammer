@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import core.Profile.SpecialRuleProfile;
+import core.Weapon.AntiType;
 import core.Weapon.SpecialRuleWeapon;
 
 /**
@@ -81,6 +82,7 @@ public class Unit {
 			int quantity = set.getValue();
 			double attacks = weapon.getAttacks() * quantity;
 			double chanceToHit = weapon.getToHit();
+			//Modify hit rolls
 			if(this.has(SpecialRuleUnit.ADD_ONE_TO_HIT)) {
 				chanceToHit = Probability.modifyRoll(chanceToHit, '+');
 			}
@@ -88,6 +90,7 @@ public class Unit {
 				chanceToHit = Probability.modifyRoll(chanceToHit, '-');
 			}
 			
+			//Do the rerolls
 			double hits = (double) attacks  * chanceToHit;
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT)) {
 				hits += ((attacks - hits) / 6) * weapon.getToHit(); 
@@ -107,6 +110,20 @@ public class Unit {
 			if(strength > toughness) { probabilityToWound = Probability.THREE_UP;}
 			if(strength == toughness) { probabilityToWound = Probability.FOUR_UP;}
 			if(strength < toughness) { probabilityToWound = Probability.FIVE_UP; }
+			
+			//Anti Type weapons
+			boolean antiTypeIsSet = weapon.getAntiType().isPresent();
+			if(antiTypeIsSet) {
+				AntiType antiType = weapon.getAntiType().orElseThrow();
+				boolean antiTypeIsProfileType = antiType.type() == enemy.getType();
+				boolean antiTypeProbabilityIsHigherThanWoundRoll = antiType.probability() > probabilityToWound;
+				
+				if(antiTypeIsProfileType && antiTypeProbabilityIsHigherThanWoundRoll) {
+					probabilityToWound = antiType.probability();
+				}
+			}
+			
+			//Modify wounds
 			if(this.has(SpecialRuleUnit.ADD_ONE_TO_WOUND)) {
 				probabilityToWound = Probability.modifyRoll(probabilityToWound, '+'); 
 			}
@@ -114,6 +131,7 @@ public class Unit {
 				probabilityToWound = Probability.modifyRoll(probabilityToWound, '-');
 			}
 			
+			//Reroll wounds
 			double wounds = hits * probabilityToWound;
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND)) {
 				wounds += ((hits - wounds) / 6) * probabilityToWound; 
@@ -133,6 +151,7 @@ public class Unit {
 			symbolicArmourSave.put(Probability.THREE_UP, 4);
 			symbolicArmourSave.put(Probability.TWO_UP, 5);
 			
+			//Is there an invul save?
 			int modifiedArmourSave = symbolicArmourSave.get(armourSave) - weapon.getArmorPenetration();
 			double probabilityToSave = modifiedArmourSave / 6.00;
 			if(modifiedArmourSave <= 0 || enemy.getInvulnerableSave() > probabilityToSave) {
