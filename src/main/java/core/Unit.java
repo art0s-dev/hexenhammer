@@ -2,10 +2,13 @@ package core;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import core.Profile.SpecialRuleProfile;
 import core.Weapon.AntiType;
+import core.Weapon.Phase;
 import core.Weapon.SpecialRuleWeapon;
 
 /**
@@ -68,14 +71,24 @@ public class Unit {
 	 * aswell as the fight phase and all the generic special rules 
 	 * 
 	 * @see Design docs - core
+	 * @apiNote Uses a Filter for which weapons shall be used in the calculation
+	 * the default is set to both but with the setPhase Method it can be changed
 	 * @param Profile - The Profile the Unit shall attack  
-	 * @return Int - The damage done to the profile unit 
+	 * @return Int - The damage done to the profile unit  
 	 */
 	public int attack(Profile enemy) {
-		int damage = 0;
+		
+		//Filters all Weapons that shall be used for a specific phase 
+		Map<Weapon, Integer> filteredWeapons = weapons;
+		if(phase != Phase.BOTH) {
+			filteredWeapons = weapons.entrySet().parallelStream()
+					.filter(entry -> entry.getKey().getPhase() == phase)
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		}
 		
 		//Iterates through all weapons and calculates damage for each weapon
-		for (Entry<Weapon, Integer> set : weapons.entrySet()) {
+		int damage = 0;
+		for (Entry<Weapon, Integer> set : filteredWeapons.entrySet()) {
 			Weapon weapon = set.getKey();
 			
 			//calculate the hits
@@ -161,8 +174,8 @@ public class Unit {
 			//Calculate damage 
 			//We don't assign assign 0,45 missed saves to a model in multiwound combat. 
 			int missedSaves = (int) Math.floor(wounds - (wounds * probabilityToSave));
-			double damageMultiplier = weapon.getDamage();
-			if(weapon.getDamage() > enemy.getHitPoints()) {
+			double damageMultiplier = weapon.getDamage() + weapon.getMelta();
+			if(damageMultiplier > enemy.getHitPoints()) {
 				damageMultiplier = enemy.getHitPoints();
 			}
 			
@@ -174,7 +187,17 @@ public class Unit {
 		}
 		
 		return damage;
+	} 
+	
+	/**
+	 * Sets the Filter which weapons shall be used for the attack sequence
+	 * @implNote The default is set to both phases
+	 * @param phase
+	 */
+	public void setPhase(Phase phase) {
+		this.phase = phase;
 	}
+	private Phase phase = Phase.BOTH;
 	
 	/**
 	 * This is the register of weapons a unit has.

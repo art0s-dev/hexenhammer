@@ -25,6 +25,12 @@ public class Weapon {
 	@Builder.Default private Phase phase = Phase.SHOOTING; 
 	
 	/**
+	 * Describes the extra damage that is done 
+	 * when this value is greater then 0
+	 */
+	@Builder.Default private int melta = 0;
+	
+	/**
 	 * This is a tuple explains the specific efficiency for wound rolls
 	 * against a certain profile type.
 	 */
@@ -32,11 +38,12 @@ public class Weapon {
 	@Builder.Default private Optional<AntiType> antiType = Optional.empty();
 	
 	/**
-	 * Distinguishes the weapon between a combat and a shooting weapon
+	 * Distinguishes the weapon between a combat and a shooting weapon 
 	 */
 	public enum Phase {
 		SHOOTING,
-		FIGHT
+		FIGHT,
+		BOTH
 	}
 	
 	/**
@@ -48,8 +55,7 @@ public class Weapon {
 	public enum SpecialRuleWeapon{
 		TORRENT,
 		HEAVY_AND_UNIT_REMAINED_STATIONARY,
-		REROLL_WOUND_ROLL,
-		ANTI
+		REROLL_WOUND_ROLL
 	}
 	
 	public void add(SpecialRuleWeapon specialRule) {

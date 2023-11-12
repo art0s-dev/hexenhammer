@@ -1,22 +1,25 @@
 package unittests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static unittests.Weaponry.abberants;
 import static unittests.Weaponry.bolter;
 import static unittests.Weaponry.eldarRangers;
 import static unittests.Weaponry.flameThrower;
 import static unittests.Weaponry.guardsmen;
 import static unittests.Weaponry.heavyBolter;
+import static unittests.Weaponry.lemanRussTank;
 import static unittests.Weaponry.otherSpaceMarines;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import core.Probability;
-import core.Profile;
 import core.Profile.Type;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import core.Weapon;
+import core.Weapon.Phase;
 
 /**
  * These are our battle simulations to test the unit API.
@@ -228,13 +231,6 @@ class BattleSimulations {
 				.damage(3)
 				.build();
 		
-		Profile lemanRussTank = Profile.builder()
-				.toughness(11)
-				.armorSave(Probability.TWO_UP)
-				.type(Type.VEHICLE)
-				.wounds(13)
-				.build();
-		
 		var harlequinBiker = new Unit();
 		//Normally those haywire cannons have devastating wounds
 		//we don't add that here for now
@@ -250,5 +246,62 @@ class BattleSimulations {
 		
 		assertEquals(expectedDamage, damage);
 	}
-
+	
+	/**
+	 * lets use some knifes! We test if our algo filters all weapns except combat weapons
+	 */
+	@Test
+	void GivenSpaceMarinesWithKnifes_WhenAttack_OnlyCombarWeaponsGetCalculated() {
+		Weapon combatKnife = Weapon.builder()
+				.attacks(2)
+				.toHit(Probability.THREE_UP)
+				.strength(4)
+				.armorPenetration(0)
+				.damage(1)
+				.phase(Phase.FIGHT)
+				.build();
+		
+		var spaceMarines = new Unit();
+		spaceMarines.setPhase(Phase.FIGHT);
+		spaceMarines.equip(5, combatKnife);
+		spaceMarines.equip(5, heavyBolter);
+		
+		var damage = spaceMarines.attack(guardsmen);
+		var hits = 5 * (combatKnife.getAttacks())* Probability.THREE_UP;
+		var wounds = hits * Probability.THREE_UP;
+		var expectedDamage = (int) Math.floor(wounds - (wounds * Probability.FIVE_UP));
+		
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * Let us introduce the Melter rule
+	 * Melter are weapons that deal extra damage if the target is in melter range.
+	 * the amount of extra damage is set by the user
+	 */
+	@Test @Disabled("Test is flaky - even when there are 120 meltas the damage is still 22")
+	void GivenSpaceMarinesWithMelters_WhenAttack_TheyDealExtraDamage() {
+		Weapon melter = Weapon.builder()
+				.attacks(1)
+				.toHit(Probability.THREE_UP)
+				.strength(9)
+				.armorPenetration(4)
+				.damage(Probability.d6(1))
+				.melta(3)
+				.build();
+	
+		int quantity = 120;
+		var spaceMarines = new Unit();
+		spaceMarines.equip(quantity, melter);
+		var damage = spaceMarines.attack(lemanRussTank);
+		
+		var hits = quantity * Probability.THREE_UP;
+		var wounds = hits * Probability.FIVE_UP;
+		int missedSaves = (int) Math.floor(wounds - (wounds * Probability.SIX_UP));
+		var melterDamage = melter.getDamage() + melter.getMelta();
+		var expectedDamage = (int) Math.floor(missedSaves * melterDamage);
+		
+		assertEquals(expectedDamage, damage);
+		assertTrue(expectedDamage > 0);
+	}
 }

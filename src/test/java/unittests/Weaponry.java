@@ -3,6 +3,7 @@ package unittests;
 import core.Probability;
 import core.Profile;
 import core.Weapon;
+import core.Profile.Type;
 import core.Weapon.SpecialRuleWeapon;
 
 /**
@@ -58,5 +59,12 @@ public class Weaponry {
 			.armorSave(Probability.FIVE_UP)
 			.hitPoints(3)
 			.feelNoPain(Probability.FOUR_UP)
+			.build();
+	
+	public static Profile lemanRussTank = Profile.builder()
+			.toughness(11)
+			.armorSave(Probability.TWO_UP)
+			.type(Type.VEHICLE)
+			.wounds(13)
 			.build();
 }
