@@ -18,7 +18,7 @@ import core.Weapon.SpecialRuleWeapon;
  * you will have to:
  * - create some weapons, a unit and a target profile
  * - equip() the weapons and maybe add() some special rules
- * - attack() the enemy profile
+ * - attack() the enemy profile 
  */
 public class Unit {
 	
@@ -86,7 +86,7 @@ public class Unit {
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		}
 		
-		//Iterates through all weapons and calculates damage for each weapon
+		//Iterates through all weapons and calculates damage for each weapon 
 		int damage = 0;
 		for (Entry<Weapon, Integer> set : filteredWeapons.entrySet()) {
 			Weapon weapon = set.getKey();

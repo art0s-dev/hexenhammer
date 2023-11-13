@@ -65,6 +65,6 @@ public class Weaponry {
 			.toughness(11)
 			.armorSave(Probability.TWO_UP)
 			.type(Type.VEHICLE)
-			.wounds(13)
+			.hitPoints(13)
 			.build();
 }

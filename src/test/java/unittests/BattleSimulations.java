@@ -234,15 +234,15 @@ class BattleSimulations {
 		var harlequinBiker = new Unit();
 		//Normally those haywire cannons have devastating wounds
 		//we don't add that here for now
-		int quantity = 5;
+		int quantity = 10;
 		harlequinBiker.equip(quantity, haywireCannon);
 		
 		var damage = harlequinBiker.attack(lemanRussTank);
-		var hits = quantity * haywireCannon.getToHit();
+		var hits = (quantity * haywireCannon.getAttacks()) * haywireCannon.getToHit();
 		//shall return an optional of a double a <enum, double)(probability)
 		var wounds = hits * haywireCannon.getAntiType().orElseThrow().probability(); 
-		var missedSaves = wounds * Probability.THREE_UP; //That can differ from the real save -just for now
-		int expectedDamage = (int) Math.floor((wounds - missedSaves) * haywireCannon.getDamage());
+		int missedSaves = (int) Math.floor(wounds - (wounds * Probability.THREE_UP));	
+		int expectedDamage = (int) Math.floor(missedSaves * haywireCannon.getDamage());
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -250,7 +250,7 @@ class BattleSimulations {
 	/**
 	 * lets use some knifes! We test if our algo filters all weapns except combat weapons
 	 */
-	@Test
+	@Test 
 	void GivenSpaceMarinesWithKnifes_WhenAttack_OnlyCombarWeaponsGetCalculated() {
 		Weapon combatKnife = Weapon.builder()
 				.attacks(2)
@@ -279,7 +279,7 @@ class BattleSimulations {
 	 * Melter are weapons that deal extra damage if the target is in melter range.
 	 * the amount of extra damage is set by the user
 	 */
-	@Test @Disabled("Test is flaky - even when there are 120 meltas the damage is still 22")
+	@Test
 	void GivenSpaceMarinesWithMelters_WhenAttack_TheyDealExtraDamage() {
 		Weapon melter = Weapon.builder()
 				.attacks(1)
@@ -290,7 +290,7 @@ class BattleSimulations {
 				.melta(3)
 				.build();
 	
-		int quantity = 120;
+		int quantity = 10;
 		var spaceMarines = new Unit();
 		spaceMarines.equip(quantity, melter);
 		var damage = spaceMarines.attack(lemanRussTank);
@@ -298,10 +298,9 @@ class BattleSimulations {
 		var hits = quantity * Probability.THREE_UP;
 		var wounds = hits * Probability.FIVE_UP;
 		int missedSaves = (int) Math.floor(wounds - (wounds * Probability.SIX_UP));
-		var melterDamage = melter.getDamage() + melter.getMelta();
-		var expectedDamage = (int) Math.floor(missedSaves * melterDamage);
+		var expectedDamage = (int) Math.floor(missedSaves * (melter.getDamage() + melter.getMelta()));
 		
-		assertEquals(expectedDamage, damage);
 		assertTrue(expectedDamage > 0);
+		assertEquals(expectedDamage, damage);
 	}
 }
