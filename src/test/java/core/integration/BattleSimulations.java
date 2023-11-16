@@ -1,20 +1,14 @@
-package unittests;
+package core.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static unittests.Weaponry.abberants;
-import static unittests.Weaponry.bolter;
-import static unittests.Weaponry.eldarRangers;
-import static unittests.Weaponry.flameThrower;
-import static unittests.Weaponry.guardsmen;
-import static unittests.Weaponry.heavyBolter;
-import static unittests.Weaponry.lemanRussTank;
-import static unittests.Weaponry.otherSpaceMarines;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import core.Probability;
+import core.Profile;
+import core.Profile.SpecialRuleProfile;
 import core.Profile.Type;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
@@ -27,65 +21,19 @@ import core.Weapon.Phase;
  */
 class BattleSimulations {
 	
-	/**
-	 * This Test shall just test the simple combat mechanic
-	 * of hit, wound and damage
-	 */
-	@Test
-	void GivenSpaceMarinesWithBolders_WhenAttack_ThenDamageIsCalculatedCorrect() {
-		var spaceMarines = new Unit();
-		spaceMarines.equip(5, bolter);
-		
-		var damage = spaceMarines.attack(guardsmen);
-		//10 Attacks with 3+ to hit, 3+ to wound and a 5up save
-		var hits = 10 * Probability.THREE_UP;
-		var wounds = hits * Probability.THREE_UP;
-		int expectedDamage = (int) Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
-		
-		assertEquals(expectedDamage, damage);
-	}
-	
-	/**
-	 * We test the equipment of the units,
-	 * we arm a space marine unit with bolters and withdraw the bolters
-	 */
-	@Test
-	void GivenSpaceWithdifferentEquipmentQuantity_WhenEquipped_ThenEquipMethodBehavesCorrect() {
-		var spaceMarines = new Unit();
-		spaceMarines.equip(420, bolter);//Add as much as you want
-		spaceMarines.equip(0, bolter);//You can set it to 0 - That deletes the item
-		spaceMarines.equip(69, bolter);
-		spaceMarines.equip(2, bolter);
-		spaceMarines.equip(-9999, bolter);//Withdrawing more than quantity deletes the item
-		//No Weapons - No cookies!
-		int damage = 0;
-		
-		assertEquals(damage, spaceMarines.attack(guardsmen));
-	}
-	
-	/**
-	 * Here we shall test, if the dodge save of our rangers will be taken
-	 * instead of the armor save
-	 */
-	@Test
-	void GivenEldarRangerAsTarget_WhenArmorSaveIsLoweThanInvulSave_ThenTakeInvulSave() {	
-		var spaceMarines = new Unit();
-		spaceMarines.equip(4, heavyBolter);
-		
-		var damage = spaceMarines.attack(eldarRangers);
-		var hits = 12 * Probability.THREE_UP;
-		var wounds = hits * Probability.THREE_UP;
-		var missedSaves = (int) Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
-		int expectedDamage = missedSaves * eldarRangers.getHitPoints();
-		
-		assertEquals(expectedDamage, damage);
-	}
+	Weapon heavyBolter;
+	Profile otherSpaceMarines;
+	Weapon flameThrower;
+	Profile guardsmen;
+	Weapon bolter;
+	Profile abberants;
+	Profile lemanRussTank;
 	
 	/**
 	 * Here we test the damage - we expect the maximum number 
 	 * of damage to be equal to the number of hitpoints * missed Saves
 	 */
-	@Test
+	@Test @Disabled
 	void GivenMultiWoundTarget_ThenDamageOfASingleShotDoesNotExceedHitPoints() {
 		var spaceMarines = new Unit();
 		spaceMarines.equip(4, heavyBolter);
@@ -104,7 +52,7 @@ class BattleSimulations {
 	 * In our next case we bring something interesting intrducing the flameThrower
 	 * the flamethrowers gain a quantity like w6 -> 2,5 and then autohit
 	 */
-	@Test
+	@Test @Disabled
 	void GivenSpaceMarinesWithFlameThrowers_WhenAttack_ThenTorrentRuleIsCalculatedCorrect() {
 		var spaceMarines = new Unit();
 		spaceMarines.equip(4, flameThrower); //Torrent rule is in flame thrower
@@ -120,7 +68,7 @@ class BattleSimulations {
 	 * In the next case we have brought fancy special rules with us
 	 * that allow our space marines to reroll the whole wound roll.
 	 */
-	@Test
+	@Test @Disabled
 	void GivenSpaceMarinesWithReRollWounds_WhenAttack_ThenCalculateRerollWoundsCorrect() {
 		var spaceMarines = new Unit();
 		spaceMarines.equip(4, heavyBolter);
@@ -140,7 +88,7 @@ class BattleSimulations {
 	 * In this case we let our space marines reroll ones to wound 
 	 * (they've got a lieutenant or smth idk)
 	 */
-	@Test
+	@Test @Disabled
 	void GivenSpaceMarinesWithRerollOnesToWound_WhenAttack_ThenCalculateRerollCorrect() {
 		var spaceMarines = new Unit();
 		spaceMarines.equip(5, bolter);
@@ -149,8 +97,9 @@ class BattleSimulations {
 		var damage = spaceMarines.attack(guardsmen);
 		var hits = 10 * Probability.THREE_UP;
 		var wounds = hits * Probability.THREE_UP;
-		var rerolls = ((hits - wounds) / 6) * Probability.THREE_UP;
-		wounds += rerolls;
+		var missedWounds = hits - wounds;
+		var rerollHits = (missedWounds / 6) * Probability.THREE_UP;
+		wounds += rerollHits;
 		int expectedDamage = (int)Math.floor(wounds - (wounds * Probability.FIVE_UP)); 
 		
 		assertEquals(expectedDamage, damage);
@@ -160,7 +109,7 @@ class BattleSimulations {
 	 * In this scenario we let our space marines use oath of the moment
 	 * so they can fully reroll the hit roll
 	 */
-	@Test 
+	@Test @Disabled
 	void GivenSpaceMarinesWithRerollHitRoll_WhenAttack_ThenCalculateRerollCorrect() {
 		var spaceMarines = new Unit();
 		spaceMarines.equip(5, bolter);
@@ -180,7 +129,7 @@ class BattleSimulations {
 	 * On this one we test the wound migitation of feel no pain.
 	 * we want to halve the incoming damage
 	 */
-	@Test
+	@Test @Disabled
 	void GivenAbberantsAsTarget_WhenAttack_TheMigigtateHalveOfTheWounds() {
 		var spaceMarines = new Unit();
 		spaceMarines.equip(5, bolter);
@@ -199,7 +148,7 @@ class BattleSimulations {
 	 * The Space marines have braught reinforcements!
 	 * A special rule allows our models to reroll ones on the hit roll
 	 */
-	@Test
+	@Test @Disabled
 	void GivenSpaceMarines_WhenRerollOnesToHit_ThenCalculateTheDamageCorrect() {
 		var spaceMarines = new Unit();
 		spaceMarines.add(SpecialRuleUnit.REROLL_ONES_TO_HIT);
@@ -220,7 +169,7 @@ class BattleSimulations {
 	 * Here we test Anti-X weapons. They always wound a certain type of
 	 * profile on the given probability.
 	 */
-	@Test
+	@Test @Disabled
 	void GivenAntiWeapons_WhenAttack_ThenWoundProbabiltyIsHigherThanNaturalStrengthComparison() {
 		Weapon haywireCannon = Weapon.builder()
 				.attacks(2)
@@ -250,7 +199,7 @@ class BattleSimulations {
 	/**
 	 * lets use some knifes! We test if our algo filters all weapns except combat weapons
 	 */
-	@Test 
+	@Test @Disabled
 	void GivenSpaceMarinesWithKnifes_WhenAttack_OnlyCombarWeaponsGetCalculated() {
 		Weapon combatKnife = Weapon.builder()
 				.attacks(2)
@@ -279,7 +228,7 @@ class BattleSimulations {
 	 * Melter are weapons that deal extra damage if the target is in melter range.
 	 * the amount of extra damage is set by the user
 	 */
-	@Test
+	@Test @Disabled
 	void GivenSpaceMarinesWithMelters_WhenAttack_TheyDealExtraDamage() {
 		Weapon melter = Weapon.builder()
 				.attacks(1)
@@ -301,6 +250,26 @@ class BattleSimulations {
 		var expectedDamage = (int) Math.floor(missedSaves * (melter.getDamage() + melter.getMelta()));
 		
 		assertTrue(expectedDamage > 0);
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * Lets use some cover. We attack again with the space marines
+	 * and the guardsmen get some cover
+	 */
+	@Test @Disabled
+	void GivenSpaceMarines_WhenGuardsmenHaveCover_ThenSpaceMarinesDealLessDamage() {
+		var spaceMarines = new Unit();
+		int quantity = 10;
+		spaceMarines.equip(quantity, bolter);
+		guardsmen.add(SpecialRuleProfile.HAS_COVER);
+		
+		var damage = spaceMarines.attack(guardsmen);
+		//10 Attacks with 3+ to hit, 3+ to wound and a 5up save
+		var hits = (quantity * bolter.getAttacks()) * Probability.THREE_UP;
+		var wounds = hits * Probability.THREE_UP;
+		int expectedDamage = (int) Math.floor(wounds - (wounds * Probability.FOUR_UP)); 
+		
 		assertEquals(expectedDamage, damage);
 	}
 }

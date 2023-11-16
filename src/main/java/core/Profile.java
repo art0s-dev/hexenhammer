@@ -37,7 +37,8 @@ public class Profile {
 	private HashSet<SpecialRuleProfile> specialRules = new HashSet<>();
 	public enum SpecialRuleProfile{
 		SUBTRACT_ONE_FROM_HIT_ROLL,
-		SUBTRACT_ONE_FROM_WOUND_ROLL
+		SUBTRACT_ONE_FROM_WOUND_ROLL,
+		HAS_COVER
 	}
 	
 	public void add(SpecialRuleProfile specialRule) {

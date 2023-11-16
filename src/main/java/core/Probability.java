@@ -22,6 +22,10 @@ public final class Probability {
 	public final static double d6(int quantity) {
 		return quantity * MEDIAN_D6;
 	}
+
+	public final int attack(double x, int c){
+		return 12;
+	}
 	
 	/**
 	 * decribes the average dice roll

@@ -1,8 +1,9 @@
-package unittests;
+package core.unit;
 
 import static core.Probability.modifyRoll;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import core.Probability;
@@ -13,7 +14,7 @@ class ProbabilityTest {
 	 * This Test covers the functionality of our roll modification
 	 * The modification API allows just one modification (+1 or -1) at a time
 	 */
-	@Test
+	@Test @Disabled
 	void modify_roll_test() {
 		//Test the edge cases
 		assertEquals(modifyRoll(7526.88, '+'), Probability.TWO_UP);

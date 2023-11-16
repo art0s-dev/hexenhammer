@@ -56,7 +56,8 @@ public class Unit {
 		REROLL_ONES_TO_WOUND,
 		REROLL_WOUND_ROLL,
 		ADD_ONE_TO_HIT,
-		ADD_ONE_TO_WOUND
+		ADD_ONE_TO_WOUND,
+		IGNORE_COVER
 	}
 	public void add(SpecialRuleUnit specialRule) {
 		this.specialRules.add(specialRule);
@@ -86,7 +87,7 @@ public class Unit {
 					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		}
 		
-		//Iterates through all weapons and calculates damage for each weapon 
+		//Iterates through all weapons and calculates damage for each weapon  
 		int damage = 0;
 		for (Entry<Weapon, Integer> set : filteredWeapons.entrySet()) {
 			Weapon weapon = set.getKey();
@@ -103,7 +104,7 @@ public class Unit {
 				chanceToHit = Probability.modifyRoll(chanceToHit, '-');
 			}
 			
-			//Do the rerolls
+			//Do the rerolls 
 			double hits = (double) attacks  * chanceToHit;
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT)) {
 				hits += ((attacks - hits) / 6) * weapon.getToHit(); 
@@ -163,9 +164,17 @@ public class Unit {
 			symbolicArmourSave.put(Probability.FOUR_UP, 3);
 			symbolicArmourSave.put(Probability.THREE_UP, 4);
 			symbolicArmourSave.put(Probability.TWO_UP, 5);
+			int modifiedArmourSave = symbolicArmourSave.get(armourSave) - weapon.getArmorPenetration();
+			
+			//Take cover!
+			boolean enemyHasCover = enemy.has(SpecialRuleProfile.HAS_COVER);
+			boolean unitDoesNotIgnoreCover = !this.has(SpecialRuleUnit.IGNORE_COVER);
+			boolean saveIsNotHighestPossible = modifiedArmourSave <= 5;
+			if(enemyHasCover && unitDoesNotIgnoreCover && saveIsNotHighestPossible) {
+				modifiedArmourSave++;
+			}
 			
 			//Is there an invul save?
-			int modifiedArmourSave = symbolicArmourSave.get(armourSave) - weapon.getArmorPenetration();
 			double probabilityToSave = modifiedArmourSave / 6.00;
 			if(modifiedArmourSave <= 0 || enemy.getInvulnerableSave() > probabilityToSave) {
 				probabilityToSave = enemy.getInvulnerableSave();
