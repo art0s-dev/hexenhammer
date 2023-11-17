@@ -68,7 +68,7 @@ class UnitEquipmentTest {
 	void GivenSpaceMarines_WhenEquipmentIsIncreased_ThenTheDamageIncreases(){	
 		Unit unit = new Unit();
 		unit.equip(5, bolter);
-		int initialDamage = unit.attack(guardsmen);
+		double initialDamage = unit.attack(guardsmen);
 		unit.equip(5, bolter);
 		
 		assertTrue(unit.attack(guardsmen) > initialDamage);

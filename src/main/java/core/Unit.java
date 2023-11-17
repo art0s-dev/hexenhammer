@@ -23,7 +23,7 @@ import core.Weapon.SpecialRuleWeapon;
 public class Unit {
 	
 	/**
-	 * With this method we add, delete and edit the weapons of a unit.
+	 * With this method we add, delete and edit the weapons of a unit. 
 	 * @param Weapon - The weapon we want to edit
 	 * @param quantity - The quantity the weapns shall recieve   
 	 * @implNote Quantity negative or zero deletes the weapon 
@@ -77,7 +77,7 @@ public class Unit {
 	 * @param Profile - The Profile the Unit shall attack  
 	 * @return Int - The damage done to the profile unit  
 	 */
-	public int attack(Profile enemy) {
+	public double attack(Profile enemy) {
 		
 		//Filters all Weapons that shall be used for a specific phase 
 		Map<Weapon, Integer> filteredWeapons = weapons;
@@ -88,7 +88,7 @@ public class Unit {
 		}
 		
 		//Iterates through all weapons and calculates damage for each weapon  
-		int damage = 0;
+		double damage = 0;
 		for (Entry<Weapon, Integer> set : filteredWeapons.entrySet()) {
 			Weapon weapon = set.getKey();
 			
@@ -105,7 +105,7 @@ public class Unit {
 			}
 			
 			//Do the rerolls 
-			double hits = (double) attacks  * chanceToHit;
+			double hits = attacks  * chanceToHit;
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT)) {
 				hits += ((attacks - hits) / 6) * weapon.getToHit(); 
 			}
@@ -167,10 +167,11 @@ public class Unit {
 			int modifiedArmourSave = symbolicArmourSave.get(armourSave) - weapon.getArmorPenetration();
 			
 			//Take cover!
+			boolean weaponIsShooting = weapon.getPhase() == Phase.SHOOTING;
 			boolean enemyHasCover = enemy.has(SpecialRuleProfile.HAS_COVER);
 			boolean unitDoesNotIgnoreCover = !this.has(SpecialRuleUnit.IGNORE_COVER);
 			boolean saveIsNotHighestPossible = modifiedArmourSave <= 5;
-			if(enemyHasCover && unitDoesNotIgnoreCover && saveIsNotHighestPossible) {
+			if(weaponIsShooting && enemyHasCover && unitDoesNotIgnoreCover && saveIsNotHighestPossible) {
 				modifiedArmourSave++;
 			}
 			
@@ -182,7 +183,7 @@ public class Unit {
 			
 			//Calculate damage 
 			//We don't assign assign 0,45 missed saves to a model in multiwound combat. 
-			int missedSaves = (int) Math.floor(wounds - (wounds * probabilityToSave));
+			double missedSaves = wounds - (wounds * probabilityToSave);
 			double damageMultiplier = weapon.getDamage() + weapon.getMelta();
 			if(damageMultiplier > enemy.getHitPoints()) {
 				damageMultiplier = enemy.getHitPoints();
@@ -190,8 +191,7 @@ public class Unit {
 			
 			double damagePotential = missedSaves * damageMultiplier;
 			double woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
-			//We dont deal 0.35 damage to a Model, Go Full or go home
-			int damageDone = (int) Math.floor(damagePotential - woundsAfterFeelNoPain);
+			double damageDone = damagePotential - woundsAfterFeelNoPain;
 			damage += damageDone;
 		}
 		
