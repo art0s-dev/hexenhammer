@@ -55,7 +55,8 @@ public class Weapon {
 	public enum SpecialRuleWeapon{
 		TORRENT,
 		HEAVY_AND_UNIT_REMAINED_STATIONARY,
-		REROLL_WOUND_ROLL
+		REROLL_WOUND_ROLL, 
+		LETHAL_HITS
 	}
 	
 	public void add(SpecialRuleWeapon specialRule) {

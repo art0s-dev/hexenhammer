@@ -393,6 +393,59 @@ class UnitBattleSequenceTest {
 		assertEquals(expectedDamage, damage);
 	}
 	
+	/**
+	 * Now We will test lethal hits on weapons(damn you deathguard!)
+	 * lethal hits always wound on 6es to hit
+	 */
+	@Test @DisplayName("Special Rules - Lethal Hits")
+	void GivenSpaceMarinesWeaponsWithLethalHit_WhenAttack_ThenCalculateDamageCorrect() {
+		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
+		
+		int quantity = 5;
+		Unit spaceMarines = new Unit();
+		spaceMarines.equip(5, bolter);
+		double damage = spaceMarines.attack(guardsmen);
+		
+		double hits = (quantity * bolter.getAttacks()) * Probability.THREE_UP;
+		//Lethal hits wander into the wound pool
+		double lethalHits = hits / 6;
+		hits -= lethalHits;
+		double wounds = (hits * Probability.THREE_UP) + lethalHits;
+		double expectedDamage = wounds - (wounds * Probability.FIVE_UP);
+		
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * Now we come to the real warcrimes - we combine add 1 to hit roll and 
+	 * the lethal hits. Means that the lethal hits trigger now on 5
+	 */
+	@Test @DisplayName("Special Rules - Lethal Hits on 5")
+	void GivenSpaceMarinesWithLethalHitsWeapons_WhenAddOneToWound_ThenCalculateCorrectDamage() {
+		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
+		
+		int quantity = 5;
+		Unit spaceMarines = new Unit();
+		spaceMarines.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
+		spaceMarines.equip(5, bolter);
+		double damage = spaceMarines.attack(guardsmen);
+		
+		double hits = (quantity * bolter.getAttacks()) * Probability.TWO_UP;
+		//We effectivly double the number of possible lethal hits 
+		//because we have now the possibility of 2 / 6 
+		double lethalHits = (hits / 6) * 2;
+		hits -= lethalHits;
+		double wounds = (hits * Probability.THREE_UP) + lethalHits;
+		double expectedDamage = wounds - (wounds * Probability.FIVE_UP);
+		
+		assertEquals(expectedDamage, damage);
+	
+	}
+	
+	
+	
+	
+	
 	
 	
 	

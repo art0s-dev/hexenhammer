@@ -128,7 +128,7 @@ class ModificationTests {
 		assertEquals(expectedDamage, damage);
 	}
 	
-	@Test @DisplayName("Mod test / -1 wound ") @Disabled
+	@Test @DisplayName("Mod test / -1 wound ")
 	void GivenScorpionTank_WhenSubtractToWound_ThenTheDamageIsLower() {
 		when(mortarion.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL)).thenReturn(true);
 		

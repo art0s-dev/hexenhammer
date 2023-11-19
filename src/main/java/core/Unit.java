@@ -18,7 +18,7 @@ import core.Weapon.SpecialRuleWeapon;
  * you will have to:
  * - create some weapons, a unit and a target profile
  * - equip() the weapons and maybe add() some special rules
- * - attack() the enemy profile 
+ * - attack() the enemy profile  
  */
 public class Unit {
 	
@@ -57,7 +57,8 @@ public class Unit {
 		REROLL_WOUND_ROLL,
 		ADD_ONE_TO_HIT,
 		ADD_ONE_TO_WOUND,
-		IGNORE_COVER
+		IGNORE_COVER,
+		LETHAL_HITS
 	}
 	public void add(SpecialRuleUnit specialRule) {
 		this.specialRules.add(specialRule);
@@ -96,6 +97,7 @@ public class Unit {
 			int quantity = set.getValue();
 			double attacks = weapon.getAttacks() * quantity;
 			double chanceToHit = weapon.getToHit();
+			
 			//Modify hit rolls
 			if(this.has(SpecialRuleUnit.ADD_ONE_TO_HIT)) {
 				chanceToHit = Probability.modifyRoll(chanceToHit, '+');
@@ -115,6 +117,7 @@ public class Unit {
 			if(weapon.has(SpecialRuleWeapon.TORRENT)) {
 				hits = weapon.getAttacks() * quantity;
 			}
+			
 			
 			//calculate the wound roll  
 			int strength = weapon.getStrength();
@@ -145,8 +148,25 @@ public class Unit {
 				probabilityToWound = Probability.modifyRoll(probabilityToWound, '-');
 			}
 			
-			//Reroll wounds
+		
+			//Subtract lethal hits from the hit pool
+			double lethalHits = 0.00;
+			boolean lethalHitsAreActive = this.has(SpecialRuleUnit.LETHAL_HITS) 
+					|| weapon.has(SpecialRuleWeapon.LETHAL_HITS);
+			if(lethalHitsAreActive) {
+				double lethalHitsModifier = 1;
+				if(this.has(SpecialRuleUnit.ADD_ONE_TO_HIT)) {
+					lethalHitsModifier = 2;
+				}
+				
+				lethalHits = (hits / 6) * lethalHitsModifier;
+				hits -= lethalHits;
+			}
+			
+			//calculate wounds 
 			double wounds = hits * probabilityToWound;
+			
+			//Reroll wounds
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND)) {
 				wounds += ((hits - wounds) / 6) * probabilityToWound; 
 			}
@@ -154,6 +174,11 @@ public class Unit {
 					|| weapon.has(SpecialRuleWeapon.REROLL_WOUND_ROLL);
 			if(rerollWoundRoll) {
 				wounds += (hits - wounds) * probabilityToWound; 
+			}
+			
+			//Add lethal hits right back to the final wound pool
+			if(lethalHitsAreActive) {
+				wounds += lethalHits;
 			}
 			
 			//determine Armour
@@ -181,14 +206,14 @@ public class Unit {
 				probabilityToSave = enemy.getInvulnerableSave();
 			} 
 			
-			//Calculate damage 
-			//We don't assign assign 0,45 missed saves to a model in multiwound combat. 
+			//Get Missed Saves and determine damage
 			double missedSaves = wounds - (wounds * probabilityToSave);
 			double damageMultiplier = weapon.getDamage() + weapon.getMelta();
 			if(damageMultiplier > enemy.getHitPoints()) {
 				damageMultiplier = enemy.getHitPoints();
 			}
 			
+			//assert damage
 			double damagePotential = missedSaves * damageMultiplier;
 			double woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
 			double damageDone = damagePotential - woundsAfterFeelNoPain;
