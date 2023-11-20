@@ -9,11 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -23,8 +19,8 @@ import core.Probability;
 import core.Profile;
 import core.Profile.SpecialRuleProfile;
 import core.Profile.Type;
-import core.Unit.SpecialRuleUnit;
 import core.Unit;
+import core.Unit.SpecialRuleUnit;
 import core.Weapon;
 import core.Weapon.AntiType;
 import core.Weapon.Phase;
@@ -36,7 +32,7 @@ import core.Weapon.SpecialRuleWeapon;
  * The Test cases ensure that the attack sequence is ruled correctly
  */
 @TestMethodOrder(MethodOrderer.Random.class)
-class UnitBattleSequenceTest {
+class UnitAttackFeaturesTest {
 	
 	Weapon bolter;
 	Weapon heavyBolter;
@@ -442,18 +438,49 @@ class UnitBattleSequenceTest {
 	
 	}
 	
+	/**
+	 * Now we implement a mechanic called sustained hits
+	 * these hits generate extra hits on 6es.
+	 */
+	@Test @DisplayName("Special Rules - Sustainded hits 2")
+	void GivenSpaceMarines_WhenAddingSustainedHits_ThenDamageIsCalculatedCorrect() {
+		when(bolter.getSustainedHits()).thenReturn(2);
+		
+		int quantity = 5;
+		Unit spaceMarines = new Unit();
+		spaceMarines.equip(5, bolter);
+		double damage = spaceMarines.attack(guardsmen);
+		
+		double hits = (quantity * bolter.getAttacks()) * Probability.THREE_UP;
+		double sustainedHits = (hits / 6) * 2;
+		hits += sustainedHits;
+		double wounds = hits * Probability.THREE_UP;
+		double expectedDamage = wounds - (wounds * Probability.FIVE_UP);
+		
+		assertEquals(expectedDamage, damage);
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/**
+	 * Devastating wounds here we go! Every 6 Rolled on the wound roll shall
+	 * bypass the armour save.
+	 */
+	@Test @DisplayName("Special Rules - Devastating wounds")
+	void GivenSpaceMarines_WhenAddingDevastaingWounds_TheDamageIsCalculatedCorrect() {
+		when(bolter.has(SpecialRuleWeapon.DEVASTATING_WOUNDS)).thenReturn(true);
+		
+		int quantity = 5;
+		Unit spaceMarines = new Unit();
+		spaceMarines.equip(5, bolter);
+		double damage = spaceMarines.attack(guardsmen);
+		
+		double hits = (quantity * bolter.getAttacks()) * Probability.THREE_UP;
+		double wounds = hits * Probability.THREE_UP;
+		double devastatingWounds = wounds / 6;
+		wounds -= devastatingWounds;
+		double expectedDamage = wounds - (wounds * Probability.FIVE_UP);
+		expectedDamage += devastatingWounds;
+		
+		assertEquals(expectedDamage, damage);
+	}
 	
 }

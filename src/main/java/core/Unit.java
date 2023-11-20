@@ -24,7 +24,7 @@ public class Unit {
 	
 	/**
 	 * With this method we add, delete and edit the weapons of a unit. 
-	 * @param Weapon - The weapon we want to edit
+	 * @param Weapon - The weapon we want to edit 
 	 * @param quantity - The quantity the weapns shall recieve   
 	 * @implNote Quantity negative or zero deletes the weapon 
 	 */
@@ -66,6 +66,7 @@ public class Unit {
 	public void remove(SpecialRuleUnit specialRule) {
 		this.specialRules.remove(specialRule);
 	}
+	
 
 	/**
 	 * The attack method is an implementation of the combat sequence of the 
@@ -114,12 +115,20 @@ public class Unit {
 			if(this.has(SpecialRuleUnit.REROLL_HIT_ROLL)) {
 				hits += (attacks - hits) * weapon.getToHit(); 
 			}
+			
+			//Torrent weapons always hit
 			if(weapon.has(SpecialRuleWeapon.TORRENT)) {
 				hits = weapon.getAttacks() * quantity;
 			}
 			
+			//sustained hits - on 6es we generate extra hits
+			int sustainedHits = weapon.getSustainedHits();
+			boolean sustainedHitsAreActive = sustainedHits > 0;
+			if(sustainedHitsAreActive) {
+				hits += (hits / 6) * sustainedHits;
+			}
 			
-			//calculate the wound roll  
+			//calculate the wound roll   
 			int strength = weapon.getStrength();
 			int toughness = enemy.getToughness();
 			double probabilityToWound = Probability.SIX_UP;
@@ -147,9 +156,9 @@ public class Unit {
 			if(enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL)) {
 				probabilityToWound = Probability.modifyRoll(probabilityToWound, '-');
 			}
-			
 		
-			//Subtract lethal hits from the hit pool
+			//Lethal hits bypass the wound roll
+			//Subtract lethal hits from the hit pool 
 			double lethalHits = 0.00;
 			boolean lethalHitsAreActive = this.has(SpecialRuleUnit.LETHAL_HITS) 
 					|| weapon.has(SpecialRuleWeapon.LETHAL_HITS);
@@ -176,9 +185,17 @@ public class Unit {
 				wounds += (hits - wounds) * probabilityToWound; 
 			}
 			
-			//Add lethal hits right back to the final wound pool
+			//Add lethal hits right back to the wound pool
 			if(lethalHitsAreActive) {
 				wounds += lethalHits;
+			}
+			
+			//Devastating wounds bypass armour and invulnerable save
+			//Subtract devastating wounds from the wound pool
+			boolean devastatingWoundsAreActive = weapon.has(SpecialRuleWeapon.DEVASTATING_WOUNDS);
+			double devastatingWounds = (wounds / 6);
+			if(devastatingWoundsAreActive) {
+				wounds -= devastatingWounds;
 			}
 			
 			//determine Armour
@@ -211,6 +228,11 @@ public class Unit {
 			double damageMultiplier = weapon.getDamage() + weapon.getMelta();
 			if(damageMultiplier > enemy.getHitPoints()) {
 				damageMultiplier = enemy.getHitPoints();
+			}
+			
+			//Add the devastating Wounds back to the wound pool
+			if(devastatingWoundsAreActive) {
+				missedSaves += devastatingWounds;
 			}
 			
 			//assert damage

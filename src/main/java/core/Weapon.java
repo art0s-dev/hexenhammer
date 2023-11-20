@@ -10,7 +10,7 @@ import lombok.Generated;
 
 /**
  * The Weapons should just contain values
- * and be attached to units. This entity will be used for comparation
+ * and be attached to units. This entity will be used for comparation 
  * against the Profile entity.
  */
 @Data @Generated @Builder
@@ -22,6 +22,7 @@ public class Weapon {
 	private int strength;
 	private int armorPenetration;
 	private double damage;
+	@Builder.Default private int sustainedHits = 0;
 	@Builder.Default private Phase phase = Phase.SHOOTING; 
 	
 	/**
@@ -56,7 +57,8 @@ public class Weapon {
 		TORRENT,
 		HEAVY_AND_UNIT_REMAINED_STATIONARY,
 		REROLL_WOUND_ROLL, 
-		LETHAL_HITS
+		LETHAL_HITS,
+		DEVASTATING_WOUNDS
 	}
 	
 	public void add(SpecialRuleWeapon specialRule) {
