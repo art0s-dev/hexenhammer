@@ -18,6 +18,4 @@ lethal hits on units && weapons
 sustained hits on units && weapons
 devastating wounds on units && weapons
 plus one to hit on shooting weapon && lethal hits on fighting weapon when BOTH is active
-
-
-
+Make sure devastating wounds do not cooperate with anti type weapons

@@ -8,7 +8,7 @@ import lombok.Generated;
 
 /**
  * This class just contains values for weapons
- * to compare against. The units that use a certain profile should be targets. 
+ * to compare against. The units that use a certain profile should be targets.  
  */
 @Data @Generated @Builder
 public class Profile {

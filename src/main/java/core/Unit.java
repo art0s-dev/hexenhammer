@@ -107,13 +107,47 @@ public class Unit {
 				chanceToHit = Probability.modifyRoll(chanceToHit, '-');
 			}
 			
-			//Do the rerolls 
+			//Calculate hits
 			double hits = attacks  * chanceToHit;
+			
+			//Lethal hits bypass the wound roll
+			//Subtract lethal hits from the hit pool 
+			double lethalHits = 0.00;
+			boolean lethalHitsAreActive = this.has(SpecialRuleUnit.LETHAL_HITS) 
+					|| weapon.has(SpecialRuleWeapon.LETHAL_HITS);
+			boolean addOneToHit = this.has(SpecialRuleUnit.ADD_ONE_TO_HIT);
+			double lethalHitsModifier = Probability.SIX_UP;
+			
+			if(lethalHitsAreActive) {
+				if(addOneToHit) {
+					lethalHitsModifier = Probability.FIVE_UP;
+				}
+				
+				lethalHits = attacks * lethalHitsModifier;
+				hits -= lethalHits;
+			}
+			
+			//Do the rerolls for the hit roll
+			boolean hitRollWasRerolled = false;
+			double rerolls = 0.00;
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT)) {
-				hits += ((attacks - hits) / 6) * weapon.getToHit(); 
+				//Rolling ones has the same chance as rolling a Six
+				rerolls = (attacks - hits) * Probability.SIX_UP; 
+				hitRollWasRerolled = true;
 			}
 			if(this.has(SpecialRuleUnit.REROLL_HIT_ROLL)) {
-				hits += (attacks - hits) * weapon.getToHit(); 
+				rerolls = (attacks - hits);
+				hitRollWasRerolled = true;
+			}
+			//Additional Hit rolls can trigger further exploding 6es
+			if(hitRollWasRerolled) {
+				double rerolledLethalHits = 0.00;
+				if(lethalHitsAreActive) {
+					rerolledLethalHits = rerolls * lethalHitsModifier;
+					lethalHits += rerolledLethalHits;
+				}
+				
+				hits += (rerolls - rerolledLethalHits) * weapon.getToHit(); 
 			}
 			
 			//Torrent weapons always hit
@@ -122,11 +156,11 @@ public class Unit {
 			}
 			
 			//sustained hits - on 6es we generate extra hits
-			int sustainedHits = weapon.getSustainedHits();
-			boolean sustainedHitsAreActive = sustainedHits > 0;
-			if(sustainedHitsAreActive) {
-				hits += (hits / 6) * sustainedHits;
-			}
+//			int sustainedHits = weapon.getSustainedHits();
+//			boolean sustainedHitsAreActive = sustainedHits > 0;
+//			if(sustainedHitsAreActive) {
+//				hits += (hits / 6) * sustainedHits; 
+//			}
 			
 			//calculate the wound roll   
 			int strength = weapon.getStrength();
@@ -156,24 +190,9 @@ public class Unit {
 			if(enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL)) {
 				probabilityToWound = Probability.modifyRoll(probabilityToWound, '-');
 			}
-		
-			//Lethal hits bypass the wound roll
-			//Subtract lethal hits from the hit pool 
-			double lethalHits = 0.00;
-			boolean lethalHitsAreActive = this.has(SpecialRuleUnit.LETHAL_HITS) 
-					|| weapon.has(SpecialRuleWeapon.LETHAL_HITS);
-			if(lethalHitsAreActive) {
-				double lethalHitsModifier = 1;
-				if(this.has(SpecialRuleUnit.ADD_ONE_TO_HIT)) {
-					lethalHitsModifier = 2;
-				}
-				
-				lethalHits = (hits / 6) * lethalHitsModifier;
-				hits -= lethalHits;
-			}
 			
 			//calculate wounds 
-			double wounds = hits * probabilityToWound;
+			double wounds = (hits * probabilityToWound) + lethalHits;
 			
 			//Reroll wounds
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND)) {
@@ -186,17 +205,17 @@ public class Unit {
 			}
 			
 			//Add lethal hits right back to the wound pool
-			if(lethalHitsAreActive) {
-				wounds += lethalHits;
-			}
+//			if(lethalHitsAreActive) {
+//				wounds += lethalHits;
+//			}
 			
 			//Devastating wounds bypass armour and invulnerable save
 			//Subtract devastating wounds from the wound pool
-			boolean devastatingWoundsAreActive = weapon.has(SpecialRuleWeapon.DEVASTATING_WOUNDS);
-			double devastatingWounds = (wounds / 6);
-			if(devastatingWoundsAreActive) {
-				wounds -= devastatingWounds;
-			}
+//			boolean devastatingWoundsAreActive = weapon.has(SpecialRuleWeapon.DEVASTATING_WOUNDS);
+//			double devastatingWounds = (wounds / 6);
+//			if(devastatingWoundsAreActive) {
+//				wounds -= devastatingWounds;
+//			}
 			
 			//determine Armour
 			double armourSave = enemy.getArmorSave();
@@ -231,9 +250,9 @@ public class Unit {
 			}
 			
 			//Add the devastating Wounds back to the wound pool
-			if(devastatingWoundsAreActive) {
-				missedSaves += devastatingWounds;
-			}
+//			if(devastatingWoundsAreActive) {
+//				missedSaves += devastatingWounds;
+//			}
 			
 			//assert damage
 			double damagePotential = missedSaves * damageMultiplier;

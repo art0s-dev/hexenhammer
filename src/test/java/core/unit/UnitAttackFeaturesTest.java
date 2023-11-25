@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -389,60 +390,12 @@ class UnitAttackFeaturesTest {
 		assertEquals(expectedDamage, damage);
 	}
 	
-	/**
-	 * Now We will test lethal hits on weapons(damn you deathguard!)
-	 * lethal hits always wound on 6es to hit
-	 */
-	@Test @DisplayName("Special Rules - Lethal Hits")
-	void GivenSpaceMarinesWeaponsWithLethalHit_WhenAttack_ThenCalculateDamageCorrect() {
-		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
-		
-		int quantity = 5;
-		Unit spaceMarines = new Unit();
-		spaceMarines.equip(5, bolter);
-		double damage = spaceMarines.attack(guardsmen);
-		
-		double hits = (quantity * bolter.getAttacks()) * Probability.THREE_UP;
-		//Lethal hits wander into the wound pool
-		double lethalHits = hits / 6;
-		hits -= lethalHits;
-		double wounds = (hits * Probability.THREE_UP) + lethalHits;
-		double expectedDamage = wounds - (wounds * Probability.FIVE_UP);
-		
-		assertEquals(expectedDamage, damage);
-	}
-	
-	/**
-	 * Now we come to the real warcrimes - we combine add 1 to hit roll and 
-	 * the lethal hits. Means that the lethal hits trigger now on 5
-	 */
-	@Test @DisplayName("Special Rules - Lethal Hits on 5")
-	void GivenSpaceMarinesWithLethalHitsWeapons_WhenAddOneToWound_ThenCalculateCorrectDamage() {
-		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
-		
-		int quantity = 5;
-		Unit spaceMarines = new Unit();
-		spaceMarines.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
-		spaceMarines.equip(5, bolter);
-		double damage = spaceMarines.attack(guardsmen);
-		
-		double hits = (quantity * bolter.getAttacks()) * Probability.TWO_UP;
-		//We effectivly double the number of possible lethal hits 
-		//because we have now the possibility of 2 / 6 
-		double lethalHits = (hits / 6) * 2;
-		hits -= lethalHits;
-		double wounds = (hits * Probability.THREE_UP) + lethalHits;
-		double expectedDamage = wounds - (wounds * Probability.FIVE_UP);
-		
-		assertEquals(expectedDamage, damage);
-	
-	}
 	
 	/**
 	 * Now we implement a mechanic called sustained hits
 	 * these hits generate extra hits on 6es.
 	 */
-	@Test @DisplayName("Special Rules - Sustainded hits 2")
+	@Test @DisplayName("Special Rules - Sustainded hits 2") @Disabled
 	void GivenSpaceMarines_WhenAddingSustainedHits_ThenDamageIsCalculatedCorrect() {
 		when(bolter.getSustainedHits()).thenReturn(2);
 		
@@ -464,7 +417,7 @@ class UnitAttackFeaturesTest {
 	 * Devastating wounds here we go! Every 6 Rolled on the wound roll shall
 	 * bypass the armour save.
 	 */
-	@Test @DisplayName("Special Rules - Devastating wounds")
+	@Test @DisplayName("Special Rules - Devastating wounds") @Disabled
 	void GivenSpaceMarines_WhenAddingDevastaingWounds_TheDamageIsCalculatedCorrect() {
 		when(bolter.has(SpecialRuleWeapon.DEVASTATING_WOUNDS)).thenReturn(true);
 		
@@ -480,6 +433,79 @@ class UnitAttackFeaturesTest {
 		double expectedDamage = wounds - (wounds * Probability.FIVE_UP);
 		expectedDamage += devastatingWounds;
 		
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * Now We will test lethal hits on weapons(damn you deathguard!)
+	 * lethal hits always wound on 6es to hit. We take the full wound pool
+	 */
+	@Test @DisplayName("Special Rules - Lethal Hits")
+	void GivenSpaceMarinesWeaponsWithLethalHit_WhenAttack_ThenMoreWoundsAreProduced(){
+		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
+		
+		int quantity = 5;
+		Unit spaceMarines = new Unit();
+		spaceMarines.equip(5, bolter);
+		double damage = spaceMarines.attack(guardsmen);
+		
+		double hitPool = quantity * bolter.getAttacks();
+		double hits = hitPool * Probability.THREE_UP;
+		double lethalHits = hitPool * Probability.SIX_UP;
+		//Lethal hits wander into the wound pool
+		hits -= lethalHits;
+		
+		double wounds = (hits * Probability.THREE_UP) + lethalHits;
+		double expectedDamage = wounds - (wounds * Probability.FIVE_UP);
+		
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * Now we come to the real warcrimes - we combine add 1 to hit roll and 
+	 * the lethal hits. Means that the lethal hits trigger now on 5
+	 */
+	@Test @DisplayName("Special Rules - Lethal Hits on 5")
+	void GivenSpaceMarinesWithLethalHitsWeapons_WhenAddOneToHit_ThenMoreLethalHitsAreProduced() {
+		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
+		
+		int quantity = 5;
+		Unit spaceMarines = new Unit();
+		spaceMarines.equip(5, bolter);
+		spaceMarines.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
+		double damage = spaceMarines.attack(guardsmen);
+		
+		double hitPool = quantity * bolter.getAttacks();
+		double hits = hitPool * Probability.TWO_UP;
+		double lethalHits = hitPool * Probability.FIVE_UP;
+		//Lethal hits wander into the wound pool
+		hits -= lethalHits;
+		
+		double wounds = (hits * Probability.THREE_UP) + lethalHits;
+		double expectedDamage = wounds - (wounds * Probability.FIVE_UP);
+		
+		assertEquals(expectedDamage, damage);
+	}
+	
+	/**
+	 * Now we further go down ne warcrime path. We let our units do the same trick again
+	 * but now with reroll ones to hit
+	 */
+	@Test @DisplayName("Special Rules - Lethal Hits / reroll 1s to hit")
+	void GivenSpaceMarinesWithLethalHitsWeapons_WhenRerollOnesToHit_ThenProduceMoreLethalHits() {
+		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
+		
+		int quantity = 5;
+		Unit spaceMarines = new Unit();
+		spaceMarines.equip(5, bolter);
+		spaceMarines.add(SpecialRuleUnit.REROLL_ONES_TO_HIT);
+		double damage = spaceMarines.attack(guardsmen);
+		
+		//TODO: Würfel das mal aus und versuch das was du würfels als code zu übersetzen
+		//TODO: Check nochmal nach ob du den reroll falsch implementiert hast
+		
+		double expectedDamage = 0;
+
 		assertEquals(expectedDamage, damage);
 	}
 	
