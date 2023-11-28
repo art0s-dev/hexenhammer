@@ -129,26 +129,31 @@ public class Unit {
 			
 			//Do the rerolls for the hit roll
 			boolean hitRollWasRerolled = false;
-			double rerolls = 0.00;
+			double missedHits = attacks - hits;
+			double hitRerollPool = 0.00;
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT)) {
 				//Rolling ones has the same chance as rolling a Six
-				rerolls = (attacks - hits) * Probability.SIX_UP; 
+				hitRerollPool = missedHits * Probability.SIX_UP; 
 				hitRollWasRerolled = true;
 			}
 			if(this.has(SpecialRuleUnit.REROLL_HIT_ROLL)) {
-				rerolls = (attacks - hits);
+				hitRerollPool = missedHits;
 				hitRollWasRerolled = true;
 			}
-			//Additional Hit rolls can trigger further exploding 6es
+
 			if(hitRollWasRerolled) {
 				double rerolledLethalHits = 0.00;
-				if(lethalHitsAreActive) {
-					rerolledLethalHits = rerolls * lethalHitsModifier;
-					lethalHits += rerolledLethalHits;
-				}
+				double rerolledHits = hitRerollPool * weapon.getToHit(); 
 				
-				hits += (rerolls - rerolledLethalHits) * weapon.getToHit(); 
+				if(lethalHitsAreActive) {
+					rerolledLethalHits = hitRerollPool * lethalHitsModifier;
+					rerolledHits -= rerolledLethalHits;
+					lethalHits += rerolledLethalHits;
+				} 
+
+				hits += rerolledHits;
 			}
+			
 			
 			//Torrent weapons always hit
 			if(weapon.has(SpecialRuleWeapon.TORRENT)) {
@@ -156,7 +161,7 @@ public class Unit {
 			}
 			
 			//sustained hits - on 6es we generate extra hits
-//			int sustainedHits = weapon.getSustainedHits();
+//			int sustainedHits = weapon.getSustainedHits(); 
 //			boolean sustainedHitsAreActive = sustainedHits > 0;
 //			if(sustainedHitsAreActive) {
 //				hits += (hits / 6) * sustainedHits; 

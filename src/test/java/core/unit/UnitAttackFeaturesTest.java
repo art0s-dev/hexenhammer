@@ -501,10 +501,25 @@ class UnitAttackFeaturesTest {
 		spaceMarines.add(SpecialRuleUnit.REROLL_ONES_TO_HIT);
 		double damage = spaceMarines.attack(guardsmen);
 		
-		//TODO: Würfel das mal aus und versuch das was du würfels als code zu übersetzen
-		//TODO: Check nochmal nach ob du den reroll falsch implementiert hast
+		//the first roll
+		double attacks = 10;
+		double lethalHits = 10 * (1/6.00); //1,66666666667
+		double hits = 10 * (4/6.00); //6,666666667
+		hits -= lethalHits; //5
 		
-		double expectedDamage = 0;
+		//Do the reroll
+		double misses = (5) * (1/6.00); //0,833333333333
+		double rerollLethalHits = misses * (1/6.00); //0,1388888
+		double rerolledHits = misses * (4/6.00); //0,5555555
+		rerolledHits -= rerollLethalHits; //0,41666667
+		hits += rerolledHits; //5,416666667
+		lethalHits += rerollLethalHits; //1,8055555
+		
+		//Calculate the wounds
+		double wounds = hits * Probability.THREE_UP; //3,6111111
+		wounds += lethalHits; ///wounds = 5,4166666
+		double expectedDamage = wounds - ( wounds * Probability.FIVE_UP); //-1,8055555
+		//3,6111 
 
 		assertEquals(expectedDamage, damage);
 	}
