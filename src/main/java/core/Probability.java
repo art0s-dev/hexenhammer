@@ -7,19 +7,19 @@ package core;
  * a roll of a one always fails
  */
 public final class Probability {
-	public final static double SURE = 1;
-	public final static double TWO_UP = 5 / 6.00;
-	public final static double THREE_UP = 4 / 6.00;
-	public final static double FOUR_UP = 3 / 6.00;
-	public final static double FIVE_UP = 2 / 6.00;
-	public final static double SIX_UP = 1 / 6.00;
-	public final static double NONE = 0.00;
+	public final static float SURE = 1;
+	public final static float TWO_UP = 5 / 6f;
+	public final static float THREE_UP = 4 / 6f;
+	public final static float FOUR_UP = 3 / 6f;
+	public final static float FIVE_UP = 2 / 6f;
+	public final static float SIX_UP = 1 / 6f;
+	public final static float NONE = 0;
 	
 	/**
 	 * recreates a dice roll with a deterministic result
 	 * @param quantity the number of d6 that that be rolled
 	 */
-	public final static double d6(int quantity) {
+	public final static float d6(byte quantity) {
 		return quantity * MEDIAN_D6;
 	}
 	
@@ -27,13 +27,13 @@ public final class Probability {
 	 * decribes the average dice roll
 	 * (1+2+3+4+5+6) / 6
 	 */
-	public final static double MEDIAN_D6 = 3.5;
+	public final static float MEDIAN_D6 = 3.5f;
 	
 	/**
 	 * recreates a halved dice roll wih deterministic result
 	 * @param quantity the number of d3 that shall be rolled
 	 */
-	public final static double d3(int quantity) {
+	public final static float d3(byte quantity) {
 		return quantity * MEDIAN_D3;
 	}
 	
@@ -41,18 +41,18 @@ public final class Probability {
 	 * describes the average of a halved dice roll
 	 * (1+2+3) / 2
 	 */
-	public final static double MEDIAN_D3 = 2;
+	public final static float MEDIAN_D3 = 2;
 	
 	/**
 	 * modifies the roll + or - one result
 	 * @param probability - the probability given (1 - 0.277)
 	 * @param operator - char the operator - (+ OR -)
 	 */
-	public static double modifyRoll(double probability, char operator) {
+	public static float modifyRoll(float probability, char operator) {
 		//+ makes the roll better (Five up -> four up)
 		//- makes the roll worse (Fivr up -> Six up)
-		int incrementOrDecrement = operator == '+' ? 1 : -1;
-		double newProbability = (Math.ceil(probability * 6) + incrementOrDecrement) / 6;
+		byte incrementOrDecrement = (byte) (operator == '+' ? 1 : -1);
+		float newProbability = (float) ((Math.ceil(probability * 6) + incrementOrDecrement) / 6);
 		if(newProbability <= 0) {
 			return Probability.SIX_UP;
 		}

@@ -28,7 +28,7 @@ public class Unit {
 	 * @param quantity - The quantity the weapns shall recieve   
 	 * @implNote Quantity negative or zero deletes the weapon 
 	 */
-	public void equip(int quantity, Weapon weapon) {
+	public void equip(byte quantity, Weapon weapon) {
 		
 		if(!weapons.containsKey(weapon)) {
 			weapons.put(weapon, quantity);
@@ -42,7 +42,7 @@ public class Unit {
 		}
 		
 		int oldQuantity = weapons.get(weapon);
-		weapons.put(weapon, oldQuantity + quantity );
+		weapons.put(weapon, (byte) (oldQuantity + quantity) );
 	}
 	
 	/**
@@ -79,10 +79,10 @@ public class Unit {
 	 * @param Profile - The Profile the Unit shall attack  
 	 * @return Int - The damage done to the profile unit  
 	 */
-	public double attack(Profile enemy) {
+	public float attack(Profile enemy) {
 		
 		//Filters all Weapons that shall be used for a specific phase 
-		Map<Weapon, Integer> filteredWeapons = weapons;
+		Map<Weapon, Byte> filteredWeapons = weapons;
 		if(phase != Phase.BOTH) {
 			filteredWeapons = weapons.entrySet().parallelStream()
 					.filter(entry -> entry.getKey().getPhase() == phase)
@@ -90,14 +90,14 @@ public class Unit {
 		}
 		
 		//Iterates through all weapons and calculates damage for each weapon  
-		double damage = 0;
-		for (Entry<Weapon, Integer> set : filteredWeapons.entrySet()) {
+		float damage = 0;
+		for (Entry<Weapon, Byte> set : filteredWeapons.entrySet()) {
 			Weapon weapon = set.getKey();
 			
 			//calculate the hits
-			int quantity = set.getValue();
-			double attacks = weapon.getAttacks() * quantity;
-			double chanceToHit = weapon.getToHit();
+			byte quantity = set.getValue();
+			float attacks = weapon.getAttacks() * quantity;
+			float chanceToHit = weapon.getToHit();
 			
 			//Modify hit rolls
 			if(this.has(SpecialRuleUnit.ADD_ONE_TO_HIT)) {
@@ -108,15 +108,15 @@ public class Unit {
 			}
 			
 			//Calculate hits
-			double hits = attacks  * chanceToHit;
+			float hits = attacks  * chanceToHit;
 			
 			//Lethal hits bypass the wound roll
 			//Subtract lethal hits from the hit pool 
-			double lethalHits = 0.00;
+			float lethalHits = 0f;
 			boolean lethalHitsAreActive = this.has(SpecialRuleUnit.LETHAL_HITS) 
 					|| weapon.has(SpecialRuleWeapon.LETHAL_HITS);
 			boolean addOneToHit = this.has(SpecialRuleUnit.ADD_ONE_TO_HIT);
-			double lethalHitsModifier = Probability.SIX_UP;
+			float lethalHitsModifier = Probability.SIX_UP;
 			
 			if(lethalHitsAreActive) {
 				if(addOneToHit) {
@@ -129,8 +129,8 @@ public class Unit {
 			
 			//Do the rerolls for the hit roll
 			boolean hitRollWasRerolled = false;
-			double missedHits = attacks - hits;
-			double hitRerollPool = 0.00;
+			float missedHits = attacks - hits;
+			float hitRerollPool = 0;
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT)) {
 				//Rolling ones has the same chance as rolling a Six
 				hitRerollPool = missedHits * Probability.SIX_UP; 
@@ -142,8 +142,8 @@ public class Unit {
 			}
 
 			if(hitRollWasRerolled) {
-				double rerolledLethalHits = 0.00;
-				double rerolledHits = hitRerollPool * weapon.getToHit(); 
+				float rerolledLethalHits = 0;
+				float rerolledHits = hitRerollPool * weapon.getToHit(); 
 				
 				if(lethalHitsAreActive) {
 					rerolledLethalHits = hitRerollPool * lethalHitsModifier;
@@ -168,9 +168,9 @@ public class Unit {
 //			}
 			
 			//calculate the wound roll   
-			int strength = weapon.getStrength();
-			int toughness = enemy.getToughness();
-			double probabilityToWound = Probability.SIX_UP;
+			byte strength = weapon.getStrength();
+			byte toughness = enemy.getToughness();
+			float probabilityToWound = Probability.SIX_UP;
 			if(strength >= toughness * 2) { probabilityToWound = Probability.TWO_UP; }
 			if(strength > toughness) { probabilityToWound = Probability.THREE_UP;}
 			if(strength == toughness) { probabilityToWound = Probability.FOUR_UP;}
@@ -197,7 +197,7 @@ public class Unit {
 			}
 			
 			//calculate wounds 
-			double wounds = (hits * probabilityToWound) + lethalHits;
+			float wounds = (hits * probabilityToWound) + lethalHits;
 			
 			//Reroll wounds
 			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND)) {
@@ -223,14 +223,14 @@ public class Unit {
 //			}
 			
 			//determine Armour
-			double armourSave = enemy.getArmorSave();
-			HashMap<Double,Integer> symbolicArmourSave = new HashMap<>();
-			symbolicArmourSave.put(Probability.SIX_UP, 1);
-			symbolicArmourSave.put(Probability.FIVE_UP, 2);
-			symbolicArmourSave.put(Probability.FOUR_UP, 3);
-			symbolicArmourSave.put(Probability.THREE_UP, 4);
-			symbolicArmourSave.put(Probability.TWO_UP, 5);
-			int modifiedArmourSave = symbolicArmourSave.get(armourSave) - weapon.getArmorPenetration();
+			float armourSave = enemy.getArmorSave();
+			HashMap<Float,Byte> symbolicArmourSave = new HashMap<>();
+			symbolicArmourSave.put(Probability.SIX_UP, (byte)1);
+			symbolicArmourSave.put(Probability.FIVE_UP, (byte)2);
+			symbolicArmourSave.put(Probability.FOUR_UP, (byte)3);
+			symbolicArmourSave.put(Probability.THREE_UP, (byte)4);
+			symbolicArmourSave.put(Probability.TWO_UP, (byte)5);
+			byte modifiedArmourSave = (byte) (symbolicArmourSave.get(armourSave) - weapon.getArmorPenetration());
 			
 			//Take cover!
 			boolean weaponIsShooting = weapon.getPhase() == Phase.SHOOTING;
@@ -242,14 +242,14 @@ public class Unit {
 			}
 			
 			//Is there an invul save?
-			double probabilityToSave = modifiedArmourSave / 6.00;
+			float probabilityToSave = modifiedArmourSave / 6f;
 			if(modifiedArmourSave <= 0 || enemy.getInvulnerableSave() > probabilityToSave) {
 				probabilityToSave = enemy.getInvulnerableSave();
 			} 
 			
 			//Get Missed Saves and determine damage
-			double missedSaves = wounds - (wounds * probabilityToSave);
-			double damageMultiplier = weapon.getDamage() + weapon.getMelta();
+			float missedSaves = wounds - (wounds * probabilityToSave);
+			float damageMultiplier = weapon.getDamage() + weapon.getMelta();
 			if(damageMultiplier > enemy.getHitPoints()) {
 				damageMultiplier = enemy.getHitPoints();
 			}
@@ -260,9 +260,9 @@ public class Unit {
 //			}
 			
 			//assert damage
-			double damagePotential = missedSaves * damageMultiplier;
-			double woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
-			double damageDone = damagePotential - woundsAfterFeelNoPain;
+			float damagePotential = missedSaves * damageMultiplier;
+			float woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
+			float damageDone = damagePotential - woundsAfterFeelNoPain;
 			damage += damageDone;
 		}
 		
@@ -285,7 +285,7 @@ public class Unit {
 	 * It contains the signature of the object as a key 
 	 * and a quantity as the value. 
 	 */
-	private HashMap<Weapon, Integer> weapons = new HashMap<>();
+	private HashMap<Weapon, Byte> weapons = new HashMap<>();
 	
 	/**
 	 * The Set of special rules each unit has.

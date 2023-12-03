@@ -16,26 +16,26 @@ import lombok.Generated;
 @Data @Generated @Builder
 public class Weapon {
 	//is double because we can use 2.5 as default for a d6
-	private double attacks;
+	private float attacks;
 	//is double because we can directly take the hit chance from the profile
-	private double toHit;
-	private int strength;
-	private int armorPenetration;
-	private double damage;
-	@Builder.Default private int sustainedHits = 0;
+	private float toHit;
+	private byte strength;
+	private byte armorPenetration;
+	private float damage;
+	@Builder.Default private byte sustainedHits = 0;
 	@Builder.Default private Phase phase = Phase.SHOOTING; 
 	
 	/**
 	 * Describes the extra damage that is done 
 	 * when this value is greater then 0
 	 */
-	@Builder.Default private int melta = 0;
+	@Builder.Default private byte melta = 0;
 	
 	/**
 	 * This is a tuple explains the specific efficiency for wound rolls
 	 * against a certain profile type.
 	 */
-	public record AntiType(Type type, Double probability) {};
+	public record AntiType(Type type, Float probability) {};
 	@Builder.Default private Optional<AntiType> antiType = Optional.empty();
 	
 	/**
@@ -85,7 +85,7 @@ public class Weapon {
 			return this;
 		}
 		
-		public WeaponBuilder setAntiType(Type type, double probability) {
+		public WeaponBuilder setAntiType(Type type, float probability) {
 			this.antiType(Optional.of(new AntiType(type, probability)));
 			return this;
 		}

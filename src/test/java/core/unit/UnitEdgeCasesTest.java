@@ -1,6 +1,5 @@
 package core.unit;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,16 +32,16 @@ class UnitEdgeCasesTest {
 	@BeforeEach
 	void setup() {
 		bolter = mock(Weapon.class);
-		when(bolter.getAttacks()).thenReturn(2.00);
-		when(bolter.getStrength()).thenReturn(4);
-		when(bolter.getArmorPenetration()).thenReturn(0);
-		when(bolter.getDamage()).thenReturn(1.00);	
+		when(bolter.getAttacks()).thenReturn(2f);
+		when(bolter.getStrength()).thenReturn((byte)4);
+		when(bolter.getArmorPenetration()).thenReturn((byte)0);
+		when(bolter.getDamage()).thenReturn(1f);	
 		when(bolter.getToHit()).thenReturn(Probability.THREE_UP);
 		
 		guardsmen = mock(Profile.class);
-		when(guardsmen.getToughness()).thenReturn(3);
+		when(guardsmen.getToughness()).thenReturn((byte)3);
 		when(guardsmen.getArmorSave()).thenReturn(Probability.FIVE_UP);
-		when(guardsmen.getHitPoints()).thenReturn(1);
+		when(guardsmen.getHitPoints()).thenReturn((byte)1);
 	}
 
 	/**
@@ -54,10 +53,10 @@ class UnitEdgeCasesTest {
 		//when(bolter.has(SpecialRuleWeapon.SUSTAINED_HITS)).thenReturn(true);
 		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
 		
-		int quantity = 5;
+		byte quantity = 5;
 		Unit spaceMarines = new Unit();
 		spaceMarines.equip(quantity, bolter);
-		double damage = spaceMarines.attack(guardsmen);
+		float damage = spaceMarines.attack(guardsmen);
 		
 		//double hits = (quantity * bolter.getAttacks()) * Probability
 	}

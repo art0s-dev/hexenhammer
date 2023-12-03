@@ -28,24 +28,25 @@ class UnitEquipmentTest {
 	@BeforeEach
 	void setup() {
 		bolter = mock(Weapon.class);
-		when(bolter.getAttacks()).thenReturn(2.00);
-		when(bolter.getStrength()).thenReturn(4);
-		when(bolter.getArmorPenetration()).thenReturn(0);
-		when(bolter.getDamage()).thenReturn(1.00);	
+		when(bolter.getAttacks()).thenReturn(2f);
+		when(bolter.getStrength()).thenReturn((byte)4);
+		when(bolter.getArmorPenetration()).thenReturn((byte)0);
+		when(bolter.getDamage()).thenReturn(1f);	
 		when(bolter.getToHit()).thenReturn(Probability.THREE_UP);
 		
 		guardsmen = mock(Profile.class);
-		when(guardsmen.getToughness()).thenReturn(3);
+		when(guardsmen.getToughness()).thenReturn((byte)3);
 		when(guardsmen.getArmorSave()).thenReturn(Probability.FIVE_UP);
-		when(guardsmen.getHitPoints()).thenReturn(1);
+		when(guardsmen.getHitPoints()).thenReturn((byte)1);
 	}
 
 	@Test @DisplayName("Add Equipment") 
 	void GivenSpaceMarines_WhenEquippedWithBolter_ThenDamageIncreases(){	
 		Unit unit = new Unit();
-		unit.equip(5, bolter);
+		unit.equip((byte)5, bolter);
+		float damage = unit.attack(guardsmen);
 		
-		assertTrue(unit.attack(guardsmen) > 0);
+		assertTrue(damage > 0);
 	}
 	
 	@Test @DisplayName("No Equipment")
@@ -58,8 +59,8 @@ class UnitEquipmentTest {
 	@Test @DisplayName("Remove Equipment") 
 	void GivenSpaceMarines_WhenEquipmentIsRemoves_ThenThereIsNoDamage(){	
 		Unit unit = new Unit();
-		unit.equip(5, bolter);
-		unit.equip(-9999999, bolter);
+		unit.equip((byte)9, bolter);
+		unit.equip((byte)-99, bolter);
 		
 		assertEquals(0.00, unit.attack(guardsmen));
 	}
@@ -67,9 +68,9 @@ class UnitEquipmentTest {
 	@Test @DisplayName("Increase Equipment") 
 	void GivenSpaceMarines_WhenEquipmentIsIncreased_ThenTheDamageIncreases(){	
 		Unit unit = new Unit();
-		unit.equip(5, bolter);
-		double initialDamage = unit.attack(guardsmen);
-		unit.equip(5, bolter);
+		unit.equip((byte) 5, bolter);
+		float initialDamage = unit.attack(guardsmen);
+		unit.equip((byte) 10, bolter);
 		
 		assertTrue(unit.attack(guardsmen) > initialDamage);
 	}

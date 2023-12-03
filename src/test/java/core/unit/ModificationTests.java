@@ -41,17 +41,17 @@ class ModificationTests {
 	@BeforeEach
 	void setup() {
 		scorpionPulsar = mock(Weapon.class);
-		when(scorpionPulsar.getAttacks()).thenReturn(5.00);
+		when(scorpionPulsar.getAttacks()).thenReturn(5f);
 		when(scorpionPulsar.getToHit()).thenReturn(Probability.THREE_UP);
-		when(scorpionPulsar.getStrength()).thenReturn(18);
-		when(scorpionPulsar.getArmorPenetration()).thenReturn(5);
-		when(scorpionPulsar.getDamage()).thenReturn(5.00);
+		when(scorpionPulsar.getStrength()).thenReturn((byte)18);
+		when(scorpionPulsar.getArmorPenetration()).thenReturn((byte)5);
+		when(scorpionPulsar.getDamage()).thenReturn(5f);
 		when(scorpionPulsar.has(SpecialRuleWeapon.REROLL_WOUND_ROLL)).thenReturn(true);
-		scorpionTank.equip(1, scorpionPulsar);
+		scorpionTank.equip((byte)1, scorpionPulsar);
 		
 		mortarion = mock(Profile.class);
-		when(mortarion.getToughness()).thenReturn(12);
-		when(mortarion.getHitPoints()).thenReturn(16);
+		when(mortarion.getToughness()).thenReturn((byte)12);
+		when(mortarion.getHitPoints()).thenReturn((byte)16);
 		when(mortarion.getArmorSave()).thenReturn(Probability.TWO_UP);
 		when(mortarion.getInvulnerableSave()).thenReturn(Probability.FOUR_UP);
 		when(mortarion.getFeelNoPain()).thenReturn(Probability.FIVE_UP);
@@ -64,10 +64,10 @@ class ModificationTests {
 	@Test @DisplayName("Mod test")
 	void mofifyRollTest() {
 		//Test the edge cases
-		assertEquals(modifyRoll(7526.88, '+'), Probability.TWO_UP);
-		assertEquals(modifyRoll(-7526.88, '+'), Probability.SIX_UP);
-		assertEquals(modifyRoll(7526.88, '-'), Probability.TWO_UP);
-		assertEquals(modifyRoll(-7526.88, '-'), Probability.SIX_UP);
+		assertEquals(modifyRoll(7526.88f, '+'), Probability.TWO_UP);
+		assertEquals(modifyRoll(-7526.88f, '+'), Probability.SIX_UP);
+		assertEquals(modifyRoll(7526.88f, '-'), Probability.TWO_UP);
+		assertEquals(modifyRoll(-7526.88f, '-'), Probability.SIX_UP);
 		assertEquals(modifyRoll(0, '+'), Probability.SIX_UP);
 		assertEquals(modifyRoll(0, '?'), Probability.SIX_UP);
 		assertEquals(modifyRoll(2, '?'), Probability.TWO_UP);
@@ -91,8 +91,8 @@ class ModificationTests {
 	void GivenScorpionTank_WhenPlusOneToHit_ThenTheDamageIsHigher() {
 		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
 		
-		double expectedDamage = calculateScorpionDamage(Probability.TWO_UP,Probability.THREE_UP);
-		double damage = scorpionTank.attack(mortarion);
+		float expectedDamage = calculateScorpionDamage(Probability.TWO_UP,Probability.THREE_UP);
+		float damage = scorpionTank.attack(mortarion);
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -101,8 +101,8 @@ class ModificationTests {
 	void GivenScorpionTank_WhenSubtractToHit_ThenTheDamageIsLower() {
 		when(mortarion.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL)).thenReturn(true);
 		
-		double expectedDamage = calculateScorpionDamage(Probability.FOUR_UP,Probability.THREE_UP);
-		double damage = scorpionTank.attack(mortarion);
+		float expectedDamage = calculateScorpionDamage(Probability.FOUR_UP,Probability.THREE_UP);
+		float damage = scorpionTank.attack(mortarion);
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -112,8 +112,8 @@ class ModificationTests {
 		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
 		when(mortarion.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL)).thenReturn(true);
 		
-		double expectedDamage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
-		double damage = scorpionTank.attack(mortarion);
+		float expectedDamage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
+		float damage = scorpionTank.attack(mortarion);
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -122,8 +122,8 @@ class ModificationTests {
 	void GivenScorpionTank_WhenPlusOneToWound_ThenTheDamageIsHigher() {
 		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_WOUND);
 		
-		double expectedDamage = calculateScorpionDamage(Probability.THREE_UP,Probability.TWO_UP);
-		double damage = scorpionTank.attack(mortarion);
+		float expectedDamage = calculateScorpionDamage(Probability.THREE_UP,Probability.TWO_UP);
+		float damage = scorpionTank.attack(mortarion);
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -132,19 +132,19 @@ class ModificationTests {
 	void GivenScorpionTank_WhenSubtractToWound_ThenTheDamageIsLower() {
 		when(mortarion.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL)).thenReturn(true);
 		
-		double expectedDamage = calculateScorpionDamage(Probability.THREE_UP,Probability.FOUR_UP);
-		double damage = scorpionTank.attack(mortarion);
+		float expectedDamage = calculateScorpionDamage(Probability.THREE_UP,Probability.FOUR_UP);
+		float damage = scorpionTank.attack(mortarion);
 		
 		assertEquals(expectedDamage, damage);
 	}
 	
-	private double calculateScorpionDamage(double toHit, double toWound) {
-		double hits = scorpionPulsar.getAttacks() * toHit;
-		double wounds = hits * toWound;
+	private float calculateScorpionDamage(float toHit, float toWound) {
+		float hits = scorpionPulsar.getAttacks() * toHit;
+		float wounds = hits * toWound;
 		wounds += (hits - wounds) * toWound; 
-		double missedSaves = wounds * Probability.FOUR_UP;
+		float missedSaves = wounds * Probability.FOUR_UP;
 		
-		double damagePotential = missedSaves * scorpionPulsar.getDamage();
+		float damagePotential = missedSaves * scorpionPulsar.getDamage();
 		return damagePotential - (damagePotential * Probability.FIVE_UP);
 	}
 	

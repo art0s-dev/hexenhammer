@@ -12,11 +12,11 @@ import lombok.Generated;
  */
 @Data @Generated @Builder
 public class Profile {
-	private int toughness;
-	private double armorSave;
-	@Builder.Default private int hitPoints = 1;
-	@Builder.Default private double invulnerableSave = Probability.NONE;
-	@Builder.Default private double feelNoPain = Probability.NONE;
+	private byte toughness;
+	private float armorSave;
+	@Builder.Default private byte hitPoints = 1;
+	@Builder.Default private float invulnerableSave = Probability.NONE;
+	@Builder.Default private float feelNoPain = Probability.NONE;
 	@Builder.Default private Type type = Type.INFANTRY;
 	
 	/**
