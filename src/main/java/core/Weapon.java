@@ -3,7 +3,7 @@ package core;
 import java.util.HashSet;
 import java.util.Optional;
 
-import core.Profile.Type;
+import core.Enemy.Type;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Generated;

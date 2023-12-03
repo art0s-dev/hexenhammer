@@ -5,11 +5,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import core.Profile.SpecialRuleProfile;
+import core.Enemy.SpecialRuleProfile;
 import core.Weapon.AntiType;
 import core.Weapon.Phase;
 import core.Weapon.SpecialRuleWeapon;
+import lombok.val;
 
 /**
  * This is the cornerstone of the software
@@ -20,7 +22,7 @@ import core.Weapon.SpecialRuleWeapon;
  * - equip() the weapons and maybe add() some special rules
  * - attack() the enemy profile  
  */
-public class Unit {
+public final class Unit {
 	
 	/**
 	 * With this method we add, delete and edit the weapons of a unit. 
@@ -67,207 +69,179 @@ public class Unit {
 		this.specialRules.remove(specialRule);
 	}
 	
-
-	/**
-	 * The attack method is an implementation of the combat sequence of the 
-	 * warhammer 40k rulebook it should cover the shooting phase,  
-	 * aswell as the fight phase and all the generic special rules 
-	 * 
-	 * @see Design docs - core
-	 * @apiNote Uses a Filter for which weapons shall be used in the calculation
-	 * the default is set to both but with the setPhase Method it can be changed
-	 * @param Profile - The Profile the Unit shall attack  
-	 * @return Int - The damage done to the profile unit  
-	 */
-	public float attack(Profile enemy) {
+	public float attack(Enemy enemy) {
+		val filteredWeapons = filter(weapons, phase);
+		val unitParams = setUnitParameters();
+		val enemyParamaters = setEnemyParameters();
+		return filteredWeapons 
+				.map(stream -> calculateDamage(unitParams, enemy, stream))
+				.reduce(0f, (sum, damage) -> sum + damage);
+	}
+	
+	private record UnitParameters() {};
+	private UnitParameters setUnitParameters() {
+		return new UnitParameters();
+	}
+	
+	private record EnemyParameters() {};
+	private EnemyParameters setEnemyParameters() {
+		return new EnemyParameters();
+	}
+	
+	private Stream<Entry<Weapon, Byte>> filter(Map<Weapon, Byte> weapons, Phase phase) {
+		val weaponStream = weapons.entrySet().parallelStream();
+		val isForBothPhases = phase.equals(Phase.BOTH);
+		return isForBothPhases ? weaponStream 
+				: weaponStream.filter(entry -> entry.getKey().getPhase() == phase);
+	} 
+	
+	private float calculateDamage(UnitParameters params, Enemy enemy, Entry<Weapon, Byte> stream) {
+		Weapon weapon = stream.getKey();
 		
-		//Filters all Weapons that shall be used for a specific phase 
-		Map<Weapon, Byte> filteredWeapons = weapons;
-		if(phase != Phase.BOTH) {
-			filteredWeapons = weapons.entrySet().parallelStream()
-					.filter(entry -> entry.getKey().getPhase() == phase)
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		//calculate the hits
+		byte quantity = stream.getValue();
+		float attacks = weapon.getAttacks() * quantity;
+		float chanceToHit = weapon.getToHit();
+		
+		//Modify hit rolls
+		if(this.has(SpecialRuleUnit.ADD_ONE_TO_HIT)) {
+			chanceToHit = Probability.modifyRoll(chanceToHit, '+');
+		}
+		if(enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL)) {
+			chanceToHit = Probability.modifyRoll(chanceToHit, '-');
 		}
 		
-		//Iterates through all weapons and calculates damage for each weapon  
-		float damage = 0;
-		for (Entry<Weapon, Byte> set : filteredWeapons.entrySet()) {
-			Weapon weapon = set.getKey();
-			
-			//calculate the hits
-			byte quantity = set.getValue();
-			float attacks = weapon.getAttacks() * quantity;
-			float chanceToHit = weapon.getToHit();
-			
-			//Modify hit rolls
-			if(this.has(SpecialRuleUnit.ADD_ONE_TO_HIT)) {
-				chanceToHit = Probability.modifyRoll(chanceToHit, '+');
-			}
-			if(enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL)) {
-				chanceToHit = Probability.modifyRoll(chanceToHit, '-');
+		//Calculate hits
+		float hits = attacks  * chanceToHit;
+		
+		//Lethal hits bypass the wound roll
+		//Subtract lethal hits from the hit pool 
+		float lethalHits = 0f;
+		boolean lethalHitsAreActive = this.has(SpecialRuleUnit.LETHAL_HITS) 
+				|| weapon.has(SpecialRuleWeapon.LETHAL_HITS);
+		boolean addOneToHit = this.has(SpecialRuleUnit.ADD_ONE_TO_HIT);
+		float lethalHitsModifier = Probability.SIX_UP;
+		
+		if(lethalHitsAreActive) {
+			if(addOneToHit) {
+				lethalHitsModifier = Probability.FIVE_UP;
 			}
 			
-			//Calculate hits
-			float hits = attacks  * chanceToHit;
-			
-			//Lethal hits bypass the wound roll
-			//Subtract lethal hits from the hit pool 
-			float lethalHits = 0f;
-			boolean lethalHitsAreActive = this.has(SpecialRuleUnit.LETHAL_HITS) 
-					|| weapon.has(SpecialRuleWeapon.LETHAL_HITS);
-			boolean addOneToHit = this.has(SpecialRuleUnit.ADD_ONE_TO_HIT);
-			float lethalHitsModifier = Probability.SIX_UP;
+			lethalHits = attacks * lethalHitsModifier;
+			hits -= lethalHits;
+		}
+		
+		//Do the rerolls for the hit roll
+		boolean hitRollWasRerolled = false;
+		float missedHits = attacks - hits;
+		float hitRerollPool = 0;
+		if(this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT)) {
+			//Rolling ones has the same chance as rolling a Six
+			hitRerollPool = missedHits * Probability.SIX_UP; 
+			hitRollWasRerolled = true;
+		}
+		if(this.has(SpecialRuleUnit.REROLL_HIT_ROLL)) {
+			hitRerollPool = missedHits;
+			hitRollWasRerolled = true;
+		}
+
+		if(hitRollWasRerolled) {
+			float rerolledLethalHits = 0;
+			float rerolledHits = hitRerollPool * weapon.getToHit(); 
 			
 			if(lethalHitsAreActive) {
-				if(addOneToHit) {
-					lethalHitsModifier = Probability.FIVE_UP;
-				}
-				
-				lethalHits = attacks * lethalHitsModifier;
-				hits -= lethalHits;
-			}
-			
-			//Do the rerolls for the hit roll
-			boolean hitRollWasRerolled = false;
-			float missedHits = attacks - hits;
-			float hitRerollPool = 0;
-			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT)) {
-				//Rolling ones has the same chance as rolling a Six
-				hitRerollPool = missedHits * Probability.SIX_UP; 
-				hitRollWasRerolled = true;
-			}
-			if(this.has(SpecialRuleUnit.REROLL_HIT_ROLL)) {
-				hitRerollPool = missedHits;
-				hitRollWasRerolled = true;
-			}
-
-			if(hitRollWasRerolled) {
-				float rerolledLethalHits = 0;
-				float rerolledHits = hitRerollPool * weapon.getToHit(); 
-				
-				if(lethalHitsAreActive) {
-					rerolledLethalHits = hitRerollPool * lethalHitsModifier;
-					rerolledHits -= rerolledLethalHits;
-					lethalHits += rerolledLethalHits;
-				} 
-
-				hits += rerolledHits;
-			}
-			
-			
-			//Torrent weapons always hit
-			if(weapon.has(SpecialRuleWeapon.TORRENT)) {
-				hits = weapon.getAttacks() * quantity;
-			}
-			
-			//sustained hits - on 6es we generate extra hits
-//			int sustainedHits = weapon.getSustainedHits(); 
-//			boolean sustainedHitsAreActive = sustainedHits > 0;
-//			if(sustainedHitsAreActive) {
-//				hits += (hits / 6) * sustainedHits; 
-//			}
-			
-			//calculate the wound roll   
-			byte strength = weapon.getStrength();
-			byte toughness = enemy.getToughness();
-			float probabilityToWound = Probability.SIX_UP;
-			if(strength >= toughness * 2) { probabilityToWound = Probability.TWO_UP; }
-			if(strength > toughness) { probabilityToWound = Probability.THREE_UP;}
-			if(strength == toughness) { probabilityToWound = Probability.FOUR_UP;}
-			if(strength < toughness) { probabilityToWound = Probability.FIVE_UP; }
-			
-			//Anti Type weapons
-			boolean antiTypeIsSet = weapon.getAntiType().isPresent();
-			if(antiTypeIsSet) {
-				AntiType antiType = weapon.getAntiType().orElseThrow();
-				boolean antiTypeIsProfileType = antiType.type() == enemy.getType();
-				boolean antiTypeProbabilityIsHigherThanWoundRoll = antiType.probability() > probabilityToWound;
-				
-				if(antiTypeIsProfileType && antiTypeProbabilityIsHigherThanWoundRoll) {
-					probabilityToWound = antiType.probability();
-				}
-			}
-			
-			//Modify wounds
-			if(this.has(SpecialRuleUnit.ADD_ONE_TO_WOUND)) {
-				probabilityToWound = Probability.modifyRoll(probabilityToWound, '+'); 
-			}
-			if(enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL)) {
-				probabilityToWound = Probability.modifyRoll(probabilityToWound, '-');
-			}
-			
-			//calculate wounds 
-			float wounds = (hits * probabilityToWound) + lethalHits;
-			
-			//Reroll wounds
-			if(this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND)) {
-				wounds += ((hits - wounds) / 6) * probabilityToWound; 
-			}
-			boolean rerollWoundRoll = this.has(SpecialRuleUnit.REROLL_WOUND_ROLL) 
-					|| weapon.has(SpecialRuleWeapon.REROLL_WOUND_ROLL);
-			if(rerollWoundRoll) {
-				wounds += (hits - wounds) * probabilityToWound; 
-			}
-			
-			//Add lethal hits right back to the wound pool
-//			if(lethalHitsAreActive) {
-//				wounds += lethalHits;
-//			}
-			
-			//Devastating wounds bypass armour and invulnerable save
-			//Subtract devastating wounds from the wound pool
-//			boolean devastatingWoundsAreActive = weapon.has(SpecialRuleWeapon.DEVASTATING_WOUNDS);
-//			double devastatingWounds = (wounds / 6);
-//			if(devastatingWoundsAreActive) {
-//				wounds -= devastatingWounds;
-//			}
-			
-			//determine Armour
-			float armourSave = enemy.getArmorSave();
-			HashMap<Float,Byte> symbolicArmourSave = new HashMap<>();
-			symbolicArmourSave.put(Probability.SIX_UP, (byte)1);
-			symbolicArmourSave.put(Probability.FIVE_UP, (byte)2);
-			symbolicArmourSave.put(Probability.FOUR_UP, (byte)3);
-			symbolicArmourSave.put(Probability.THREE_UP, (byte)4);
-			symbolicArmourSave.put(Probability.TWO_UP, (byte)5);
-			byte modifiedArmourSave = (byte) (symbolicArmourSave.get(armourSave) - weapon.getArmorPenetration());
-			
-			//Take cover!
-			boolean weaponIsShooting = weapon.getPhase() == Phase.SHOOTING;
-			boolean enemyHasCover = enemy.has(SpecialRuleProfile.HAS_COVER);
-			boolean unitDoesNotIgnoreCover = !this.has(SpecialRuleUnit.IGNORE_COVER);
-			boolean saveIsNotHighestPossible = modifiedArmourSave <= 5;
-			if(weaponIsShooting && enemyHasCover && unitDoesNotIgnoreCover && saveIsNotHighestPossible) {
-				modifiedArmourSave++;
-			}
-			
-			//Is there an invul save?
-			float probabilityToSave = modifiedArmourSave / 6f;
-			if(modifiedArmourSave <= 0 || enemy.getInvulnerableSave() > probabilityToSave) {
-				probabilityToSave = enemy.getInvulnerableSave();
+				rerolledLethalHits = hitRerollPool * lethalHitsModifier;
+				rerolledHits -= rerolledLethalHits;
+				lethalHits += rerolledLethalHits;
 			} 
-			
-			//Get Missed Saves and determine damage
-			float missedSaves = wounds - (wounds * probabilityToSave);
-			float damageMultiplier = weapon.getDamage() + weapon.getMelta();
-			if(damageMultiplier > enemy.getHitPoints()) {
-				damageMultiplier = enemy.getHitPoints();
-			}
-			
-			//Add the devastating Wounds back to the wound pool
-//			if(devastatingWoundsAreActive) {
-//				missedSaves += devastatingWounds;
-//			}
-			
-			//assert damage
-			float damagePotential = missedSaves * damageMultiplier;
-			float woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
-			float damageDone = damagePotential - woundsAfterFeelNoPain;
-			damage += damageDone;
+
+			hits += rerolledHits;
 		}
 		
-		return damage;
-	} 
+		//Torrent weapons always hit
+		if(weapon.has(SpecialRuleWeapon.TORRENT)) {
+			hits = weapon.getAttacks() * quantity;
+		}
+		
+		//calculate the wound roll   
+		byte strength = weapon.getStrength();
+		byte toughness = enemy.getToughness();
+		float probabilityToWound = Probability.SIX_UP;
+		if(strength >= toughness * 2) { probabilityToWound = Probability.TWO_UP; }
+		if(strength > toughness) { probabilityToWound = Probability.THREE_UP;}
+		if(strength == toughness) { probabilityToWound = Probability.FOUR_UP;}
+		if(strength < toughness) { probabilityToWound = Probability.FIVE_UP; }
+		
+		//Anti Type weapons
+		boolean antiTypeIsSet = weapon.getAntiType().isPresent();
+		if(antiTypeIsSet) {
+			AntiType antiType = weapon.getAntiType().orElseThrow();
+			boolean antiTypeIsProfileType = antiType.type() == enemy.getType();
+			boolean antiTypeProbabilityIsHigherThanWoundRoll = antiType.probability() > probabilityToWound;
+			
+			if(antiTypeIsProfileType && antiTypeProbabilityIsHigherThanWoundRoll) {
+				probabilityToWound = antiType.probability();
+			}
+		}
+		
+		//Modify wounds
+		if(this.has(SpecialRuleUnit.ADD_ONE_TO_WOUND)) {
+			probabilityToWound = Probability.modifyRoll(probabilityToWound, '+'); 
+		}
+		if(enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL)) {
+			probabilityToWound = Probability.modifyRoll(probabilityToWound, '-');
+		}
+		
+		//calculate wounds 
+		float wounds = (hits * probabilityToWound) + lethalHits;
+		
+		//Reroll wounds
+		if(this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND)) {
+			wounds += ((hits - wounds) / 6) * probabilityToWound; 
+		}
+		boolean rerollWoundRoll = this.has(SpecialRuleUnit.REROLL_WOUND_ROLL) 
+				|| weapon.has(SpecialRuleWeapon.REROLL_WOUND_ROLL);
+		if(rerollWoundRoll) {
+			wounds += (hits - wounds) * probabilityToWound; 
+		}
+		
+		//determine Armour
+		float armourSave = enemy.getArmorSave();
+		HashMap<Float,Byte> symbolicArmourSave = new HashMap<>();
+		symbolicArmourSave.put(Probability.SIX_UP, (byte)1);
+		symbolicArmourSave.put(Probability.FIVE_UP, (byte)2);
+		symbolicArmourSave.put(Probability.FOUR_UP, (byte)3);
+		symbolicArmourSave.put(Probability.THREE_UP, (byte)4);
+		symbolicArmourSave.put(Probability.TWO_UP, (byte)5);
+		byte modifiedArmourSave = (byte) (symbolicArmourSave.get(armourSave) - weapon.getArmorPenetration());
+		
+		//Take cover!
+		boolean weaponIsShooting = weapon.getPhase() == Phase.SHOOTING;
+		boolean enemyHasCover = enemy.has(SpecialRuleProfile.HAS_COVER);
+		boolean unitDoesNotIgnoreCover = !this.has(SpecialRuleUnit.IGNORE_COVER);
+		boolean saveIsNotHighestPossible = modifiedArmourSave <= 5;
+		if(weaponIsShooting && enemyHasCover && unitDoesNotIgnoreCover && saveIsNotHighestPossible) {
+			modifiedArmourSave++;
+		}
+		
+		//Is there an invul save?
+		float probabilityToSave = modifiedArmourSave / 6f;
+		if(modifiedArmourSave <= 0 || enemy.getInvulnerableSave() > probabilityToSave) {
+			probabilityToSave = enemy.getInvulnerableSave();
+		} 
+		
+		//Get Missed Saves and determine damage
+		float missedSaves = wounds - (wounds * probabilityToSave);
+		float damageMultiplier = weapon.getDamage() + weapon.getMelta();
+		if(damageMultiplier > enemy.getHitPoints()) {
+			damageMultiplier = enemy.getHitPoints();
+		}
+		
+		//assert damage
+		float damagePotential = missedSaves * damageMultiplier;
+		float woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
+		return damagePotential - woundsAfterFeelNoPain;
+	}
 	
 	/**
 	 * Sets the Filter which weapons shall be used for the attack sequence

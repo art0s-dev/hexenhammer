@@ -11,7 +11,7 @@ import lombok.Generated;
  * to compare against. The units that use a certain profile should be targets.  
  */
 @Data @Generated @Builder
-public class Profile {
+public class Enemy {
 	private byte toughness;
 	private float armorSave;
 	@Builder.Default private byte hitPoints = 1;

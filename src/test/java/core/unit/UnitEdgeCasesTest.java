@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Probability;
-import core.Profile;
+import core.Enemy;
 import core.Unit;
 import core.Weapon;
 import core.Weapon.SpecialRuleWeapon;
@@ -25,9 +25,9 @@ class UnitEdgeCasesTest {
 	
 	Weapon bolter;
 	Weapon heavyBolter;
-	Profile guardsmen;
-	Profile aberrants;
-	Profile lemanRussTank;
+	Enemy guardsmen;
+	Enemy aberrants;
+	Enemy lemanRussTank;
 	
 	@BeforeEach
 	void setup() {
@@ -38,7 +38,7 @@ class UnitEdgeCasesTest {
 		when(bolter.getDamage()).thenReturn(1f);	
 		when(bolter.getToHit()).thenReturn(Probability.THREE_UP);
 		
-		guardsmen = mock(Profile.class);
+		guardsmen = mock(Enemy.class);
 		when(guardsmen.getToughness()).thenReturn((byte)3);
 		when(guardsmen.getArmorSave()).thenReturn(Probability.FIVE_UP);
 		when(guardsmen.getHitPoints()).thenReturn((byte)1);

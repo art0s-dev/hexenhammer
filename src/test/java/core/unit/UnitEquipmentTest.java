@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Probability;
-import core.Profile;
+import core.Enemy;
 import core.Unit;
 import core.Weapon;
 
@@ -23,7 +23,7 @@ import core.Weapon;
 class UnitEquipmentTest {
 	
 	Weapon bolter;
-	Profile guardsmen;
+	Enemy guardsmen;
 	
 	@BeforeEach
 	void setup() {
@@ -34,7 +34,7 @@ class UnitEquipmentTest {
 		when(bolter.getDamage()).thenReturn(1f);	
 		when(bolter.getToHit()).thenReturn(Probability.THREE_UP);
 		
-		guardsmen = mock(Profile.class);
+		guardsmen = mock(Enemy.class);
 		when(guardsmen.getToughness()).thenReturn((byte)3);
 		when(guardsmen.getArmorSave()).thenReturn(Probability.FIVE_UP);
 		when(guardsmen.getHitPoints()).thenReturn((byte)1);

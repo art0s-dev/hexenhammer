@@ -12,8 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import core.Probability;
-import core.Profile;
-import core.Profile.SpecialRuleProfile;
+import core.Enemy;
+import core.Enemy.SpecialRuleProfile;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import core.Weapon;
@@ -35,7 +35,7 @@ class ModificationTests {
 	
 	
 	Weapon scorpionPulsar;
-	Profile mortarion;
+	Enemy mortarion;
 	Unit scorpionTank = new Unit();
 	
 	@BeforeEach
@@ -49,7 +49,7 @@ class ModificationTests {
 		when(scorpionPulsar.has(SpecialRuleWeapon.REROLL_WOUND_ROLL)).thenReturn(true);
 		scorpionTank.equip((byte)1, scorpionPulsar);
 		
-		mortarion = mock(Profile.class);
+		mortarion = mock(Enemy.class);
 		when(mortarion.getToughness()).thenReturn((byte)12);
 		when(mortarion.getHitPoints()).thenReturn((byte)16);
 		when(mortarion.getArmorSave()).thenReturn(Probability.TWO_UP);
