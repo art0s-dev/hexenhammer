@@ -91,6 +91,7 @@ public class Unit {
 	public void setPhase(Phase phase) {
 		this.phase = phase;
 	}
+
 	private Phase phase = Phase.BOTH;
 	
 	/**

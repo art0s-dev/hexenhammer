@@ -24,7 +24,7 @@ BUT in the battle step it all boils down to:
 - you shoot at a target
 - and you repeat until all weapons are resolved
 
-So That means Units are just a profile and a bunch of weapons with a nice
+So That means Units are just a bunch of weapons withg some special rules and a nice
 abstraction. 
 
 The profile on the other hand is the sheet the weapons and the units are compared against.
@@ -35,17 +35,9 @@ So at the core we just have 3 Entities:
 - Weapon (The Damage attached to the unit)
 - Profile (enemy sheet)
 
-### But the implementation is sooo loooooooong
-The implementation of the battle Sequence is so long because 
-the core mechanics shall be encapsulated in one method so we don't have to 
-maintain many methods and they are not spreaded anywhere.
-Also: it's nice and simple `Unit.attacks(enemy)` isn't it?
-Still not convinced? Please read John Ousterhout's principles of software design.
-[John Ousterhout's Book](https://web.stanford.edu/~ouster/cgi-bin/book.php) 
-
 ## About the special rules
 
-Yeah i know, Wargames are niche. And the Tomes the rules come in are heavy.
+Yeah i know, Wargames are niche. And the tomes the rules come in are heavy.
 So we try to keep it simple and have 4 Groups of special Rules:
 - Unit (These Special Rules apply to the unit at a global scale - these affect all weapons)
 - Weapon (This Ruleset only applies to the Weapon fired during combat)

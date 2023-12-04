@@ -14,7 +14,8 @@ import lombok.var;
 
 /**
  * The Combat Class incoporates all fighting mechanics 
- * in the warhammer 40k rulebook.
+ * in the warhammer 40k rulebook. This class should only be called
+ * via the abstractions of the unit class
  */
 final class Combat {
 	
@@ -129,7 +130,7 @@ final class Combat {
 		
 		//determine Armour
 		val armourSave = enemy.getArmorSave();
-		@var byte modifiedArmourSave = (byte) (ARMOUR_SAVES.get(armourSave) - weapon.getArmorPenetration());
+		@var byte modifiedArmourSave = (byte) (ARMOR_SAVES.get(armourSave) - weapon.getArmorPenetration());
 		
 		//Take cover!
 		val weaponIsShooting = weapon.getPhase() == Phase.SHOOTING;
@@ -158,15 +159,14 @@ final class Combat {
 }
 	
 	/**
-	 * Determines a probability for a weapon to wound a target 
+	 * Determines the probability for a weapon to wound a target
 	 */
-	private static float compare(byte weaponsStrength, byte enemyToughness) {
-		float probabilityToWound = Probability.SIX_UP;
-		if(weaponsStrength >= enemyToughness * 2) { probabilityToWound = Probability.TWO_UP; }
-		if(weaponsStrength > enemyToughness) { probabilityToWound = Probability.THREE_UP;}
-		if(weaponsStrength == enemyToughness) { probabilityToWound = Probability.FOUR_UP;}
-		if(weaponsStrength < enemyToughness) { probabilityToWound = Probability.FIVE_UP; }
-		return probabilityToWound;
+	private static float compare(byte strength, byte toughness) {
+		if(strength >= toughness * 2) { return Probability.TWO_UP; }
+		if(strength > toughness) { return Probability.THREE_UP;}
+		if(strength == toughness) { return Probability.FOUR_UP;}
+		if(strength < toughness) { return Probability.FIVE_UP; }
+		return Probability.SIX_UP;
 	}
 	
 	/**
@@ -191,6 +191,10 @@ final class Combat {
 	) {
 	};
 	
+	/**
+	 * Creates the feature flags for the battle sequence
+	 * this method gets called before the damage of a new weapon is calculated
+	 */
 	private CombatRules setRules(Weapon weapon) {
 		return new CombatRules(
 			unit.has(SpecialRuleUnit.ADD_ONE_TO_HIT),
@@ -210,18 +214,18 @@ final class Combat {
 	}
 	
 	/**
-	 * The Armour save characteristica of an enemy unit tells us how
-	 * tanky a unit is. This implementation subtracts the armour penetration value
-	 * from the weapon from the given values, until there is no armpur save left
+	 * The armor save characteristica of an enemy unit tells us how
+	 * tanky a unit is. This implementation subtracts the armor penetration value
+	 * from the weapon from the given values, until there is no armor save left
 	 */
-	private static final HashMap<Float,Byte> ARMOUR_SAVES = new HashMap<>();
+	private static final HashMap<Float,Byte> ARMOR_SAVES = new HashMap<>();
 	static {
-		ARMOUR_SAVES.put(Probability.SIX_UP, (byte)1);
-		ARMOUR_SAVES.put(Probability.FIVE_UP, (byte)2);
-		ARMOUR_SAVES.put(Probability.FOUR_UP, (byte)3);
-		ARMOUR_SAVES.put(Probability.THREE_UP, (byte)4);
-		ARMOUR_SAVES.put(Probability.TWO_UP, (byte)5);
-		Collections.unmodifiableMap(ARMOUR_SAVES);
+		ARMOR_SAVES.put(Probability.SIX_UP, (byte)1);
+		ARMOR_SAVES.put(Probability.FIVE_UP, (byte)2);
+		ARMOR_SAVES.put(Probability.FOUR_UP, (byte)3);
+		ARMOR_SAVES.put(Probability.THREE_UP, (byte)4);
+		ARMOR_SAVES.put(Probability.TWO_UP, (byte)5);
+		Collections.unmodifiableMap(ARMOR_SAVES);
 	}
 	
 	private final Unit unit;
