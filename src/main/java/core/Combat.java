@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import core.Enemy.SpecialRuleProfile;
 import core.Unit.SpecialRuleUnit;
-import core.Weapon.AntiType;
 import core.Weapon.Phase;
 import core.Weapon.SpecialRuleWeapon;
 import lombok.val;
@@ -34,6 +33,46 @@ final class Combat {
 		val weapon = entry.getKey();
 		val quantity = entry.getValue();
 		val rules = setRules(weapon);
+		
+		val hitRollDicePool = hitRoll(rules, weapon, quantity);
+		val woundPool = woundRoll(enemy, weapon, rules, hitRollDicePool);
+		val wounds = woundPool.successes;
+		
+		//determine Armour
+		val armourSave = enemy.getArmorSave();
+		@var byte modifiedArmourSave = (byte) (ARMOR_SAVES.get(armourSave) - weapon.getArmorPenetration());
+		
+		//Take cover!
+		val weaponIsShooting = weapon.getPhase() == Phase.SHOOTING;
+		val saveIsNotHighestPossible = modifiedArmourSave <= 5;
+		if(weaponIsShooting && rules.enemyHasCover && !rules.ignoreCover && saveIsNotHighestPossible) {
+			modifiedArmourSave++;
+		}
+		
+		//Is there an invul save?
+		@var float probabilityToSave = modifiedArmourSave / 6f;
+		if(modifiedArmourSave <= 0 || enemy.getInvulnerableSave() > probabilityToSave) {
+			probabilityToSave = enemy.getInvulnerableSave();
+		} 
+		
+		//Get Missed Saves and determine damage
+		val missedSaves = wounds - (wounds * probabilityToSave);
+		@var float damageMultiplier = weapon.getDamage() + weapon.getMelta();
+		if(damageMultiplier > enemy.getHitPoints()) {
+			damageMultiplier = enemy.getHitPoints();
+		}
+		
+		//assert damage
+		val damagePotential = missedSaves * damageMultiplier;
+		val woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
+		return damagePotential - woundsAfterFeelNoPain;
+	}
+	
+	/**
+	 * Makes a hit roll. 
+	 * All functionality for the hit roll step are found here.
+	 */
+	private HitDicePool hitRoll(CombatRules rules, Weapon weapon, byte quantity) {
 		val attacks = weapon.getAttacks() * quantity;
 		@var float chanceToHit = weapon.getToHit();
 		//Modify hit rolls
@@ -93,6 +132,18 @@ final class Combat {
 			hits = weapon.getAttacks() * quantity;
 		}
 		
+		return new HitDicePool(
+			new DicePool(
+				attacks,
+				hits
+			),
+			lethalHits
+		);
+	}
+	
+	private DicePool woundRoll(Enemy enemy, Weapon weapon, CombatRules rules, HitDicePool hitRollDicePool) {
+		val hits = hitRollDicePool.dicePool.successes;
+		val lethalHits = hitRollDicePool.lethalHits;
 		//calculate the wound roll   
 		val strength = weapon.getStrength();
 		val toughness = enemy.getToughness();
@@ -128,43 +179,33 @@ final class Combat {
 			wounds += (hits - wounds) * probabilityToWound; 
 		}
 		
-		//determine Armour
-		val armourSave = enemy.getArmorSave();
-		@var byte modifiedArmourSave = (byte) (ARMOR_SAVES.get(armourSave) - weapon.getArmorPenetration());
+		return new DicePool(hits, wounds);
+	}
+	
+	/**
+	 * This Data Structure holds the result of a Dice roll durin a combat step.
+	 */
+	private record DicePool(
+			float total,
+			float successes
+		) {};
 		
-		//Take cover!
-		val weaponIsShooting = weapon.getPhase() == Phase.SHOOTING;
-		val saveIsNotHighestPossible = modifiedArmourSave <= 5;
-		if(weaponIsShooting && rules.enemyHasCover && !rules.ignoreCover && saveIsNotHighestPossible) {
-			modifiedArmourSave++;
-		}
-		
-		//Is there an invul save?
-		@var float probabilityToSave = modifiedArmourSave / 6f;
-		if(modifiedArmourSave <= 0 || enemy.getInvulnerableSave() > probabilityToSave) {
-			probabilityToSave = enemy.getInvulnerableSave();
-		} 
-		
-		//Get Missed Saves and determine damage
-		val missedSaves = wounds - (wounds * probabilityToSave);
-		@var float damageMultiplier = weapon.getDamage() + weapon.getMelta();
-		if(damageMultiplier > enemy.getHitPoints()) {
-			damageMultiplier = enemy.getHitPoints();
-		}
-		
-		//assert damage
-		val damagePotential = missedSaves * damageMultiplier;
-		val woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
-		return damagePotential - woundsAfterFeelNoPain;
-}
+	/**
+	 * This structure incorporates the main dice pool and extends it with
+	 * the hit roll specific functionality
+	 */
+	private record HitDicePool(
+		DicePool dicePool,
+		float lethalHits
+	) {};
 	
 	/**
 	 * Determines the probability for a weapon to wound a target
 	 */
 	private static float compare(byte strength, byte toughness) {
 		if(strength >= toughness * 2) { return Probability.TWO_UP; }
-		if(strength > toughness) { return Probability.THREE_UP;}
-		if(strength == toughness) { return Probability.FOUR_UP;}
+		if(strength > toughness) { return Probability.THREE_UP; }
+		if(strength == toughness) { return Probability.FOUR_UP; }
 		if(strength < toughness) { return Probability.FIVE_UP; }
 		return Probability.SIX_UP;
 	}
