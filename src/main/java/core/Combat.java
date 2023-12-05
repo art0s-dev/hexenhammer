@@ -35,37 +35,9 @@ final class Combat {
 		val rules = setRules(weapon);
 		
 		val hitRollDicePool = hitRoll(rules, weapon, quantity);
-		val woundPool = woundRoll(enemy, weapon, rules, hitRollDicePool);
-		val wounds = woundPool.successes;
-		
-		//determine Armour
-		val armourSave = enemy.getArmorSave();
-		@var byte modifiedArmourSave = (byte) (ARMOR_SAVES.get(armourSave) - weapon.getArmorPenetration());
-		
-		//Take cover!
-		val weaponIsShooting = weapon.getPhase() == Phase.SHOOTING;
-		val saveIsNotHighestPossible = modifiedArmourSave <= 5;
-		if(weaponIsShooting && rules.enemyHasCover && !rules.ignoreCover && saveIsNotHighestPossible) {
-			modifiedArmourSave++;
-		}
-		
-		//Is there an invul save?
-		@var float probabilityToSave = modifiedArmourSave / 6f;
-		if(modifiedArmourSave <= 0 || enemy.getInvulnerableSave() > probabilityToSave) {
-			probabilityToSave = enemy.getInvulnerableSave();
-		} 
-		
-		//Get Missed Saves and determine damage
-		val missedSaves = wounds - (wounds * probabilityToSave);
-		@var float damageMultiplier = weapon.getDamage() + weapon.getMelta();
-		if(damageMultiplier > enemy.getHitPoints()) {
-			damageMultiplier = enemy.getHitPoints();
-		}
-		
-		//assert damage
-		val damagePotential = missedSaves * damageMultiplier;
-		val woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
-		return damagePotential - woundsAfterFeelNoPain;
+		val woundRollDicePool = woundRoll(enemy, weapon, rules, hitRollDicePool);
+		val savingThrowDicePool = savingThrows(woundRollDicePool, weapon, enemy, rules);
+		return assertDamage(savingThrowDicePool, weapon, enemy);
 	}
 	
 	/**
@@ -141,6 +113,9 @@ final class Combat {
 		);
 	}
 	
+	/**
+	 * Takes the information from the hit roll and resolves wounds
+	 */
 	private DicePool woundRoll(Enemy enemy, Weapon weapon, CombatRules rules, HitDicePool hitRollDicePool) {
 		val hits = hitRollDicePool.dicePool.successes;
 		val lethalHits = hitRollDicePool.lethalHits;
@@ -183,12 +158,56 @@ final class Combat {
 	}
 	
 	/**
+	 * After the wounds have been determined the saving throws
+	 * migitate the damage
+	 */
+	private DicePool savingThrows(DicePool woundRollDicePool, Weapon weapon, Enemy enemy, CombatRules rules) {
+		val wounds = woundRollDicePool.successes;
+		//determine Armour
+		val armourSave = enemy.getArmorSave();
+		@var byte modifiedArmourSave = (byte) (ARMOR_SAVES.get(armourSave) - weapon.getArmorPenetration());
+		
+		//Take cover!
+		val weaponIsShooting = weapon.getPhase() == Phase.SHOOTING;
+		val saveIsNotHighestPossible = modifiedArmourSave <= 5;
+		if(weaponIsShooting && rules.enemyHasCover && !rules.ignoreCover && saveIsNotHighestPossible) {
+			modifiedArmourSave++;
+		}
+		
+		//Is there an invul save?
+		@var float probabilityToSave = modifiedArmourSave / 6f;
+		if(modifiedArmourSave <= 0 || enemy.getInvulnerableSave() > probabilityToSave) {
+			probabilityToSave = enemy.getInvulnerableSave();
+		} 
+		
+		//Get Missed Saves and determine damage
+		val missedSaves = wounds - (wounds * probabilityToSave);
+		return new DicePool(wounds, missedSaves);
+	}
+	
+	/**
+	 * The damage step of the calculation.
+	 */
+	private float assertDamage(DicePool savingThrowDicePool, Weapon weapon, Enemy enemy) {
+		val missedSaves = savingThrowDicePool.successes;
+		@var float damageMultiplier = weapon.getDamage() + weapon.getMelta();
+		if(damageMultiplier > enemy.getHitPoints()) {
+			damageMultiplier = enemy.getHitPoints();
+		}
+		
+		//assert damage
+		val damagePotential = missedSaves * damageMultiplier;
+		val woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
+		return damagePotential - woundsAfterFeelNoPain;
+	}
+	
+	/**
 	 * This Data Structure holds the result of a Dice roll durin a combat step.
 	 */
 	private record DicePool(
-			float total,
-			float successes
-		) {};
+		float total,
+		float successes
+	) {};
 		
 	/**
 	 * This structure incorporates the main dice pool and extends it with
