@@ -1,7 +1,7 @@
 /**
  * 
  */
-package core.unit;
+package core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;

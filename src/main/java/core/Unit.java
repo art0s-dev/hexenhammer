@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import core.Weapon.Phase;
+import core.combat.Combat;
 import lombok.val;
 
 /**
@@ -72,7 +73,7 @@ public class Unit {
 	 * @see Combat
 	 */
 	public float attack(Enemy enemy) {
-		val filteredWeapons = filter(weapons, phase);
+		val filteredWeapons = _filter(weapons, phase);
 		val combat = new Combat(this, enemy);
 		return filteredWeapons
 				.map(entry -> combat.calculateDamage(entry))
@@ -103,7 +104,8 @@ public class Unit {
 	 * that is set. So when the fighting phase is set it ensures, 
 	 * that only close combat weapons are taken 
 	 */
-	private Stream<Entry<Weapon, Byte>> filter(Map<Weapon, Byte> weapons, Phase phase) {
+	private Stream<Entry<Weapon, Byte>> _filter
+	(Map<Weapon, Byte> weapons, Phase phase) {
 		val weaponStream = weapons.entrySet().parallelStream();
 		val isForBothPhases = phase.equals(Phase.BOTH);
 		return isForBothPhases ? weaponStream 

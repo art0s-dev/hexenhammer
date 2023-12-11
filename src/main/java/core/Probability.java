@@ -40,6 +40,7 @@ public final class Probability {
 	 * describes the average of a halved dice roll (1+2+3) / 2
 	 */
 	public final static float MEDIAN_D3 = 2;
+	
 
 	/**
 	 * modifies the roll + or - one result

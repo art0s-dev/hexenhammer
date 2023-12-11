@@ -1,4 +1,4 @@
-package core.unit;
+package core;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
