@@ -1,7 +1,4 @@
-/**
- * 
- */
-package core;
+package unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -16,10 +13,10 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import core.Probability;
 import core.Enemy;
 import core.Enemy.SpecialRuleProfile;
 import core.Enemy.Type;
+import core.Probability;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import core.Weapon;
@@ -503,7 +500,7 @@ class UnitAttackFeaturesTest {
 		
 		//the first roll
 		float attacks = 10;
-		float lethalHits = 10 * (1/6f); //1,66666666667
+		float lethalHits = attacks * (1/6f); //1,66666666667
 		float hits = 10 * (4/6f); //6,666666667
 		hits -= lethalHits; //5
 		

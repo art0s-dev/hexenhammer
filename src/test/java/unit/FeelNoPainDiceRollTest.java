@@ -1,4 +1,4 @@
-package core.combat.dicePool;
+package unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -12,12 +12,14 @@ import core.Probability;
 import core.Unit;
 import core.Weapon;
 import core.combat.CombatRules;
+import core.combat.dicePool.DicePool;
+import core.combat.dicePool.FeelNoPainDiceRoll;
 import lombok.val;
 
 class FeelNoPainDiceRollTest {
 
 	@Test @DisplayName("Test Feel No Pain")
-	void test() {
+	void feelNoPain() {
 		val total = 10f;
 		val dicePool = mock(DicePool.class);
 		when(dicePool.total()).thenReturn(total);

@@ -1,19 +1,17 @@
-package core;
+package integration;
 
 import static core.Probability.modifyRoll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import core.Probability;
 import core.Enemy;
 import core.Enemy.SpecialRuleProfile;
+import core.Probability;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import core.Weapon;

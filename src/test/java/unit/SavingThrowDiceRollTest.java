@@ -1,4 +1,4 @@
-package core.combat.dicePool;
+package unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -14,6 +14,8 @@ import core.Probability;
 import core.Unit;
 import core.Weapon;
 import core.combat.CombatRules;
+import core.combat.dicePool.DicePool;
+import core.combat.dicePool.SavingThrowDiceRoll;
 import lombok.val;
 
 class SavingThrowDiceRollTest {
