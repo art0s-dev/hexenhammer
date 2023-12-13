@@ -14,13 +14,13 @@ public abstract class DiceRoll implements IDiceRoll {
 	protected final Unit unit;
 	protected final Weapon weapon;
 	protected final Enemy enemy;
-	protected final CombatRules combatRules;
+	protected final CombatRules rules;
 	
-	public DiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules combatRules) {
+	public DiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
 		this.unit = unit;
 		this.weapon = weapon;
 		this.enemy = enemy;
-		this.combatRules = combatRules;
+		this.rules = rules;
 	}
 	
 	public abstract DicePool roll(DicePool dicePool);

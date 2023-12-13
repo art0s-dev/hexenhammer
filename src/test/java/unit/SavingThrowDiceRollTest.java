@@ -6,7 +6,9 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Enemy;
 import core.Enemy.SpecialRuleProfile;
@@ -18,6 +20,7 @@ import core.combat.dicePool.DicePool;
 import core.combat.dicePool.SavingThrowDiceRoll;
 import lombok.val;
 
+@TestMethodOrder(MethodOrderer.Random.class)
 class SavingThrowDiceRollTest {
 	
 	private float total = 10;

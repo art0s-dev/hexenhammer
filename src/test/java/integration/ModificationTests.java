@@ -7,7 +7,9 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Enemy;
 import core.Enemy.SpecialRuleProfile;
@@ -29,6 +31,7 @@ import core.Weapon.SpecialRuleWeapon;
  * the most impact. We aggregate some Groups:
  * - +1 / no mod / -1  |  for hit and wound rolls
  */
+@TestMethodOrder(MethodOrderer.Random.class)
 class ModificationTests {
 	
 	

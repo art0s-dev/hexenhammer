@@ -16,8 +16,8 @@ import lombok.val;
  */
 public class SavingThrowDiceRoll extends DiceRoll {
 
-	public SavingThrowDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules combatRules) {
-		super(unit, weapon, enemy, combatRules);
+	public SavingThrowDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
+		super(unit, weapon, enemy, rules);
 	}
 
 	public DicePool roll(DicePool dicePool) {

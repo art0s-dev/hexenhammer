@@ -13,8 +13,8 @@ import lombok.val;
  */
 public class FeelNoPainDiceRoll extends DiceRoll {
 
-	public FeelNoPainDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules combatRules) {
-		super(unit, weapon, enemy, combatRules);
+	public FeelNoPainDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
+		super(unit, weapon, enemy, rules);
 	}
 
 	public DicePool roll(DicePool dicePool) {
