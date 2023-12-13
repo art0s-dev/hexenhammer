@@ -11,6 +11,9 @@ import core.Weapon;
 import core.combat.CombatRules;
 import lombok.val;
 
+/**
+ * Makes Saving throws for an Enemy after determining the wounds
+ */
 public class SavingThrowDiceRoll extends DiceRoll {
 
 	public SavingThrowDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules combatRules) {

@@ -15,9 +15,8 @@ import lombok.Generated;
  */
 @Data @Generated @Builder
 public class Weapon {
-	//is double because we can use 2.5 as default for a d6
+	//is float because we can use 2.5 as default for a d6
 	private float attacks;
-	//is double because we can directly take the hit chance from the profile
 	private float toHit;
 	private byte strength;
 	private byte armorPenetration;

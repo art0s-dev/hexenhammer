@@ -6,6 +6,11 @@ import core.Weapon;
 import core.combat.CombatRules;
 import lombok.val;
 
+/**
+ * Migitates damage after saving throws were made
+ * and the damage multiplier has been applied
+ * @see SavingThrowDiceRoll
+ */
 public class FeelNoPainDiceRoll extends DiceRoll {
 
 	public FeelNoPainDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules combatRules) {
