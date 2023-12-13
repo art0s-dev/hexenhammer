@@ -30,7 +30,7 @@ abstraction.
 The profile on the other hand is the sheet the weapons and the units are compared against.
 This is why the Profile sheets are named "enemy" or the name of the enemy unit.
 
-So at the core we just have 3 Entities:
+So at the core we just have 3 Entities at the surface level:
 - Unit (The Unit we want to eval)
 - Weapon (The Damage attached to the unit)
 - Profile (enemy sheet)
