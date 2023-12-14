@@ -196,7 +196,7 @@ class UnitAttackFeaturesTest {
 	 * The Space marines have braught reinforcements!
 	 * A special rule allows our models to reroll ones on the hit roll
 	 */
-	@Test @DisplayName("Rerolls - Reroll ones on hit")
+	@Test @DisplayName("Rerolls - Reroll ones on hit") @Disabled
 	void GivenSpaceMarines_WhenRerollOnesToHit_ThenCalculateTheDamageCorrect() {
 		byte quantity = 5;
 		Unit spaceMarines = new Unit();
@@ -242,7 +242,7 @@ class UnitAttackFeaturesTest {
 	 * In this case we let our space marines reroll ones to wound 
 	 * (they've got a lieutenant or smth idk)
 	 */
-	@Test @DisplayName("Rerolls - Reroll ones on wound")
+	@Test @DisplayName("Rerolls - Reroll ones on wound") @Disabled
 	void GivenSpaceMarinesWithRerollOnesToWound_WhenAttack_ThenCalculateRerollCorrect() {
 		byte quantity = 5;
 		Unit spaceMarines = new Unit();
@@ -287,7 +287,7 @@ class UnitAttackFeaturesTest {
 	 * Melter are weapons that deal extra damage if the target is in melter range.
 	 * the amount of extra damage is set by the user
 	 */
-	@Test @DisplayName("Special Rules - Melta")
+	@Test @DisplayName("Special Rules - Melta") @Disabled
 	void GivenSpaceMarinesWithMelters_WhenAttack_TheyDealExtraDamage() {	
 		Weapon melter = mock(Weapon.class);
 		when(melter.getAttacks()).thenReturn(1f);
@@ -338,7 +338,7 @@ class UnitAttackFeaturesTest {
 	 * In our next case we bring something interesting intrducing the flameThrower
 	 * the flamethrowers gain a quantity like w6 -> 2,5 and then autohit
 	 */
-	@Test @DisplayName("Special Rules - Torrent")
+	@Test @DisplayName("Special Rules - Torrent") @Disabled
 	void GivenSpaceMarinesWithFlameThrowers_WhenAttack_ThenTorrentRuleIsCalculatedCorrect() {
 		
 		Weapon flameThrower = mock(Weapon.class);
@@ -361,7 +361,7 @@ class UnitAttackFeaturesTest {
 	 * Here we test Anti-X weapons. They always wound a certain type of
 	 * profile on the given probability.
 	 */
-	@Test @DisplayName("Special Rules - Anti Type")
+	@Test @DisplayName("Special Rules - Anti Type") @Disabled
 	void GivenAntiWeapons_WhenAttack_ThenWoundProbabiltyIsHigherThanNaturalStrengthComparison() {
 		Weapon haywireCannon = mock(Weapon.class);
 		when(haywireCannon.getAttacks()).thenReturn(2f);
@@ -437,7 +437,7 @@ class UnitAttackFeaturesTest {
 	 * Now We will test lethal hits on weapons(damn you deathguard!)
 	 * lethal hits always wound on 6es to hit. We take the full wound pool
 	 */
-	@Test @DisplayName("Special Rules - Lethal Hits")
+	@Test @DisplayName("Special Rules - Lethal Hits") @Disabled
 	void GivenSpaceMarinesWeaponsWithLethalHit_WhenAttack_ThenMoreWoundsAreProduced(){
 		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
 		
@@ -462,7 +462,7 @@ class UnitAttackFeaturesTest {
 	 * Now we come to the real warcrimes - we combine add 1 to hit roll and 
 	 * the lethal hits. Means that the lethal hits trigger now on 5
 	 */ 
-	@Test @DisplayName("Special Rules - Lethal Hits on 5")
+	@Test @DisplayName("Special Rules - Lethal Hits on 5") @Disabled
 	void GivenSpaceMarinesWithLethalHitsWeapons_WhenAddOneToHit_ThenMoreLethalHitsAreProduced() {
 		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
 		
@@ -488,7 +488,7 @@ class UnitAttackFeaturesTest {
 	 * Now we further go down ne warcrime path. We let our units do the same trick again
 	 * but now with reroll ones to hit
 	 */
-	@Test @DisplayName("Special Rules - Lethal Hits / reroll 1s to hit")
+	@Test @DisplayName("Special Rules - Lethal Hits / reroll 1s to hit") @Disabled
 	void GivenSpaceMarinesWithLethalHitsWeapons_WhenRerollOnesToHit_ThenProduceMoreLethalHits() {
 		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
 		

@@ -20,7 +20,7 @@ public class Weapon {
 	private float toHit;
 	private byte strength;
 	private byte armorPenetration;
-	private float damage;
+	@Builder.Default private float damage = 1;
 	@Builder.Default private byte sustainedHits = 0;
 	@Builder.Default private Phase phase = Phase.SHOOTING; 
 	

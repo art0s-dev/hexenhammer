@@ -7,13 +7,13 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import core.CombatRules;
 import core.Enemy;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
-import core.combat.CombatRules;
-import core.combat.dicePool.DicePool;
-import core.combat.dicePool.FeelNoPainDiceRoll;
+import core.combat.DicePool;
+import core.combat.FeelNoPainDiceRoll;
 import lombok.val;
 
 class FeelNoPainDiceRollTest {
@@ -22,8 +22,9 @@ class FeelNoPainDiceRollTest {
 	void feelNoPain() {
 		val total = 10f;
 		val dicePool = mock(DicePool.class);
-		when(dicePool.total()).thenReturn(total);
-		when(dicePool.result()).thenReturn(0f);
+		//The Feel no pain always uses the result of the saving throw
+		when(dicePool.total()).thenReturn(0f);
+		when(dicePool.result()).thenReturn(total);
 		
 		val unit = mock(Unit.class);
 		val weapon = mock(Weapon.class);

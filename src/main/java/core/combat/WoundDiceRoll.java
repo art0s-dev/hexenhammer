@@ -1,20 +1,23 @@
-package core.combat.dicePool;
+package core.combat;
 
+import core.CombatRules;
 import core.Enemy;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
-import core.combat.CombatRules;
 import lombok.val;
 
-public class WoundDiceRoll extends DiceRoll {
+/**
+ * Takes hits from a weapon and wounds the target
+ */
+public final class WoundDiceRoll extends DiceRoll {
 
 	public WoundDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
 		super(unit, weapon, enemy, rules);
 	}
 
 	public DicePool roll(DicePool dicePool) {
-		val total  = dicePool.total();
+		val total  = dicePool.result();
 		val originalProbability = _compare(weapon.getStrength(), enemy.getToughness());
 		val probabilityToWound = _modifyProbability(originalProbability);
 		

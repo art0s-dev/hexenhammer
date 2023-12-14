@@ -10,14 +10,14 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import core.CombatRules;
 import core.Enemy;
 import core.Enemy.SpecialRuleProfile;
+import core.combat.DicePool;
+import core.combat.SavingThrowDiceRoll;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
-import core.combat.CombatRules;
-import core.combat.dicePool.DicePool;
-import core.combat.dicePool.SavingThrowDiceRoll;
 import lombok.val;
 
 @TestMethodOrder(MethodOrderer.Random.class)
@@ -33,8 +33,9 @@ class SavingThrowDiceRollTest {
 	@BeforeEach
 	void setup(){
 		dicePool = mock(DicePool.class);
-		when(dicePool.total()).thenReturn(total);
-		when(dicePool.result()).thenReturn(0f);
+		//The saving throw also works with the result given from the wound roll
+		when(dicePool.total()).thenReturn(0f);
+		when(dicePool.result()).thenReturn(total);
 		
 		unit = mock(Unit.class);
 		weapon = mock(Weapon.class);

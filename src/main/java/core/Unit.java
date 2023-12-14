@@ -6,8 +6,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
+import core.Enemy.SpecialRuleProfile;
 import core.Weapon.Phase;
-import core.combat.Combat;
+import core.Weapon.SpecialRuleWeapon;
+import core.combat.DicePool;
+import core.combat.FeelNoPainDiceRoll;
+import core.combat.HitDiceRoll;
+import core.combat.SavingThrowDiceRoll;
+import core.combat.WoundDiceRoll;
 import lombok.val;
 
 /**
@@ -74,9 +80,8 @@ public class Unit {
 	 */
 	public float attack(Enemy enemy) {
 		val filteredWeapons = _filter(weapons, phase);
-		val combat = new Combat(this, enemy);
 		return filteredWeapons
-				.map(entry -> combat.calculateDamage(entry))
+				.map(entry -> _dealDamage(entry, enemy))
 				.reduce(0f, (sum, damage) -> sum + damage);
 	}
 	
@@ -120,6 +125,48 @@ public class Unit {
 	
 	public boolean has(SpecialRuleUnit specialRule) {
 		return this.specialRules.contains(specialRule);
+	}
+	
+	private float _dealDamage(Entry<Weapon, Byte> entry, Enemy enemy) {
+		val weapon = entry.getKey();
+		val quantity = entry.getValue();
+		val rules = _setRules(weapon, enemy);
+		
+		val hitRoll= new HitDiceRoll(this, weapon, enemy, rules);
+		val woundRoll = new WoundDiceRoll(this, weapon, enemy, rules);
+		val savingThrows = new SavingThrowDiceRoll(this, weapon, enemy, rules);
+		val feelNoPainRoll = new FeelNoPainDiceRoll(this, weapon, enemy, rules);
+		
+		val shots = (float) weapon.getAttacks() * quantity;
+		val hits = hitRoll.roll(new DicePool(shots, 0f));
+		val wounds = woundRoll.roll(hits);
+		val saves = savingThrows.roll(wounds);
+		val damage = new DicePool(0f, weapon.getDamage() * saves.result());
+		val feelNoPain = feelNoPainRoll.roll(damage);
+		return feelNoPain.result();
+	}
+	
+	
+	/**
+	 * Creates the feature flags for the battle sequence
+	 * this method gets called before the damage of a new weapon is calculated
+	 */
+	private CombatRules _setRules(Weapon weapon, Enemy enemy) {
+		return new CombatRules(
+			this.has(SpecialRuleUnit.ADD_ONE_TO_HIT),
+			enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL),
+			this.has(SpecialRuleUnit.LETHAL_HITS) || weapon.has(SpecialRuleWeapon.LETHAL_HITS),
+			this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT),
+			this.has(SpecialRuleUnit.REROLL_HIT_ROLL),
+			weapon.has(SpecialRuleWeapon.TORRENT),
+			this.has(SpecialRuleUnit.ADD_ONE_TO_WOUND),
+			enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL),
+			this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND),
+			this.has(SpecialRuleUnit.REROLL_WOUND_ROLL) || weapon.has(SpecialRuleWeapon.REROLL_WOUND_ROLL),
+			weapon.getAntiType().isPresent(),
+			enemy.has(SpecialRuleProfile.HAS_COVER),
+			this.has(SpecialRuleUnit.IGNORE_COVER)
+		);
 	}
 
 }

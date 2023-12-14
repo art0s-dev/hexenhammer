@@ -1,4 +1,4 @@
-package core.combat.dicePool;
+package core.combat;
 
 public interface IDiceRoll {
 	/**

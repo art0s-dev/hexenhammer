@@ -1,27 +1,28 @@
-package core.combat.dicePool;
+package core.combat;
 
 import java.util.Collections;
 import java.util.HashMap;
 
+import core.CombatRules;
 import core.Enemy;
 import core.Enemy.SpecialRuleProfile;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
-import core.combat.CombatRules;
 import lombok.val;
 
 /**
  * Makes Saving throws for an Enemy after determining the wounds
+ * @see WoundDiceRoll
  */
-public class SavingThrowDiceRoll extends DiceRoll {
+public final class SavingThrowDiceRoll extends DiceRoll {
 
 	public SavingThrowDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
 		super(unit, weapon, enemy, rules);
 	}
 
 	public DicePool roll(DicePool dicePool) {
-		val total = dicePool.total();
+		val total = dicePool.result();
 		val armourSave = enemy.getArmorSave();
 		val invulSave = enemy.getInvulnerableSave();
 		

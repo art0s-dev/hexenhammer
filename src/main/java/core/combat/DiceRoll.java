@@ -1,9 +1,9 @@
-package core.combat.dicePool;
+package core.combat;
 
+import core.CombatRules;
 import core.Enemy;
 import core.Unit;
 import core.Weapon;
-import core.combat.CombatRules;
 
 /**
  * The Dice Roll is an abstraction which applies the combat rules 

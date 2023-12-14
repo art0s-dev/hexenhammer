@@ -1,9 +1,9 @@
-package core.combat.dicePool;
+package core.combat;
 
+import core.CombatRules;
 import core.Enemy;
 import core.Unit;
 import core.Weapon;
-import core.combat.CombatRules;
 import lombok.val;
 
 /**
@@ -11,14 +11,14 @@ import lombok.val;
  * and the damage multiplier has been applied
  * @see SavingThrowDiceRoll
  */
-public class FeelNoPainDiceRoll extends DiceRoll {
+public final class FeelNoPainDiceRoll extends DiceRoll {
 
 	public FeelNoPainDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
 		super(unit, weapon, enemy, rules);
 	}
 
 	public DicePool roll(DicePool dicePool) {
-		val total = dicePool.total();
+		val total = dicePool.result();
 		val damageAfterFeelNoPain = total - (total * enemy.getFeelNoPain()); 
 		return new DicePool(total, damageAfterFeelNoPain);
 	}
