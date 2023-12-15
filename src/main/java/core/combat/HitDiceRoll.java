@@ -17,17 +17,19 @@ public final class HitDiceRoll extends DiceRoll {
 	}
 
 	public DicePool roll(DicePool dicePool) {
-		val total = dicePool.total();
+		val total = dicePool.getTotal();
 		val probabilityToHit = _modifyProbability(weapon.getToHit());
 		val hits = total * probabilityToHit;
 		val misses = rules.rerollOnesToHit() ? total * Probability.SIX_UP : total - hits;
+		val lethalHits = rules.lethalHits() ? total * Probability.SIX_UP : 0f;
 		
-		val firstRoll = new DicePool(total, hits);
+		val firstRoll = new HitDicePool(total, hits, lethalHits, 0f);
 		
 		val reroll = rules.rerollHitRoll() || rules.rerollOnesToHit();
 		if(reroll) {
 			val rerolledHits = misses * weapon.getToHit();
-			return new DicePool(total, hits + rerolledHits);
+			val rerolledLethalHits = rules.lethalHits() ? (misses * Probability.SIX_UP) + lethalHits : 0f;
+			return new HitDicePool(total, hits + rerolledHits, rerolledLethalHits, 0f);
 		}
 		
 		return firstRoll; 
@@ -49,5 +51,7 @@ public final class HitDiceRoll extends DiceRoll {
 		return modifyRoll ? Probability.modifyRoll(originalProbability, modifier)
 				: originalProbability;
 	}
+	
+	
 
 }

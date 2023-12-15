@@ -35,8 +35,8 @@ class WoundDiceRollTest {
 	void setup(){
 		dicePool = mock(DicePool.class);
 		//The wound roll uses the result of the hit roll
-		when(dicePool.total()).thenReturn(0f);
-		when(dicePool.result()).thenReturn(total);
+		when(dicePool.getTotal()).thenReturn(0f);
+		when(dicePool.getResult()).thenReturn(total);
 		
 		unit = mock(Unit.class);
 		weapon = mock(Weapon.class);
@@ -96,7 +96,7 @@ class WoundDiceRollTest {
 		when(enemy.getToughness()).thenReturn((byte)toughness);
 		when(weapon.getStrength()).thenReturn((byte)strength);
 		woundRoll = new WoundDiceRoll(unit, weapon, enemy, rules);
-		return woundRoll.roll(dicePool).result();
+		return woundRoll.roll(dicePool).getResult();
 	}
 
 }

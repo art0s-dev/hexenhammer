@@ -81,7 +81,7 @@ public class Unit {
 	public float attack(Enemy enemy) {
 		val filteredWeapons = _filter(weapons, phase);
 		return filteredWeapons
-				.map(entry -> _dealDamage(entry, enemy))
+				.map(weaponAndQuantity -> _dealDamage(weaponAndQuantity, enemy))
 				.reduce(0f, (sum, damage) -> sum + damage);
 	}
 	
@@ -127,12 +127,15 @@ public class Unit {
 		return this.specialRules.contains(specialRule);
 	}
 	
-	private float _dealDamage(Entry<Weapon, Byte> entry, Enemy enemy) {
-		val weapon = entry.getKey();
-		val quantity = entry.getValue();
+	/**
+	 * Calculates the damage of a single weapon against a given enemy
+	 */
+	private float _dealDamage(Entry<Weapon, Byte> weaponAndQuantity, Enemy enemy) {
+		val weapon = weaponAndQuantity.getKey();
+		val quantity = weaponAndQuantity.getValue();
 		val rules = _setRules(weapon, enemy);
 		
-		val hitRoll= new HitDiceRoll(this, weapon, enemy, rules);
+		val hitRoll = new HitDiceRoll(this, weapon, enemy, rules);
 		val woundRoll = new WoundDiceRoll(this, weapon, enemy, rules);
 		val savingThrows = new SavingThrowDiceRoll(this, weapon, enemy, rules);
 		val feelNoPainRoll = new FeelNoPainDiceRoll(this, weapon, enemy, rules);
@@ -141,9 +144,10 @@ public class Unit {
 		val hits = hitRoll.roll(new DicePool(shots, 0f));
 		val wounds = woundRoll.roll(hits);
 		val saves = savingThrows.roll(wounds);
-		val damage = new DicePool(0f, weapon.getDamage() * saves.result());
+		val damage = new DicePool(0f, weapon.getDamage() * saves.getResult());
 		val feelNoPain = feelNoPainRoll.roll(damage);
-		return feelNoPain.result();
+		
+		return feelNoPain.getResult();
 	}
 	
 	

@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -14,8 +15,10 @@ import core.Enemy;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
+import core.Weapon.SpecialRuleWeapon;
 import core.combat.DicePool;
 import core.combat.DiceRoll;
+import core.combat.HitDicePool;
 import core.combat.HitDiceRoll;
 import lombok.val;
 
@@ -33,8 +36,8 @@ class HitDiceRollTest {
 	@BeforeEach
 	void setup(){
 		dicePool = mock(DicePool.class);
-		when(dicePool.total()).thenReturn(total);
-		when(dicePool.result()).thenReturn(0f);
+		when(dicePool.getTotal()).thenReturn(total);
+		when(dicePool.getResult()).thenReturn(0f);
 		
 		unit = mock(Unit.class);
 		weapon = mock(Weapon.class);
@@ -88,10 +91,48 @@ class HitDiceRollTest {
 		assertEquals(total * Probability.THREE_UP, _result(Probability.THREE_UP));
 	}
 	
+	@Test 
+	void testLethalHits() {
+		when(rules.lethalHits()).thenReturn(true);
+		
+		val lethalHits = total * Probability.SIX_UP;
+		hitRoll = new HitDiceRoll(unit, weapon, enemy, rules);
+		HitDicePool hitDicePool = (HitDicePool) hitRoll.roll(dicePool);
+		assertEquals(lethalHits, hitDicePool.getLethalHits());
+	}
+	
+	@Test 
+	void testLethalHitsAndReroll() {
+		when(rules.lethalHits()).thenReturn(true);
+		when(weapon.getToHit()).thenReturn(Probability.THREE_UP);
+		when(rules.rerollHitRoll()).thenReturn(true);
+		
+		val hits = total * Probability.THREE_UP;
+		val misses = total - hits;
+		val lethalHits = (total * Probability.SIX_UP) + (misses * Probability.SIX_UP);
+		
+		hitRoll = new HitDiceRoll(unit, weapon, enemy, rules);
+		HitDicePool hitDicePool = (HitDicePool) hitRoll.roll(dicePool);
+		assertEquals(lethalHits, hitDicePool.getLethalHits());
+	}
+	
+	@Test
+	void testLethalHitsAndRerollPartial() {
+		when(rules.lethalHits()).thenReturn(true);
+		when(rules.rerollOnesToHit()).thenReturn(true);
+		
+		val rerolls = total * Probability.SIX_UP;
+		val lethalHits = (total * Probability.SIX_UP) + (rerolls * Probability.SIX_UP);
+		
+		hitRoll = new HitDiceRoll(unit, weapon, enemy, rules);
+		HitDicePool hitDicePool = (HitDicePool) hitRoll.roll(dicePool);
+		assertEquals(lethalHits, hitDicePool.getLethalHits());
+	}
+	
 	
 	private float _result(float toHit) {
 		when(weapon.getToHit()).thenReturn(toHit);
 		hitRoll = new HitDiceRoll(unit, weapon, enemy, rules);
-		return hitRoll.roll(dicePool).result();
+		return hitRoll.roll(dicePool).getResult();
 	}
 }

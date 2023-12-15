@@ -18,7 +18,7 @@ public final class FeelNoPainDiceRoll extends DiceRoll {
 	}
 
 	public DicePool roll(DicePool dicePool) {
-		val total = dicePool.result();
+		val total = dicePool.getResult();
 		val damageAfterFeelNoPain = total - (total * enemy.getFeelNoPain()); 
 		return new DicePool(total, damageAfterFeelNoPain);
 	}

@@ -22,7 +22,7 @@ public final class SavingThrowDiceRoll extends DiceRoll {
 	}
 
 	public DicePool roll(DicePool dicePool) {
-		val total = dicePool.result();
+		val total = dicePool.getResult();
 		val armourSave = enemy.getArmorSave();
 		val invulSave = enemy.getInvulnerableSave();
 		

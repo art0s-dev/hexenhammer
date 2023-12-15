@@ -23,8 +23,8 @@ class FeelNoPainDiceRollTest {
 		val total = 10f;
 		val dicePool = mock(DicePool.class);
 		//The Feel no pain always uses the result of the saving throw
-		when(dicePool.total()).thenReturn(0f);
-		when(dicePool.result()).thenReturn(total);
+		when(dicePool.getTotal()).thenReturn(0f);
+		when(dicePool.getResult()).thenReturn(total);
 		
 		val unit = mock(Unit.class);
 		val weapon = mock(Weapon.class);
@@ -36,7 +36,7 @@ class FeelNoPainDiceRollTest {
 		val resultPool = diceRoll.roll(dicePool);
 		val feelNoPainCalc = total - (total * Probability.FIVE_UP);
 		
-		assertEquals(feelNoPainCalc, resultPool.result());
+		assertEquals(feelNoPainCalc, resultPool.getResult());
 	}
 
 }

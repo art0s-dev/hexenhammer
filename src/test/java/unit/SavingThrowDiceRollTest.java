@@ -34,8 +34,8 @@ class SavingThrowDiceRollTest {
 	void setup(){
 		dicePool = mock(DicePool.class);
 		//The saving throw also works with the result given from the wound roll
-		when(dicePool.total()).thenReturn(0f);
-		when(dicePool.result()).thenReturn(total);
+		when(dicePool.getTotal()).thenReturn(0f);
+		when(dicePool.getResult()).thenReturn(total);
 		
 		unit = mock(Unit.class);
 		weapon = mock(Weapon.class);
@@ -51,7 +51,7 @@ class SavingThrowDiceRollTest {
 		val resultPool = diceRoll.roll(dicePool);
 		val missedSavingThrows = total - (total * Probability.FIVE_UP);
 		
-		assertEquals(missedSavingThrows, resultPool.result());
+		assertEquals(missedSavingThrows, resultPool.getResult());
 	}
 	
 	@Test @DisplayName("Test saving throws - with mods - no armor save")
@@ -62,7 +62,7 @@ class SavingThrowDiceRollTest {
 		val diceRoll = new SavingThrowDiceRoll(unit, weapon, enemy, combatRules);
 		val resultPool = diceRoll.roll(dicePool);
 		
-		assertEquals(total, resultPool.result());
+		assertEquals(total, resultPool.getResult());
 	}
 	
 	@Test @DisplayName("Test saving throws - with mods - invul save")
@@ -75,7 +75,7 @@ class SavingThrowDiceRollTest {
 		val resultPool = diceRoll.roll(dicePool);
 		val missedSavingThrows = total - (total * Probability.FIVE_UP);
 		
-		assertEquals(missedSavingThrows, resultPool.result());
+		assertEquals(missedSavingThrows, resultPool.getResult());
 	}
 	
 	@Test @DisplayName("Test saving throws - with mods - no invul - cover")
@@ -87,7 +87,7 @@ class SavingThrowDiceRollTest {
 		val resultPool = diceRoll.roll(dicePool);
 		val missedSavingThrows = total - (total * Probability.FOUR_UP);
 		
-		assertEquals(missedSavingThrows, resultPool.result());
+		assertEquals(missedSavingThrows, resultPool.getResult());
 	}
 
 }

@@ -17,7 +17,7 @@ public final class WoundDiceRoll extends DiceRoll {
 	}
 
 	public DicePool roll(DicePool dicePool) {
-		val total  = dicePool.result();
+		val total  = dicePool.getResult();
 		val originalProbability = _compare(weapon.getStrength(), enemy.getToughness());
 		val probabilityToWound = _modifyProbability(originalProbability);
 		
