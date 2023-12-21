@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Enemy;
-import core.Enemy.SpecialRuleProfile;
+import core.Enemy.SpecialRuleEnemy;
 import core.Probability;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
@@ -100,7 +100,7 @@ class ModificationTests {
 	
 	@Test @DisplayName("Mod test / -1 hit ")
 	void GivenScorpionTank_WhenSubtractToHit_ThenTheDamageIsLower() {
-		when(mortarion.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL)).thenReturn(true);
+		when(mortarion.has(SpecialRuleEnemy.SUBTRACT_ONE_FROM_HIT_ROLL)).thenReturn(true);
 		
 		float expectedDamage = calculateScorpionDamage(Probability.FOUR_UP,Probability.THREE_UP);
 		float damage = scorpionTank.attack(mortarion);
@@ -111,7 +111,7 @@ class ModificationTests {
 	@Test @DisplayName("Mod test / no mods ")
 	void GivenScorpionBothModifiers_WhenItAttacks_ThenDamageIsSameAsBaseCase() {
 		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
-		when(mortarion.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL)).thenReturn(true);
+		when(mortarion.has(SpecialRuleEnemy.SUBTRACT_ONE_FROM_HIT_ROLL)).thenReturn(true);
 		
 		float expectedDamage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
 		float damage = scorpionTank.attack(mortarion);
@@ -131,7 +131,7 @@ class ModificationTests {
 	
 	@Test @DisplayName("Mod test / -1 wound ")
 	void GivenScorpionTank_WhenSubtractToWound_ThenTheDamageIsLower() {
-		when(mortarion.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL)).thenReturn(true);
+		when(mortarion.has(SpecialRuleEnemy.SUBTRACT_ONE_FROM_WOUND_ROLL)).thenReturn(true);
 		
 		float expectedDamage = calculateScorpionDamage(Probability.THREE_UP,Probability.FOUR_UP);
 		float damage = scorpionTank.attack(mortarion);

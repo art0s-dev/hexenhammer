@@ -6,9 +6,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
-import core.Enemy.SpecialRuleProfile;
+import core.Enemy.SpecialRuleEnemy;
 import core.Weapon.Phase;
 import core.Weapon.SpecialRuleWeapon;
+import core.combat.CombatRules;
 import core.combat.DicePool;
 import core.combat.FeelNoPainDiceRoll;
 import core.combat.HitDiceRoll;
@@ -140,8 +141,8 @@ public class Unit {
 		val savingThrows = new SavingThrowDiceRoll(this, weapon, enemy, rules);
 		val feelNoPainRoll = new FeelNoPainDiceRoll(this, weapon, enemy, rules);
 		
-		val shots = (float) weapon.getAttacks() * quantity;
-		val hits = hitRoll.roll(new DicePool(shots, 0f));
+		val attacks = (float) weapon.getAttacks() * quantity;
+		val hits = hitRoll.roll(new DicePool(attacks, 0f));
 		val wounds = woundRoll.roll(hits);
 		val saves = savingThrows.roll(wounds);
 		val damage = new DicePool(0f, weapon.getDamage() * saves.getResult());
@@ -158,18 +159,20 @@ public class Unit {
 	private CombatRules _setRules(Weapon weapon, Enemy enemy) {
 		return new CombatRules(
 			this.has(SpecialRuleUnit.ADD_ONE_TO_HIT),
-			enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_HIT_ROLL),
+			enemy.has(SpecialRuleEnemy.SUBTRACT_ONE_FROM_HIT_ROLL),
 			this.has(SpecialRuleUnit.LETHAL_HITS) || weapon.has(SpecialRuleWeapon.LETHAL_HITS),
 			this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT),
 			this.has(SpecialRuleUnit.REROLL_HIT_ROLL),
 			weapon.has(SpecialRuleWeapon.TORRENT),
 			this.has(SpecialRuleUnit.ADD_ONE_TO_WOUND),
-			enemy.has(SpecialRuleProfile.SUBTRACT_ONE_FROM_WOUND_ROLL),
+			enemy.has(SpecialRuleEnemy.SUBTRACT_ONE_FROM_WOUND_ROLL),
 			this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND),
 			this.has(SpecialRuleUnit.REROLL_WOUND_ROLL) || weapon.has(SpecialRuleWeapon.REROLL_WOUND_ROLL),
 			weapon.getAntiType().isPresent(),
-			enemy.has(SpecialRuleProfile.HAS_COVER),
-			this.has(SpecialRuleUnit.IGNORE_COVER)
+			enemy.has(SpecialRuleEnemy.HAS_COVER),
+			this.has(SpecialRuleUnit.IGNORE_COVER),
+			weapon.getSustainedHits() > 0,
+			weapon.getMelter() > 0
 		);
 	}
 

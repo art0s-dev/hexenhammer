@@ -24,11 +24,12 @@ public class Weapon {
 	@Builder.Default private byte sustainedHits = 0;
 	@Builder.Default private Phase phase = Phase.SHOOTING; 
 	
+	
 	/**
 	 * Describes the extra damage that is done 
 	 * when this value is greater then 0
 	 */
-	@Builder.Default private byte melta = 0;
+	@Builder.Default private byte melter = 0; 
 	
 	/**
 	 * This is a tuple explains the specific efficiency for wound rolls
@@ -57,7 +58,7 @@ public class Weapon {
 		HEAVY_AND_UNIT_REMAINED_STATIONARY,
 		REROLL_WOUND_ROLL, 
 		LETHAL_HITS,
-		DEVASTATING_WOUNDS
+		DEVASTATING_WOUNDS,
 	}
 	
 	public void add(SpecialRuleWeapon specialRule) {

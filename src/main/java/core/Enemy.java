@@ -32,23 +32,23 @@ public class Enemy {
 	 * apply
 	 */
 	@Builder.Default
-	private HashSet<SpecialRuleProfile> specialRules = new HashSet<>();
+	private HashSet<SpecialRuleEnemy> specialRules = new HashSet<>();
 
-	public enum SpecialRuleProfile {
+	public enum SpecialRuleEnemy {
 		SUBTRACT_ONE_FROM_HIT_ROLL, 
 		SUBTRACT_ONE_FROM_WOUND_ROLL, 
 		HAS_COVER
 	}
 
-	public void add(SpecialRuleProfile specialRule) {
+	public void add(SpecialRuleEnemy specialRule) {
 		this.specialRules.add(specialRule);
 	}
 
-	public void remove(SpecialRuleProfile specialRule) {
+	public void remove(SpecialRuleEnemy specialRule) {
 		this.remove(specialRule);
 	}
 
-	public boolean has(SpecialRuleProfile specialRule) {
+	public boolean has(SpecialRuleEnemy specialRule) {
 		return this.specialRules.contains(specialRule);
 	}
 

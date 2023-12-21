@@ -4,16 +4,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import core.CombatRules;
 import core.Enemy;
+import core.Enemy.Type;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
+import core.Weapon.AntiType;
+import core.combat.CombatRules;
 import core.combat.DicePool;
 import core.combat.DiceRoll;
 import core.combat.WoundDiceRoll;
@@ -89,6 +93,16 @@ class WoundDiceRollTest {
 		when(rules.subtractOneFromWoundRoll()).thenReturn(true);
 		val successes = total * Probability.FIVE_UP;
 		assertEquals(successes, _result(4,5));
+	}
+	
+	@Test
+	void testAntiType() {
+		when(rules.antiTypeWeapon()).thenReturn(true);
+		val antiType = Optional.of(new AntiType(Type.INFANTRY, Probability.THREE_UP));
+		when(weapon.getAntiType()).thenReturn(antiType);
+		when(enemy.getType()).thenReturn(Type.INFANTRY);
+		
+		assertEquals(total * Probability.THREE_UP, _result(2, 6));
 	}
 	
 	

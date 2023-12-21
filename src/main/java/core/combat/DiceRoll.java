@@ -1,6 +1,5 @@
 package core.combat;
 
-import core.CombatRules;
 import core.Enemy;
 import core.Unit;
 import core.Weapon;

@@ -1,4 +1,4 @@
-package core;
+package core.combat;
 
 /**
  * These are the Features that can occure during a combat sequence
@@ -18,6 +18,8 @@ public record CombatRules(
 	boolean rerollWoundRoll,
 	boolean antiTypeWeapon,
 	boolean enemyHasCover,
-	boolean ignoreCover
+	boolean ignoreCover,
+	boolean sustainedHits,
+	boolean melter
 ) {
 };

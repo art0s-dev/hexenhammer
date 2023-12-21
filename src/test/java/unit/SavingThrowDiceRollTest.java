@@ -10,9 +10,9 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import core.CombatRules;
 import core.Enemy;
-import core.Enemy.SpecialRuleProfile;
+import core.Enemy.SpecialRuleEnemy;
+import core.combat.CombatRules;
 import core.combat.DicePool;
 import core.combat.SavingThrowDiceRoll;
 import core.Probability;
@@ -81,7 +81,7 @@ class SavingThrowDiceRollTest {
 	@Test @DisplayName("Test saving throws - with mods - no invul - cover")
 	void testCover() {
 		when(enemy.getArmorSave()).thenReturn(Probability.FIVE_UP);
-		when(enemy.has(SpecialRuleProfile.HAS_COVER)).thenReturn(true);
+		when(enemy.has(SpecialRuleEnemy.HAS_COVER)).thenReturn(true);
 		
 		val diceRoll = new SavingThrowDiceRoll(unit, weapon, enemy, combatRules);
 		val resultPool = diceRoll.roll(dicePool);
