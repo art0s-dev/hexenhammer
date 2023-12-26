@@ -20,6 +20,7 @@ public record CombatRules(
 	boolean enemyHasCover,
 	boolean ignoreCover,
 	boolean sustainedHits,
-	boolean melter
+	boolean melter,
+	boolean devastatingWounds
 ) {
 };

@@ -24,7 +24,6 @@ public class Weapon {
 	@Builder.Default private byte sustainedHits = 0;
 	@Builder.Default private Phase phase = Phase.SHOOTING; 
 	
-	
 	/**
 	 * Describes the extra damage that is done 
 	 * when this value is greater then 0

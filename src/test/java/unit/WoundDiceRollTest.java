@@ -20,6 +20,7 @@ import core.Weapon.AntiType;
 import core.combat.CombatRules;
 import core.combat.DicePool;
 import core.combat.DiceRoll;
+import core.combat.WoundDicePool;
 import core.combat.WoundDiceRoll;
 import lombok.val;
 
@@ -103,6 +104,47 @@ class WoundDiceRollTest {
 		when(enemy.getType()).thenReturn(Type.INFANTRY);
 		
 		assertEquals(total * Probability.THREE_UP, _result(2, 6));
+	}
+	
+	@Test
+	void testDevastatingWounds() {
+		when(rules.devastatingWounds()).thenReturn(true);
+		woundRoll = new WoundDiceRoll(unit, weapon, enemy, rules);
+		WoundDicePool woundDicePool = (WoundDicePool) woundRoll.roll(dicePool);
+		assertEquals(total * Probability.SIX_UP, woundDicePool.getDevastatingWounds());
+	}
+	
+	@Test
+	void testDevastatingWoundsReroll() {
+		when(rules.devastatingWounds()).thenReturn(true);
+		when(rules.rerollWoundRoll()).thenReturn(true);
+		when(enemy.getToughness()).thenReturn((byte)4);
+		when(weapon.getStrength()).thenReturn((byte)5);
+		woundRoll = new WoundDiceRoll(unit, weapon, enemy, rules);
+		
+		val devastatingWounds = total * Probability.SIX_UP;
+		val wounds = total * Probability.THREE_UP;
+		val rerolls = total - wounds;
+		val rerolledDevastatingWounds = rerolls * Probability.SIX_UP;
+		val sumDevastatingWounds = devastatingWounds + rerolledDevastatingWounds;
+		
+		WoundDicePool woundDicePool = (WoundDicePool) woundRoll.roll(dicePool);
+		assertEquals(sumDevastatingWounds, woundDicePool.getDevastatingWounds());
+	}
+	
+	@Test
+	void testDevastatingWoundsRerollPartial() {
+		when(rules.devastatingWounds()).thenReturn(true);
+		when(rules.rerollOnesToWound()).thenReturn(true);
+		when(enemy.getToughness()).thenReturn((byte)4);
+		when(weapon.getStrength()).thenReturn((byte)5);
+		woundRoll = new WoundDiceRoll(unit, weapon, enemy, rules);
+		
+		val rerolls = total * Probability.SIX_UP;
+		val devastatingWounds = rerolls + (rerolls * Probability.SIX_UP);
+		
+		WoundDicePool woundDicePool = (WoundDicePool) woundRoll.roll(dicePool);
+		assertEquals(devastatingWounds, woundDicePool.getDevastatingWounds());
 	}
 	
 	

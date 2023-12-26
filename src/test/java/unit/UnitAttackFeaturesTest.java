@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -15,12 +13,10 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Enemy;
 import core.Enemy.SpecialRuleEnemy;
-import core.Enemy.Type;
 import core.Probability;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import core.Weapon;
-import core.Weapon.AntiType;
 import core.Weapon.Phase;
 import core.Weapon.SpecialRuleWeapon;
 
@@ -238,7 +234,7 @@ class UnitAttackFeaturesTest {
 	 * Devastating wounds here we go! Every 6 Rolled on the wound roll shall
 	 * bypass the armour save.
 	 */
-	@Test @DisplayName("Special Rules - Devastating wounds") @Disabled
+	@Test @DisplayName("Special Rules - Devastating wounds")
 	void GivenSpaceMarines_WhenAddingDevastaingWounds_TheDamageIsCalculatedCorrect() {
 		when(bolter.has(SpecialRuleWeapon.DEVASTATING_WOUNDS)).thenReturn(true);
 		
@@ -249,8 +245,7 @@ class UnitAttackFeaturesTest {
 		
 		float hits = (quantity * bolter.getAttacks()) * Probability.THREE_UP;
 		float wounds = hits * Probability.THREE_UP;
-		float devastatingWounds = wounds / 6;
-		wounds -= devastatingWounds;
+		float devastatingWounds = hits * Probability.SIX_UP;
 		float expectedDamage = wounds - (wounds * Probability.FIVE_UP);
 		expectedDamage += devastatingWounds;
 		

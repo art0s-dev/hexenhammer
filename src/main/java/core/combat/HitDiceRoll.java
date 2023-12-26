@@ -7,7 +7,7 @@ import core.Weapon;
 import lombok.val;
 
 /**
- * Takes the stats of a weapon and fires it at a given target 
+ * Takes the stats of a weapon and fires it at a given target  
  */
 public final class HitDiceRoll extends DiceRoll {
 
@@ -49,7 +49,7 @@ public final class HitDiceRoll extends DiceRoll {
 	
 	/**
 	 * Takes a probability like THREE_UP and upgrades or downgrades the result
-	 * @implNote TWO_UP is highest, SIX_UP is lowest   
+	 * @implNote TWO_UP is highest, SIX_UP is lowest    
 	 */
 	private float _modifyProbability(float originalProbability) {
 		val modifyRoll = rules.addOneToHitRoll() || rules.subtractOneFromHitRoll();

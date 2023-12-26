@@ -14,6 +14,7 @@ import core.combat.DicePool;
 import core.combat.FeelNoPainDiceRoll;
 import core.combat.HitDiceRoll;
 import core.combat.SavingThrowDiceRoll;
+import core.combat.WoundDicePool;
 import core.combat.WoundDiceRoll;
 import lombok.val;
 
@@ -136,16 +137,20 @@ public class Unit {
 		val quantity = weaponAndQuantity.getValue();
 		val rules = _setRules(weapon, enemy);
 		
+		//Create the wrapper for the Functions
 		val hitRoll = new HitDiceRoll(this, weapon, enemy, rules);
 		val woundRoll = new WoundDiceRoll(this, weapon, enemy, rules);
 		val savingThrows = new SavingThrowDiceRoll(this, weapon, enemy, rules);
 		val feelNoPainRoll = new FeelNoPainDiceRoll(this, weapon, enemy, rules);
 		
+		//create a dice pool and pass it to the next step in the combat sequence
 		val attacks = (float) weapon.getAttacks() * quantity;
 		val hits = hitRoll.roll(new DicePool(attacks, 0f));
-		val wounds = woundRoll.roll(hits);
-		val saves = savingThrows.roll(wounds);
-		val damage = new DicePool(0f, weapon.getDamage() * saves.getResult());
+		WoundDicePool woundPool = (WoundDicePool) woundRoll.roll(hits);
+		val saves = savingThrows.roll(woundPool);
+		val wounds = saves.getResult() + woundPool.getDevastatingWounds();
+		
+		val damage = new DicePool(0f, weapon.getDamage() * wounds);
 		val feelNoPain = feelNoPainRoll.roll(damage);
 		
 		return feelNoPain.getResult();
@@ -172,7 +177,8 @@ public class Unit {
 			enemy.has(SpecialRuleEnemy.HAS_COVER),
 			this.has(SpecialRuleUnit.IGNORE_COVER),
 			weapon.getSustainedHits() > 0,
-			weapon.getMelter() > 0
+			weapon.getMelter() > 0,
+			weapon.has(SpecialRuleWeapon.DEVASTATING_WOUNDS)
 		);
 	}
 

@@ -1,12 +1,16 @@
 package core.combat;
 
 public class WoundDicePool extends DicePool {
-	
-	private final boolean canBeRerolled;
 
-	public WoundDicePool(float total, float result, boolean canBeRerolled) {
+	private final float devastatingWounds;
+	
+	public WoundDicePool(float total, float result, float devastatingWounds) {
 		super(total, result);
-		this.canBeRerolled = canBeRerolled;
+		this.devastatingWounds = devastatingWounds;
+	}
+	
+	public float getDevastatingWounds() {
+		return this.devastatingWounds;
 	}
 
 }

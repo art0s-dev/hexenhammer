@@ -23,12 +23,17 @@ public final class WoundDiceRoll extends DiceRoll {
 		
 		val wounds = total * probabilityToWound;
 		val fails = rules.rerollOnesToWound() ? total * Probability.SIX_UP : total - wounds;
-		val firstRoll = new DicePool(total, wounds);
+		val devastatingWounds = rules.devastatingWounds() ? total * Probability.SIX_UP : 0;
+		val firstRoll = new WoundDicePool(total, wounds, devastatingWounds);
 		
 		val reroll = rules.rerollWoundRoll() || rules.rerollOnesToWound();
 		if(reroll) {
 			val rerolledWounds = fails * probabilityToWound;
-			return new DicePool(total, wounds + rerolledWounds);
+			val allWounds = wounds + rerolledWounds;
+			
+			val rerolledDevastatingWounds = fails * Probability.SIX_UP;
+			val allDevastatingWounds = rules.devastatingWounds() ? devastatingWounds + rerolledDevastatingWounds: 0;
+			return new WoundDicePool(total, allWounds, allDevastatingWounds);
 		}
 		
 		return firstRoll;
