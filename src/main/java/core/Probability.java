@@ -7,7 +7,6 @@ package core;
  * a roll of a one always fails
  */
 public final class Probability {
-	public final static float SURE = 1;
 	public final static float TWO_UP = 5 / 6f;
 	public final static float THREE_UP = 4 / 6f;
 	public final static float FOUR_UP = 3 / 6f;
@@ -40,26 +39,38 @@ public final class Probability {
 	 * describes the average of a halved dice roll (1+2+3) / 2
 	 */
 	public final static float MEDIAN_D3 = 2;
-	
 
 	/**
 	 * modifies the roll + or - one result
+	 * + makes the roll better (Five up -> four up)
+	 * - makes the roll worse (Five up -> Six up)
 	 * @param probability - the probability given (1 - 0.277)
-	 * @param operator    - char the operator - (+ OR -)
+	 * @param operator - char the operator - (+ OR -)
 	 */
-	public static float modifyRoll(float probability, char operator) {
-		// + makes the roll better (Five up -> four up)
-		// - makes the roll worse (Fivr up -> Six up)
-		byte incrementOrDecrement = (byte) (operator == '+' ? 1 : -1);
-		float newProbability = (float) ((Math.ceil(probability * 6) + incrementOrDecrement) / 6);
+	public static float modifyRoll(float probability, Modifier modifier) {
+		float newProbability = (float) ((Math.ceil(probability * 6) + modifier.value ) / 6);
+		
 		if (newProbability <= 0) {
 			return Probability.SIX_UP;
 		}
+		
 		if (newProbability > Probability.TWO_UP) {
 			return Probability.TWO_UP;
 		}
 
 		return newProbability;
 	}
+	
+	/**
+	 * Modify a dice roll with +1 or -1
+	 */
+	public enum Modifier {
+		PLUS_ONE((byte)1),
+		MINUS_ONE((byte)-1);
 
+		public final byte value;
+		private Modifier(byte value) {
+			this.value = value;
+		}
+	}
 }

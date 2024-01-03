@@ -12,16 +12,16 @@ import lombok.Generated;
  */
 @Data @Generated @Builder
 public class Enemy {
-	private byte toughness;
-	private float armorSave;
+	@Builder.Default private byte toughness = 1;
+	@Builder.Default private float armorSave = Probability.NONE;
 	@Builder.Default private byte hitPoints = 1;
 	@Builder.Default private float invulnerableSave = Probability.NONE;
 	@Builder.Default private float feelNoPain = Probability.NONE;
 	@Builder.Default private Type type = Type.INFANTRY;
 
 	/**
-	 * The Type a profile has. It is used to determine wounds for anti weapon
-	 * capabilities.
+	 * The unit type an enemy has. 
+	 * It is used to determine wounds for anti weapon capabilities.
 	 */
 	public enum Type {
 		INFANTRY, MONSTER, VEHICLE

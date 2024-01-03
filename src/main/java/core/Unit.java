@@ -42,13 +42,13 @@ public class Unit {
 			return;
 		}
 		
-		var quantityWillBeNegative =  weapons.get(weapon) + quantity <= 0;
+		val quantityWillBeNegative =  weapons.get(weapon) + quantity <= 0;
 		if(quantityWillBeNegative || quantity == 0) {
 			weapons.remove(weapon);
 			return;
 		}
 		
-		int oldQuantity = weapons.get(weapon);
+		val oldQuantity = weapons.get(weapon);
 		weapons.put(weapon, (byte) (oldQuantity + quantity) );
 	}
 	
@@ -67,9 +67,11 @@ public class Unit {
 		IGNORE_COVER,
 		LETHAL_HITS
 	}
+	
 	public void add(SpecialRuleUnit specialRule) {
 		this.specialRules.add(specialRule);
 	}
+	
 	public void remove(SpecialRuleUnit specialRule) {
 		this.specialRules.remove(specialRule);
 	}
@@ -131,13 +133,14 @@ public class Unit {
 	
 	/**
 	 * Calculates the damage of a single weapon against a given enemy
+	 * @implNote shall utilize the combat package
 	 */
 	private float _dealDamage(Entry<Weapon, Byte> weaponAndQuantity, Enemy enemy) {
 		val weapon = weaponAndQuantity.getKey();
 		val quantity = weaponAndQuantity.getValue();
 		val rules = _setRules(weapon, enemy);
 		
-		//Create the wrapper for the Functions
+		//Create all the Dice Rolls and give them the necessary informations
 		val hitRoll = new HitDiceRoll(this, weapon, enemy, rules);
 		val woundRoll = new WoundDiceRoll(this, weapon, enemy, rules);
 		val savingThrows = new SavingThrowDiceRoll(this, weapon, enemy, rules);

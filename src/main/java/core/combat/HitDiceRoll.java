@@ -59,7 +59,10 @@ public final class HitDiceRoll extends DiceRoll {
 			return originalProbability;
 		}
 		
-		val modifier = rules.addOneToHitRoll() ? '+' : '-' ;
+		val modifier = rules.addOneToHitRoll() 
+				? Probability.Modifier.PLUS_ONE 
+				: Probability.Modifier.MINUS_ONE;
+		
 		return modifyRoll ? Probability.modifyRoll(originalProbability, modifier)
 				: originalProbability;
 	}

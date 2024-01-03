@@ -69,7 +69,10 @@ public final class WoundDiceRoll extends DiceRoll {
 			return originalProbability;
 		}
 		
-		val modifier = rules.addOneToWoundRoll() ? '+' : '-' ;
+		val modifier = rules.addOneToWoundRoll() 
+				? Probability.Modifier.PLUS_ONE 
+				: Probability.Modifier.MINUS_ONE;
+		
 		return modifyRoll ? Probability.modifyRoll(originalProbability, modifier)
 				: originalProbability;
 	}
