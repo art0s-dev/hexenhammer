@@ -8,10 +8,7 @@ Contains mostly entities which can be combined to simulate an attack.
 
 #### Combat
 The Combat package should combine the functionality to make an attack against the 
-enemy unit. Should be used as a controller
-
-#### DicePool
-contains all necessary rules for determining combat damage
+enemy unit.
 
 ## Development
 The Software is developed via TDD. We use Junit and Mockito in order to provide meaningful tests.
