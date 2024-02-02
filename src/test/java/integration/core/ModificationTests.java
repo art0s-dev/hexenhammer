@@ -1,4 +1,4 @@
-package integration;
+package integration.core;
 
 import static core.Probability.modifyRoll;
 import static org.junit.jupiter.api.Assertions.assertEquals;

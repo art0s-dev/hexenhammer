@@ -78,7 +78,7 @@ public class Unit {
 	
 	/**
 	 * The attack interface for every unit calculates
-	 * the total damage from every equipped and filtered weapon
+	 * the total damage from every equipped and filtered weapon 
 	 * from that unit and uses the combat class for further calculations
 	 * @see Combat
 	 */
