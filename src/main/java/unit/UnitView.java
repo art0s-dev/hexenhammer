@@ -114,8 +114,9 @@ public class UnitView implements IView {
 		nameLabel.setText(UNIT_EDITOR_UNIT_NAME);
 		nameInput = new Text(unitEditorGroup, SWT.NONE);
 		nameInput.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		nameInput.setText(unit.getName());
+
 		nameInput.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+		if(isSet) nameInput.setText(unit.getName() != null ? unit.getName() : "");
 		new Label(unitEditorGroup, SWT.NONE); //Placeholder
 		new Label(unitEditorGroup, SWT.NONE); //Placeholder
 		
