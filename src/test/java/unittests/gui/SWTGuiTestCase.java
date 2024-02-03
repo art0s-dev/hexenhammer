@@ -1,4 +1,4 @@
-package unit.gui;
+package unittests.gui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;

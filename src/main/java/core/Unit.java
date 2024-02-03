@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
+import arch.IModel;
 import core.Enemy.SpecialRuleEnemy;
 import core.Weapon.Phase;
 import core.Weapon.SpecialRuleWeapon;
@@ -16,6 +17,8 @@ import core.combat.HitDiceRoll;
 import core.combat.SavingThrowDiceRoll;
 import core.combat.WoundDicePool;
 import core.combat.WoundDiceRoll;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 
 /**
@@ -27,7 +30,9 @@ import lombok.val;
  * - equip() the weapons and maybe add() some special rules
  * - attack() the enemy profile  
  */
-public class Unit {
+public class Unit implements IModel {
+	
+	@Getter @Setter String name;
 	
 	/**
 	 * With this method we add, delete and edit the weapons of a unit. 

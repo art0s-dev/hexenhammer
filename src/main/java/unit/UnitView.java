@@ -12,12 +12,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
 import arch.IModel;
 import arch.IView;
+import core.Unit;
+import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
 import lombok.val;
 
@@ -42,19 +45,21 @@ public class UnitView implements IView {
 	private final static String UNIT_EDITOR_IGNORE_COVER = "Ignore cover";
 	
 	//"Puppet strings" for the controller
-	@Getter public TabItem unitTab;
-	@Getter public Button checkBoxAddOneToHit;
-	@Getter public Button checkBoxLethalHits;
-	@Getter public Button checkBoxRerollOnes;
-	@Getter public Button checkBoxRerollHitRoll;
-	@Getter public Button checkBoxAddOneToWound;
-	@Getter public Button checkBoxRerollOnesToWound;
-	@Getter public Button checkBoxRerollWound;
-	@Getter public Button checkBoxIgnoreCover;
+	@Getter private TabItem unitTab;
+	@Getter private Text nameInput;
+	@Getter private Button checkBoxAddOneToHit;
+	@Getter private Button checkBoxLethalHits;
+	@Getter private Button checkBoxRerollOnes;
+	@Getter private Button checkBoxRerollHitRoll;
+	@Getter private Button checkBoxAddOneToWound;
+	@Getter private Button checkBoxRerollOnesToWound;
+	@Getter private Button checkBoxRerollWound;
+	@Getter private Button checkBoxIgnoreCover;
+	@Getter private List selectionList;
 	
 	//"Recycled" Widgets - you mostly have to use draw() beforehand
 	private Composite compositeUnitEditor;
-	
+	private Group unitListGroup;
 	
 	public UnitView(TabFolder mainTab) {
 		this.mainTab = mainTab;
@@ -74,53 +79,30 @@ public class UnitView implements IView {
 		sashFormUnits.SASH_WIDTH = 3;
 		sashFormUnits.setBackground(display.getSystemColor(SWT.COLOR_DARK_GRAY));
 		
-		//List View
-		{
-			Composite compositeUnitList = new Composite(sashFormUnits, SWT.NONE);
-			val layout = new FillLayout();
-			layout.marginHeight = 5;
-			layout.marginWidth = 5;
-			
-			compositeUnitList.setLayout(layout);
-			compositeUnitList.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-			
-			Group unitListGroup = new Group(compositeUnitList, SWT.NONE);
-			unitListGroup.setText(UNIT_LIST_VIEW);
-			unitListGroup.setLayout(new FillLayout());
-			
-			//listToChooseUnitsFrom = new org.eclipse.swt.widgets.List(unitListGroup, SWT.NONE);
-			//displayUnitList(Collections.emptyList());
-		}
+		val layout = new FillLayout();
+		layout.marginHeight = 5;
+		layout.marginWidth = 5;
 		
-		//Sash form column 2
-		{
-			compositeUnitEditor = new Composite(sashFormUnits, SWT.NONE);
-			val layout = new FillLayout(SWT.VERTICAL);
-			layout.spacing = 5;
-			layout.marginHeight = 5;
-			layout.marginWidth = 5;
-			compositeUnitEditor.setLayout(layout);
-			compositeUnitEditor.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-
-			//Group for editing Units  
-			{
-				
-				
-				//displaySelectedUnit(null);
-			}
+		//List View
+		Composite compositeUnitList = new Composite(sashFormUnits, SWT.NONE);
+		compositeUnitList.setLayout(layout);
+		compositeUnitList.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		
+		unitListGroup = new Group(compositeUnitList, SWT.NONE); 
+		unitListGroup.setText(UNIT_LIST_VIEW);
+		unitListGroup.setLayout(new FillLayout());
 			
-			/**Group for Editing Weapons TODO implement
-			{
-				Group unitWeaponEditorGroup = new Group(compositeUnitEditor, SWT.NONE);
-				unitWeaponEditorGroup.setText("Weapon Arsenal");
-				GridLayout gridUnitWeaponEditor = new GridLayout(4, true);
-				unitWeaponEditorGroup.setLayout(gridUnitWeaponEditor);
-			}*/
-		}
+		//View for Editor 
+		compositeUnitEditor = new Composite(sashFormUnits, SWT.NONE);
+		compositeUnitEditor.setLayout(layout);
+		compositeUnitEditor.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 	}
 
 	@Override
 	public void drawEditor(IModel model) {
+		Unit unit = (Unit) model;
+		val isSet = model != null;
+		
 		Group unitEditorGroup = new Group(compositeUnitEditor, SWT.NONE);
 		unitEditorGroup.setText(UNIT_EDITOR_GROUP_NAME);
 		GridLayout fillLayoutUnitEditor = new GridLayout(4, true);
@@ -130,8 +112,9 @@ public class UnitView implements IView {
 		
 		Label nameLabel = new Label(unitEditorGroup, SWT.NONE);
 		nameLabel.setText(UNIT_EDITOR_UNIT_NAME);
-		Text nameInput = new Text(unitEditorGroup, SWT.NONE);
+		nameInput = new Text(unitEditorGroup, SWT.NONE);
 		nameInput.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		nameInput.setText(unit.getName());
 		nameInput.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		new Label(unitEditorGroup, SWT.NONE); //Placeholder
 		new Label(unitEditorGroup, SWT.NONE); //Placeholder
@@ -143,29 +126,37 @@ public class UnitView implements IView {
 		
 		checkBoxAddOneToHit = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxAddOneToHit.setText(UNIT_EDITOR_ADD_ONE_TO_HIT);
+		if(isSet) checkBoxAddOneToHit.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_HIT));
 		checkBoxLethalHits = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxLethalHits.setText(UNIT_EDITOR_HAS_LETHAL_HITS);
+		if(isSet) checkBoxLethalHits.setSelection(unit.has(SpecialRuleUnit.LETHAL_HITS));
 		checkBoxRerollOnes = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxRerollOnes.setText(UNIT_EDITOR_REROLL_ONES_TO_HIT);
+		if(isSet) checkBoxRerollOnes.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_HIT));
 		checkBoxRerollHitRoll = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxRerollHitRoll.setText(UNIT_EDITOR_REROLL_HIT_ROLL);
+		if(isSet) checkBoxRerollHitRoll.setSelection(unit.has(SpecialRuleUnit.REROLL_HIT_ROLL));
 		
 		checkBoxAddOneToWound = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxAddOneToWound.setText(UNIT_EDITOR_ADD_ONE_TO_WOUND);
+		if(isSet) checkBoxAddOneToWound.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_WOUND));
 		checkBoxRerollOnesToWound = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxRerollOnesToWound.setText(UNIT_EDITOR_REROLL_ONES_TO_WOUND);
+		if(isSet) checkBoxRerollOnesToWound.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND));
 		checkBoxRerollWound = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxRerollWound.setText(UNIT_EDITOR_REROLL_WOUND_ROLL);
+		if(isSet) checkBoxRerollWound.setSelection(unit.has(SpecialRuleUnit.REROLL_WOUND_ROLL));
 		checkBoxIgnoreCover = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxIgnoreCover.setText(UNIT_EDITOR_IGNORE_COVER);
+		if(isSet) checkBoxIgnoreCover.setSelection(unit.has(SpecialRuleUnit.IGNORE_COVER));
 	}
 
 	@Override
 	public void drawList(ArrayList<IModel> modelList) {
-		// TODO Auto-generated method stub
-
+		selectionList = new List(unitListGroup, SWT.NONE);
+		for(IModel model: modelList) {
+			Unit unit = (Unit) model;
+			selectionList.add(unit.getName());
+		}
 	}
-	
-	
-
 }

@@ -1,4 +1,4 @@
-package unit.core;
+package unittests.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
