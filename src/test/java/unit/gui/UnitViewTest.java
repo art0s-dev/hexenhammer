@@ -1,23 +1,35 @@
 package unit.gui;
 
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TabFolder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import gui._UnitView;
+import unit.UnitView;
 
-class UnitViewTest {
+class UnitViewTest extends SWTGuiTestCase {
+	
+	UnitView view;
+	
+	@BeforeEach
+	void setup() {
+		TabFolder mainTab = new TabFolder(shell, SWT.NONE);
+		view = new UnitView(mainTab);
+		view.draw();
+	}
 
 	@Test
-	void whenNoUnitListIsSet_thenNoUnitsAreAddedToTheRosterList() {
-		Display display = mock(Display.class);
-		TabFolder mainTab = mock(TabFolder.class);
-		
-		_UnitView view = new _UnitView(mainTab);
-		view.draw();
-		
+	void testViewCanBeCreatedAndShowALabel() {
+		assertEquals("Units", view.getUnitTab().getText());
+	}
+	
+	@Test
+	void testUnitEditorWhenItsEmptyShowsCheckBoxDefaultFalse() {
+		view.drawEditor(null);
+		assertFalse(view.getCheckBoxAddOneToHit().getSelection());
 	}
 
 }
