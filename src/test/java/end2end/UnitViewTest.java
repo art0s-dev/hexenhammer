@@ -9,12 +9,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 
-import arch.IModel;
+import arch.Model;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
+import unit.UnitList;
 import unit.UnitView;
 
 public class UnitViewTest {
+	
 	/**
 	 * Just the main method for running an SWT application
 	 */
@@ -37,9 +39,11 @@ public class UnitViewTest {
 		anotherUnit.setName("AnotherUnit");
 		anotherUnit.add(SpecialRuleUnit.ADD_ONE_TO_WOUND);
 		
-		ArrayList<IModel> unitList = new ArrayList<>();
-		unitList.add(spaceMarines);
-		unitList.add(anotherUnit);
+		ArrayList<Unit> list = new ArrayList<>();
+		list.add(spaceMarines);
+		list.add(anotherUnit); 
+		
+		UnitList unitList = new UnitList(list);
 		
 		view.drawEditor(spaceMarines);
 		view.drawList(unitList);

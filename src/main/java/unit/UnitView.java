@@ -17,8 +17,9 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
-import arch.IModel;
 import arch.IView;
+import arch.Model;
+import arch.ModelList;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
@@ -99,8 +100,8 @@ public class UnitView implements IView {
 	}
 
 	@Override
-	public void drawEditor(IModel model) {
-		Unit unit = (Unit) model;
+	public void drawEditor(Model model) {
+		Unit unit = (Unit) model; 
 		val isSet = model != null;
 		
 		Group unitEditorGroup = new Group(compositeUnitEditor, SWT.NONE);
@@ -153,11 +154,10 @@ public class UnitView implements IView {
 	}
 
 	@Override
-	public void drawList(ArrayList<IModel> modelList) {
+	public void drawList(ModelList modelList) {
+		UnitList unitList = (UnitList) modelList;
 		selectionList = new List(unitListGroup, SWT.NONE);
-		for(IModel model: modelList) {
-			Unit unit = (Unit) model;
-			selectionList.add(unit.getName());
-		}
+		unitList.getUnits().stream().forEach(unit -> selectionList.add(unit.getName()));
 	}
+
 }

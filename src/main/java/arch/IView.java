@@ -1,9 +1,5 @@
 package arch;
 
-import java.util.ArrayList;
-
-import core.Unit;
-
 public interface IView {
 	/**
 	 * draws all that labels, groups und stuff that
@@ -17,14 +13,14 @@ public interface IView {
 	 * Draws a List of Models that the user can see
 	 * @param modeList
 	 */
-	void drawList(ArrayList<IModel> modelList);
+	void drawList(ModelList modelList);
 	
 	/**
 	 * Draws a selection Editor for a single model.
 	 * Shall get redrawn, if the user wants to change the model
 	 * @param model
 	 */
-	void drawEditor(IModel model);
+	void drawEditor(Model model);
 	
 
 }

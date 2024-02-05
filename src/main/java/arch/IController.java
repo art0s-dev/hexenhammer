@@ -6,14 +6,14 @@ public interface IController {
 	
 	/**
 	 * Loads all Specific Models into the controller
-	 * @return
 	 */
-	ArrayList<IModel> loadModels();
+	void loadModels();
 	
 	/**
-	 *	Saves a List of models
+	 * initializes the view before injecting listeners
+	 * or performing operations
 	 */
-	void save(ArrayList<IModel> modelList);
+	void initView();
 	
 	/**
 	 * Injects a listener into the view, which operates
@@ -23,5 +23,10 @@ public interface IController {
 	 * how can i break this into parts?
 	 */
 	void injectListener();
+	
+	/**
+	 *	Saves a List of models
+	 */
+	void save(ArrayList<Model> modelList);
 	
 }

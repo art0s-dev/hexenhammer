@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
-import arch.IModel;
+import arch.Model;
 import core.Enemy.SpecialRuleEnemy;
 import core.Weapon.Phase;
 import core.Weapon.SpecialRuleWeapon;
@@ -30,7 +30,7 @@ import lombok.val;
  * - equip() the weapons and maybe add() some special rules
  * - attack() the enemy profile  
  */
-public class Unit implements IModel {
+public class Unit extends Model {
 	
 	@Getter @Setter String name;
 	
