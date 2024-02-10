@@ -31,7 +31,6 @@ import lombok.val;
  * - attack() the enemy profile  
  */
 public class Unit extends Model {
-	
 	@Getter @Setter String name;
 	
 	/**

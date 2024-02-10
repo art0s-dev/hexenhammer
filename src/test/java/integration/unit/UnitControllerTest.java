@@ -7,10 +7,12 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TabFolder;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import arch.Model;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import unit.UnitController;
@@ -19,7 +21,7 @@ import unit.UnitRepository;
 import unit.UnitView;
 import unittests.gui.SWTGuiTestCase;
 
-class UnitControllerTest extends SWTGuiTestCase{
+class UnitControllerTest extends SWTGuiTestCase {
 
 	@Test
 	void testSwitchingUnitsInUnitsList() {
@@ -52,8 +54,12 @@ class UnitControllerTest extends SWTGuiTestCase{
 		controller.initView();
 		controller.injectListener();
 		
+		List selectionList = view.getSelectionList();
+		selectionList.select(0);
 		assertTrue(view.getNameInput().getText().equals(nameUnit1));
-		view.getSelectionList().select(1);
+		selectionList.setSelection(1);
+		selectionList.select(1);
+		selectionList.notifyListeners(SWT.Selection, new Event());
 		assertTrue(view.getNameInput().getText().equals(nameUnit2));
 	}
 

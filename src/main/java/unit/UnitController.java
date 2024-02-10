@@ -32,7 +32,7 @@ public class UnitController implements IController {
 	}
 
 	@Override
-	public void injectListener() {
+	public void injectListener() { 
 		view.getSelectionList().addSelectionListener(new SelectionListener() {
 
 			@Override

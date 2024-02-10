@@ -1,7 +1,5 @@
 package unit;
 
-import java.util.ArrayList;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FillLayout;
@@ -97,12 +95,6 @@ public class UnitView implements IView {
 		compositeUnitEditor = new Composite(sashFormUnits, SWT.NONE);
 		compositeUnitEditor.setLayout(layout);
 		compositeUnitEditor.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-	}
-
-	@Override
-	public void drawEditor(Model model) {
-		Unit unit = (Unit) model; 
-		val isSet = model != null;
 		
 		Group unitEditorGroup = new Group(compositeUnitEditor, SWT.NONE);
 		unitEditorGroup.setText(UNIT_EDITOR_GROUP_NAME);
@@ -112,12 +104,11 @@ public class UnitView implements IView {
 		unitEditorGroup.setLayout(fillLayoutUnitEditor);
 		
 		Label nameLabel = new Label(unitEditorGroup, SWT.NONE);
-		nameLabel.setText(UNIT_EDITOR_UNIT_NAME);
+		nameLabel.setText(UNIT_EDITOR_UNIT_NAME); 
 		nameInput = new Text(unitEditorGroup, SWT.NONE);
 		nameInput.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-
 		nameInput.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
-		if(isSet) nameInput.setText(unit.getName() != null ? unit.getName() : "");
+		
 		new Label(unitEditorGroup, SWT.NONE); //Placeholder
 		new Label(unitEditorGroup, SWT.NONE); //Placeholder
 		
@@ -128,33 +119,47 @@ public class UnitView implements IView {
 		
 		checkBoxAddOneToHit = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxAddOneToHit.setText(UNIT_EDITOR_ADD_ONE_TO_HIT);
-		if(isSet) checkBoxAddOneToHit.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_HIT));
 		checkBoxLethalHits = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxLethalHits.setText(UNIT_EDITOR_HAS_LETHAL_HITS);
-		if(isSet) checkBoxLethalHits.setSelection(unit.has(SpecialRuleUnit.LETHAL_HITS));
 		checkBoxRerollOnes = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxRerollOnes.setText(UNIT_EDITOR_REROLL_ONES_TO_HIT);
-		if(isSet) checkBoxRerollOnes.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_HIT));
 		checkBoxRerollHitRoll = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxRerollHitRoll.setText(UNIT_EDITOR_REROLL_HIT_ROLL);
-		if(isSet) checkBoxRerollHitRoll.setSelection(unit.has(SpecialRuleUnit.REROLL_HIT_ROLL));
 		
 		checkBoxAddOneToWound = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxAddOneToWound.setText(UNIT_EDITOR_ADD_ONE_TO_WOUND);
-		if(isSet) checkBoxAddOneToWound.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_WOUND));
 		checkBoxRerollOnesToWound = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxRerollOnesToWound.setText(UNIT_EDITOR_REROLL_ONES_TO_WOUND);
-		if(isSet) checkBoxRerollOnesToWound.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND));
 		checkBoxRerollWound = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxRerollWound.setText(UNIT_EDITOR_REROLL_WOUND_ROLL);
-		if(isSet) checkBoxRerollWound.setSelection(unit.has(SpecialRuleUnit.REROLL_WOUND_ROLL));
 		checkBoxIgnoreCover = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxIgnoreCover.setText(UNIT_EDITOR_IGNORE_COVER);
-		if(isSet) checkBoxIgnoreCover.setSelection(unit.has(SpecialRuleUnit.IGNORE_COVER));
 	}
 
 	@Override
-	public void drawList(ModelList modelList) {
+	public void drawEditor(Model model) {
+		Unit unit = (Unit) model; 
+		val init = model == null;
+		
+		if(init) {
+			return;
+		}
+		
+		nameInput.setText(unit.getName() != null ? unit.getName() : "");
+		
+		checkBoxAddOneToHit.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_HIT));
+		checkBoxLethalHits.setSelection(unit.has(SpecialRuleUnit.LETHAL_HITS));
+		checkBoxRerollOnes.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_HIT));
+		checkBoxRerollHitRoll.setSelection(unit.has(SpecialRuleUnit.REROLL_HIT_ROLL));
+		
+		checkBoxAddOneToWound.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_WOUND));
+		checkBoxRerollOnesToWound.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND));
+		checkBoxRerollWound.setSelection(unit.has(SpecialRuleUnit.REROLL_WOUND_ROLL));
+		checkBoxIgnoreCover.setSelection(unit.has(SpecialRuleUnit.IGNORE_COVER));
+	}
+
+	@Override
+	public void drawList(ModelList modelList) { 
 		UnitList unitList = (UnitList) modelList;
 		selectionList = new List(unitListGroup, SWT.NONE);
 		unitList.getUnits().stream().forEach(unit -> selectionList.add(unit.getName()));

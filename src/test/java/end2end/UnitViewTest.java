@@ -1,5 +1,8 @@
 package end2end;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -9,10 +12,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 
-import arch.Model;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
+import unit.UnitController;
 import unit.UnitList;
+import unit.UnitRepository;
 import unit.UnitView;
 
 public class UnitViewTest {
@@ -28,8 +32,6 @@ public class UnitViewTest {
 		TabFolder mainTab = new TabFolder(shell, SWT.NONE);
 		mainTab.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		UnitView view = new UnitView(mainTab);
-		view.draw();
-		
 		
 		Unit spaceMarines = new Unit();
 		spaceMarines.setName("My new favorite unit");
@@ -45,8 +47,13 @@ public class UnitViewTest {
 		
 		UnitList unitList = new UnitList(list);
 		
-		view.drawEditor(spaceMarines);
-		view.drawList(unitList);
+		UnitRepository unitRepo = mock(UnitRepository.class);
+		when(unitRepo.load()).thenReturn(unitList);
+		
+		UnitController unitController = new UnitController(view, unitRepo);
+		unitController.loadModels();
+		unitController.initView();
+		unitController.injectListener();
 
 		shell.open();
 		while (!shell.isDisposed ()) {
