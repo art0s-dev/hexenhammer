@@ -162,7 +162,9 @@ public class UnitView implements IView {
 	public void drawList(ModelList modelList) { 
 		UnitList unitList = (UnitList) modelList;
 		selectionList = new List(unitListGroup, SWT.NONE);
-		unitList.getUnits().stream().forEach(unit -> selectionList.add(unit.getName()));
+		for(Unit unit: unitList.getUnits()) {
+			selectionList.add(unit.getName() != null ? unit.getName() : "");
+		}
 	}
 
 }
