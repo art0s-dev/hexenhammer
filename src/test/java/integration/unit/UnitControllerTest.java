@@ -57,6 +57,30 @@ class UnitControllerTest extends SWTGuiTestCase {
 		selectionList.notifyListeners(SWT.Selection, new Event());
 		assertTrue(view.getNameInput().getText().equals(nameUnit2));
 	}
+	
+	@Test
+	void testCanEnterNewUnitName() {
+		String nameUnit1 = "My new unit";
+		unit1 = new Unit();
+		unit1.setName(nameUnit1);
+		String nameUnit2 = "AnotherUnit";
+		when(unit2.getName()).thenReturn(nameUnit2);
+		
+		refresh();
+		
+		String newUnitName = "My new testable unit";
+		List selectionList = view.getSelectionList();
+		selectionList.select(0);
+		assertTrue(view.getNameInput().getText().equals(nameUnit1));
+		view.getNameInput().setText(newUnitName);
+		view.getNameInput().notifyListeners(SWT.Modify, new Event());
+		
+		selectionList.select(1);
+		selectionList.notifyListeners(SWT.Selection, new Event());
+		selectionList.select(0);
+		selectionList.notifyListeners(SWT.Selection, new Event());
+		assertTrue(view.getNameInput().getText().equals(newUnitName));
+	}
 
 	@Test
 	void testCheckBoxesStayCheckedAfterSwitching() {

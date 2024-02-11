@@ -1,5 +1,7 @@
 package utils;
 
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 
@@ -12,6 +14,14 @@ public class Lambda {
 
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
+			}
+		};
+	}
+	
+	public static ModifyListener modify(Runnable fn) {
+		return new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				fn.run();
 			}
 		};
 	}

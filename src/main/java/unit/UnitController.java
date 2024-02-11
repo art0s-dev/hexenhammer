@@ -42,6 +42,13 @@ public class UnitController implements IController {
 			view.drawEditor(unitList.getUnits().get(index));
 		}));
 		
+		view.getNameInput().addModifyListener(Lambda.modify(()->{
+			int index = view.getSelectionList().getSelectionIndex();
+			Unit selectedUnit = unitList.getUnits().get(index);
+			selectedUnit.setName(view.getNameInput().getText());
+			unitList.getUnits().set(index, selectedUnit);
+		}));
+		
 		HashMap<Button, SpecialRuleUnit> checkboxes = new HashMap<>();
 		checkboxes.put(view.getCheckBoxAddOneToHit(), SpecialRuleUnit.ADD_ONE_TO_HIT);
 		checkboxes.put(view.getCheckBoxLethalHits(), SpecialRuleUnit.LETHAL_HITS);
