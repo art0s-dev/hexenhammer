@@ -19,8 +19,6 @@ public interface IController {
 	 * Injects a listener into the view, which operates
 	 * the triggers of all functionalities in the Model
 	 * like a property change listener or vice versa
-	 * TODO This might be a gathering point for a big mud ball of logic 
-	 * how can i break this into parts?
 	 */
 	void injectListener();
 	

@@ -48,7 +48,7 @@ public class UnitView implements IView {
 	@Getter private Text nameInput;
 	@Getter private Button checkBoxAddOneToHit;
 	@Getter private Button checkBoxLethalHits;
-	@Getter private Button checkBoxRerollOnes;
+	@Getter private Button checkBoxRerollOnesToHit;
 	@Getter private Button checkBoxRerollHitRoll;
 	@Getter private Button checkBoxAddOneToWound;
 	@Getter private Button checkBoxRerollOnesToWound;
@@ -121,8 +121,8 @@ public class UnitView implements IView {
 		checkBoxAddOneToHit.setText(UNIT_EDITOR_ADD_ONE_TO_HIT);
 		checkBoxLethalHits = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxLethalHits.setText(UNIT_EDITOR_HAS_LETHAL_HITS);
-		checkBoxRerollOnes = new Button(unitEditorGroup,SWT.CHECK);
-		checkBoxRerollOnes.setText(UNIT_EDITOR_REROLL_ONES_TO_HIT);
+		checkBoxRerollOnesToHit = new Button(unitEditorGroup,SWT.CHECK);
+		checkBoxRerollOnesToHit.setText(UNIT_EDITOR_REROLL_ONES_TO_HIT);
 		checkBoxRerollHitRoll = new Button(unitEditorGroup,SWT.CHECK);
 		checkBoxRerollHitRoll.setText(UNIT_EDITOR_REROLL_HIT_ROLL);
 		
@@ -149,7 +149,7 @@ public class UnitView implements IView {
 		
 		checkBoxAddOneToHit.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_HIT));
 		checkBoxLethalHits.setSelection(unit.has(SpecialRuleUnit.LETHAL_HITS));
-		checkBoxRerollOnes.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_HIT));
+		checkBoxRerollOnesToHit.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_HIT));
 		checkBoxRerollHitRoll.setSelection(unit.has(SpecialRuleUnit.REROLL_HIT_ROLL));
 		
 		checkBoxAddOneToWound.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_WOUND));

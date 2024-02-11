@@ -1,6 +1,8 @@
 package unit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.widgets.Button;
 
@@ -40,9 +42,20 @@ public class UnitController implements IController {
 			view.drawEditor(unitList.getUnits().get(index));
 		}));
 		
-		view.getCheckBoxRerollWound().addSelectionListener(Lambda.select(()->{
-			toggle(view.getCheckBoxRerollWound(), SpecialRuleUnit.REROLL_WOUND_ROLL);
-	    }));
+		HashMap<Button, SpecialRuleUnit> checkboxes = new HashMap<>();
+		checkboxes.put(view.getCheckBoxAddOneToHit(), SpecialRuleUnit.ADD_ONE_TO_HIT);
+		checkboxes.put(view.getCheckBoxLethalHits(), SpecialRuleUnit.LETHAL_HITS);
+		checkboxes.put(view.getCheckBoxRerollOnesToHit(), SpecialRuleUnit.REROLL_ONES_TO_HIT);
+		checkboxes.put(view.getCheckBoxRerollHitRoll(), SpecialRuleUnit.REROLL_HIT_ROLL);
+		checkboxes.put(view.getCheckBoxAddOneToWound(), SpecialRuleUnit.ADD_ONE_TO_WOUND);
+		checkboxes.put(view.getCheckBoxRerollOnesToWound(), SpecialRuleUnit.REROLL_ONES_TO_WOUND);
+		checkboxes.put(view.getCheckBoxRerollWound(), SpecialRuleUnit.REROLL_WOUND_ROLL);
+		checkboxes.put(view.getCheckBoxIgnoreCover(), SpecialRuleUnit.IGNORE_COVER);
+		
+		checkboxes.forEach((btn, rule) -> {
+			btn.addSelectionListener(Lambda.select(() -> toggle(btn, rule)));
+		});
+		
 	}
 
 	@Override
