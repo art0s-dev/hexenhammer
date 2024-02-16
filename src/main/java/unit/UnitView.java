@@ -1,5 +1,7 @@
 package unit;
 
+import static utils.View.placeholder;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.layout.FillLayout;
@@ -15,13 +17,14 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
-import arch.View;
 import arch.Model;
 import arch.ModelList;
+import arch.View;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
 import lombok.val;
+import utils.ButtonFactory;
 
 public class UnitView implements View {
 	
@@ -56,7 +59,7 @@ public class UnitView implements View {
 	@Getter private Button checkBoxIgnoreCover;
 	@Getter private List selectionList;
 	
-	//"Recycled" Widgets - you mostly have to use draw() beforehand
+	//"Recycled" Widgets - you mostly have to use draw() before using these
 	private Composite compositeUnitEditor;
 	private Group unitListGroup;
 	
@@ -90,6 +93,8 @@ public class UnitView implements View {
 		unitListGroup = new Group(compositeUnitList, SWT.NONE); 
 		unitListGroup.setText(UNIT_LIST_VIEW);
 		unitListGroup.setLayout(new FillLayout());
+		
+		selectionList = new List(unitListGroup, SWT.NONE);
 			
 		//View for Editor 
 		compositeUnitEditor = new Composite(sashFormUnits, SWT.NONE);
@@ -101,7 +106,7 @@ public class UnitView implements View {
 		GridLayout fillLayoutUnitEditor = new GridLayout(4, true);
 		fillLayoutUnitEditor.marginHeight = 5;
 		fillLayoutUnitEditor.marginWidth = 5;
-		unitEditorGroup.setLayout(fillLayoutUnitEditor);
+		unitEditorGroup.setLayout(fillLayoutUnitEditor); 
 		
 		Label nameLabel = new Label(unitEditorGroup, SWT.NONE);
 		nameLabel.setText(UNIT_EDITOR_UNIT_NAME); 
@@ -109,43 +114,31 @@ public class UnitView implements View {
 		nameInput.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		nameInput.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		
-		new Label(unitEditorGroup, SWT.NONE); //Placeholder
-		new Label(unitEditorGroup, SWT.NONE); //Placeholder
+		placeholder(6, unitEditorGroup);
 		
-		new Label(unitEditorGroup, SWT.NONE); //Placeholder
-		new Label(unitEditorGroup, SWT.NONE); //Placeholder
-		new Label(unitEditorGroup, SWT.NONE); //Placeholder
-		new Label(unitEditorGroup, SWT.NONE); //Placeholder
+		ButtonFactory buttonFactory = new ButtonFactory(unitEditorGroup);
+		checkBoxAddOneToHit = buttonFactory.createCheckBox(UNIT_EDITOR_ADD_ONE_TO_HIT);
+		checkBoxLethalHits = buttonFactory.createCheckBox(UNIT_EDITOR_HAS_LETHAL_HITS);
+		checkBoxRerollOnesToHit = buttonFactory.createCheckBox(UNIT_EDITOR_REROLL_ONES_TO_HIT);
+		checkBoxRerollHitRoll = buttonFactory.createCheckBox(UNIT_EDITOR_REROLL_HIT_ROLL);
 		
-		checkBoxAddOneToHit = new Button(unitEditorGroup,SWT.CHECK);
-		checkBoxAddOneToHit.setText(UNIT_EDITOR_ADD_ONE_TO_HIT);
-		checkBoxLethalHits = new Button(unitEditorGroup,SWT.CHECK);
-		checkBoxLethalHits.setText(UNIT_EDITOR_HAS_LETHAL_HITS);
-		checkBoxRerollOnesToHit = new Button(unitEditorGroup,SWT.CHECK);
-		checkBoxRerollOnesToHit.setText(UNIT_EDITOR_REROLL_ONES_TO_HIT);
-		checkBoxRerollHitRoll = new Button(unitEditorGroup,SWT.CHECK);
-		checkBoxRerollHitRoll.setText(UNIT_EDITOR_REROLL_HIT_ROLL);
-		
-		checkBoxAddOneToWound = new Button(unitEditorGroup,SWT.CHECK);
-		checkBoxAddOneToWound.setText(UNIT_EDITOR_ADD_ONE_TO_WOUND);
-		checkBoxRerollOnesToWound = new Button(unitEditorGroup,SWT.CHECK);
-		checkBoxRerollOnesToWound.setText(UNIT_EDITOR_REROLL_ONES_TO_WOUND);
-		checkBoxRerollWound = new Button(unitEditorGroup,SWT.CHECK);
-		checkBoxRerollWound.setText(UNIT_EDITOR_REROLL_WOUND_ROLL);
-		checkBoxIgnoreCover = new Button(unitEditorGroup,SWT.CHECK);
-		checkBoxIgnoreCover.setText(UNIT_EDITOR_IGNORE_COVER);
+		checkBoxAddOneToWound = buttonFactory.createCheckBox(UNIT_EDITOR_ADD_ONE_TO_WOUND);
+		checkBoxRerollOnesToWound = buttonFactory.createCheckBox(UNIT_EDITOR_REROLL_ONES_TO_WOUND);
+		checkBoxRerollWound = buttonFactory.createCheckBox(UNIT_EDITOR_REROLL_WOUND_ROLL);
+		checkBoxIgnoreCover = buttonFactory.createCheckBox(UNIT_EDITOR_IGNORE_COVER);
 	}
 
 	@Override
 	public void drawEditor(Model model) {
 		Unit unit = (Unit) model; 
-		val init = model == null;
+		val formIsInitialized = model == null;
 		
-		if(init) {
+		if(formIsInitialized) {
 			return;
 		}
 		
-		nameInput.setText(unit.getName() != null ? unit.getName() : "");
+		val unitHasNoName = unit.getName() == null;
+		nameInput.setText(unitHasNoName ? "" : unit.getName());
 		
 		checkBoxAddOneToHit.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_HIT));
 		checkBoxLethalHits.setSelection(unit.has(SpecialRuleUnit.LETHAL_HITS));
@@ -161,9 +154,11 @@ public class UnitView implements View {
 	@Override
 	public void drawList(ModelList modelList) { 
 		UnitList unitList = (UnitList) modelList;
-		selectionList = new List(unitListGroup, SWT.NONE);
+		selectionList.removeAll();
+		
 		for(Unit unit: unitList.getUnits()) {
-			selectionList.add(unit.getName() != null ? unit.getName() : "");
+			val unitHasNoName = unit.getName() == null;
+			selectionList.add(unitHasNoName ? "" : unit.getName());
 		}
 	}
 

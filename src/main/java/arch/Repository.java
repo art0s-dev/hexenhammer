@@ -1,7 +1,7 @@
 package arch;
 
 /**
- * The Repository incorporates all Database Calls and the 
+ * The Repository incorporates all Database calls and the 
  * persistence layer in general.
  */
 public interface Repository {

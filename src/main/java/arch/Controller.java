@@ -2,6 +2,10 @@ package arch;
 
 import java.util.ArrayList;
 
+/**
+ * Interface for Controller.
+ * It should resemble the classic MVC pattern
+ */
 public interface Controller {
 	
 	/**
