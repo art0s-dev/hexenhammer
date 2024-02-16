@@ -2,7 +2,7 @@ package arch;
 
 import java.util.ArrayList;
 
-public interface IController {
+public interface Controller {
 	
 	/**
 	 * Loads all Specific Models into the controller

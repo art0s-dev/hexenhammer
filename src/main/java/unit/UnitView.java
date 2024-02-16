@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
-import arch.IView;
+import arch.View;
 import arch.Model;
 import arch.ModelList;
 import core.Unit;
@@ -23,7 +23,7 @@ import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
 import lombok.val;
 
-public class UnitView implements IView {
+public class UnitView implements View {
 	
 	//Dependencys
 	private final TabFolder mainTab;

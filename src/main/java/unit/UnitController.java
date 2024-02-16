@@ -6,13 +6,13 @@ import java.util.Map.Entry;
 
 import org.eclipse.swt.widgets.Button;
 
-import arch.IController;
+import arch.Controller;
 import arch.Model;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import utils.Lambda;
 
-public class UnitController implements IController {
+public class UnitController implements Controller {
 	
 	private final UnitView view;
 	private final UnitRepository unitRepository;

@@ -1,6 +1,6 @@
 package arch;
 
-public interface IView {
+public interface View {
 	/**
 	 * draws all that labels, groups und stuff that
 	 * will be necessary, to draw the editor and the list.
