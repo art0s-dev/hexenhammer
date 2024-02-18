@@ -6,9 +6,13 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 
@@ -18,11 +22,12 @@ import unit.UnitController;
 import unit.UnitList;
 import unit.UnitRepository;
 import unit.UnitView;
+import utils.Lambda;
 
 public class UnitViewTest {
 	
 	/**
-	 * Just the main method for running an SWT application
+	 * Just the main method for running an SWT application 
 	 */
 	public static void main(String[] args) {
 		Display display = new Display();
@@ -53,6 +58,7 @@ public class UnitViewTest {
 		UnitController unitController = new UnitController(view, unitRepo);
 		unitController.loadModels();
 		unitController.initView();
+		
 		unitController.injectListener();
 
 		shell.open();

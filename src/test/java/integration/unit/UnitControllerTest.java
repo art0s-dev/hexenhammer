@@ -1,5 +1,6 @@
 package integration.unit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -117,6 +118,27 @@ class UnitControllerTest extends SWTGuiTestCase {
 		assertTrue(testToggler.apply(view.getCheckBoxRerollOnesToWound()), "RerollOnesToWound");
 		assertTrue(testToggler.apply(view.getCheckBoxRerollWound()), "RerollWound");
 		assertTrue(testToggler.apply(view.getCheckBoxIgnoreCover()), "IgnoreCover");
+	}
+
+	@Test
+	void testViewListCanAddItems() {
+		String nameUnit1 = "My new favorite unit";
+		when(unit1.getName()).thenReturn(nameUnit1);
+		String nameUnit2 = "AnotherUnit";
+		when(unit2.getName()).thenReturn(nameUnit2);
+		
+		refresh();
+		
+		view.getSelectionList().select(0); //That would be unit1
+		view.getButtonAddUnit().notifyListeners(SWT.Selection, new Event());
+		view.getButtonAddUnit().notifyListeners(SWT.Selection, new Event());
+		view.getButtonAddUnit().notifyListeners(SWT.Selection, new Event());
+		view.getButtonAddUnit().notifyListeners(SWT.Selection, new Event());
+		view.getButtonAddUnit().notifyListeners(SWT.Selection, new Event());
+		//We assume that the method changes the selection auomatically to the new item
+		
+		int numberOfUnits = 7;
+		assertEquals(numberOfUnits -1 , view.getSelectionList().getSelectionIndex());
 	}
 	
 	private void refresh() {

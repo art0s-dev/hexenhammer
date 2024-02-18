@@ -37,15 +37,18 @@ public class UnitController implements Controller {
 	@Override
 	public void injectListener() { 
 		view.getSelectionList().addSelectionListener(Lambda.select(()->{
-			int index = view.getSelectionList().getSelectionIndex();
-			view.drawEditor(unitList.getUnits().get(index));
+			view.drawEditor(unitList.getUnits().get(getIndex()));
 		}));
 		
 		view.getNameInput().addModifyListener(Lambda.modify(()->{
-			int index = view.getSelectionList().getSelectionIndex();
-			Unit selectedUnit = unitList.getUnits().get(index);
+			Unit selectedUnit = unitList.getUnits().get(getIndex());
 			selectedUnit.setName(view.getNameInput().getText());
-			unitList.getUnits().set(index, selectedUnit);
+			unitList.getUnits().set(getIndex(), selectedUnit);
+		}));
+		
+		view.getButtonAddUnit().addSelectionListener(Lambda.select(()->{
+			view.getSelectionList().add("NEW TODO");
+			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
 		}));
 		
 		HashMap<Button, SpecialRuleUnit> checkboxes = new HashMap<>();
@@ -67,7 +70,6 @@ public class UnitController implements Controller {
 	@Override
 	public void save(ArrayList<Model> modelList) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	private void toggle(Button btn, SpecialRuleUnit rule) {
@@ -82,6 +84,10 @@ public class UnitController implements Controller {
 		}
 		
 		unitList.getUnits().set(index, selectedUnit);
+	}
+	
+	private int getIndex() {
+		return view.getSelectionList().getSelectionIndex();
 	}
 	
 	
