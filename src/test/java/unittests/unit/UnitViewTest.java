@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -19,7 +17,6 @@ import org.junit.jupiter.api.Test;
 
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
-import unit.UnitList;
 import unit.UnitView;
 import unittests.gui.SWTGuiTestCase;
 

@@ -23,7 +23,6 @@ public class WeaponView implements View{
 	private static final String TAB_NAME = "Weapons";
 	
 	//"Recycled" Widgets - you mostly have to use draw() before using these
-	private Composite compositeWeaponEditor;
 	
 	public WeaponView(TabFolder mainTab) {
 		this.mainTab = mainTab;

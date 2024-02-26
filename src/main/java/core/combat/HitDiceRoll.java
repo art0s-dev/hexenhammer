@@ -18,34 +18,66 @@ public final class HitDiceRoll extends DiceRoll {
 	public DicePool roll(DicePool dicePool) {
 		val total = dicePool.getTotal();
 		
-		val torrent = rules.torrent();
-		if(torrent) {
-			return new HitDicePool(total, total, 0f);
+		val isTorrentWeapon = rules.torrent();
+		if(isTorrentWeapon) {
+			return new HitDicePool(total, total);
 		}
 		
-		val probabilityToHit = _modifyProbability(weapon.getToHit());
-		val hits = total * probabilityToHit;
-		val misses = rules.rerollOnesToHit() ? total * Probability.SIX_UP : total - hits;
+		val firstRoll = _makeFirstRoll(total);		
 		
-		val lethalHits = rules.lethalHits() ? total * Probability.SIX_UP : 0f;
-		val sustainedHits = (total * Probability.SIX_UP) * weapon.getSustainedHits();
-		
-		val cumulatedHits = rules.sustainedHits() ? hits + sustainedHits : hits;
-		val firstRoll = new HitDicePool(total, cumulatedHits, lethalHits);
-		
-		val reroll = rules.rerollHitRoll() || rules.rerollOnesToHit();
-		if(reroll) {
-			val rerolledHits = misses * weapon.getToHit();
-			
-			val rerolledLethalHits = rules.lethalHits() ? (misses * Probability.SIX_UP) + lethalHits : 0f;
-			val rerolledSustainedHits = (misses * Probability.SIX_UP) * weapon.getSustainedHits();
-			
-			val cumulatedRerolledHits = hits + rerolledHits + sustainedHits + rerolledSustainedHits;
-			return new HitDicePool(total, cumulatedRerolledHits, rerolledLethalHits);
+		val dicePoolShallBeRerolled = rules.rerollHitRoll() || rules.rerollOnesToHit();
+		if(dicePoolShallBeRerolled) {
+			return _makeSecondRoll(total, firstRoll);
 		}
 		
 		return firstRoll; 
 	}
+
+	/**
+	 * Take the initial dice pool and roll the dice
+	 */
+	private HitDicePool _makeFirstRoll(float total) {
+		val probabilityToHit = _modifyProbability(weapon.getToHit());
+		val hits = total * probabilityToHit;
+		val sixesInFirstRoll = total * Probability.SIX_UP;
+		val misses = rules.rerollOnesToHit() ? sixesInFirstRoll : total - hits;
+		
+		val lethalHits = rules.lethalHits() ? sixesInFirstRoll : 0f;
+		val sustainedHits = sixesInFirstRoll * weapon.getSustainedHits();
+		
+		val hitsAndSustainedHits = rules.sustainedHits() ? hits + sustainedHits : hits;
+		
+		return new HitDicePool(total, hitsAndSustainedHits)
+				.withLethalHits(lethalHits)
+				.withSustainedHits(sustainedHits)
+				.withMisses(misses)
+				.withHits(hits);
+	}
+	
+	/**
+	 * Do the reroll
+	 */
+	private HitDicePool _makeSecondRoll(float total, HitDicePool firstRoll) {
+		val misses = firstRoll.getMisses();
+		val rerolledHits = misses * weapon.getToHit();
+		val sixesInSecondRoll = misses * Probability.SIX_UP;
+		
+		val rerolledLethalHits = rules.lethalHits() 
+				? sixesInSecondRoll + firstRoll.getLethalHits() 
+				: 0f;
+		
+		val rerolledSustainedHits = sixesInSecondRoll * weapon.getSustainedHits();
+		
+		val allHitsBothRerolledAndGenerated = 
+				firstRoll.getHits() + 
+				rerolledHits + 
+				firstRoll.getSustainedHits() + 
+				rerolledSustainedHits;
+		
+		return new HitDicePool(total, allHitsBothRerolledAndGenerated)
+				.withLethalHits(rerolledLethalHits);
+	}
+	
 	
 	/**
 	 * Takes a probability like THREE_UP and upgrades or downgrades the result
@@ -66,7 +98,5 @@ public final class HitDiceRoll extends DiceRoll {
 		return modifyRoll ? Probability.modifyRoll(originalProbability, modifier)
 				: originalProbability;
 	}
-	
-	
 
 }

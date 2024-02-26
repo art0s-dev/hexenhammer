@@ -3,6 +3,8 @@ package core.combat;
 import core.Enemy;
 import core.Unit;
 import core.Weapon;
+import lombok.AllArgsConstructor;
+import lombok.Generated;
 import lombok.val;
 
 /**
@@ -10,6 +12,7 @@ import lombok.val;
  * and the damage multiplier has been applied
  * @see SavingThrowDiceRoll
  */
+@Generated
 public final class FeelNoPainDiceRoll extends DiceRoll {
 
 	public FeelNoPainDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {

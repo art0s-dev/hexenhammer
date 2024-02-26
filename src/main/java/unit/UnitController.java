@@ -46,10 +46,10 @@ public class UnitController implements Controller {
 			unitList.getUnits().set(getIndex(), selectedUnit);
 		}));
 		
-		view.getButtonAddUnit().addSelectionListener(Lambda.select(()->{
-			view.getSelectionList().add("NEW TODO");
-			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
-		}));
+		//view.getButtonAddUnit().addSelectionListener(Lambda.select(()->{
+		//	view.getSelectionList().add("NEW TODO");
+		//	view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
+		//}));
 		
 		HashMap<Button, SpecialRuleUnit> checkboxes = new HashMap<>();
 		checkboxes.put(view.getCheckBoxAddOneToHit(), SpecialRuleUnit.ADD_ONE_TO_HIT);

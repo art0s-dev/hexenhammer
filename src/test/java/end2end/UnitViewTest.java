@@ -6,13 +6,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 
@@ -22,7 +18,6 @@ import unit.UnitController;
 import unit.UnitList;
 import unit.UnitRepository;
 import unit.UnitView;
-import utils.Lambda;
 
 public class UnitViewTest {
 	
@@ -32,7 +27,7 @@ public class UnitViewTest {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell();
-		shell.setLayout(new FillLayout());
+		shell.setLayout(new GridLayout(1, true));
 		
 		TabFolder mainTab = new TabFolder(shell, SWT.NONE);
 		mainTab.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

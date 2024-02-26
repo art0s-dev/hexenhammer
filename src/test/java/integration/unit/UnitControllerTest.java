@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TabFolder;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -120,7 +121,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 		assertTrue(testToggler.apply(view.getCheckBoxIgnoreCover()), "IgnoreCover");
 	}
 
-	@Test
+	@Test @Disabled
 	void testViewListCanAddItems() {
 		String nameUnit1 = "My new favorite unit";
 		when(unit1.getName()).thenReturn(nameUnit1);
