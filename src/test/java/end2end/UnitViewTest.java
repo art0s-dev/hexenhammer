@@ -46,7 +46,6 @@ public class UnitViewTest {
 		list.add(anotherUnit); 
 		
 		UnitList unitList = new UnitList(list);
-		
 		UnitRepository unitRepo = mock(UnitRepository.class);
 		when(unitRepo.load()).thenReturn(unitList);
 		

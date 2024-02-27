@@ -9,6 +9,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -26,11 +27,13 @@ import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
 import lombok.val;
 import utils.ButtonFactory;
+import utils.ImageServer;
 
 public class UnitView implements View {
 	
 	//Dependencys
 	private final TabFolder mainTab;
+	private final ImageServer imageServer;
 	
 	//Language Strings
 	private final static String TAB_NAME = "Units";
@@ -45,6 +48,8 @@ public class UnitView implements View {
 	private final static String REROLL_ONES_TO_WOUND = "Reroll ones to wound";
 	private final static String REROLL_WOUND_ROLL = "Reroll wound roll";
 	private final static String IGNORE_COVER = "Ignore cover";
+	private final static String ADD = "Klick here, to add an entry to the chosen tab list";
+	private final static String DELETE = "Klick here, to delete the selected entry from the chosen tab";
 	
 	//"Puppet strings" for the controller
 	@Getter private TabItem unitTab;
@@ -69,6 +74,7 @@ public class UnitView implements View {
 	
 	public UnitView(TabFolder mainTab) {
 		this.mainTab = mainTab;
+		this.imageServer = new ImageServer(mainTab.getShell().getDisplay());
 	}
 	
 	@Override
@@ -88,7 +94,6 @@ public class UnitView implements View {
 		
 		sashFormUnits = new SashForm(compositeUnits, SWT.HORIZONTAL);
 		sashFormUnits.SASH_WIDTH = 3;
-		//sashFormUnits.setBackground(display.getSystemColor(SWT.COLOR_DARK_GRAY));
 		
 		GridLayout layout = new GridLayout(1, true);
 		layout.marginHeight = 5;
@@ -103,18 +108,20 @@ public class UnitView implements View {
 	private void initializeListView() {
 		compositeUnitList = new Composite(sashFormUnits, SWT.NONE);
 		compositeUnitList.setLayout(compositeFillLayout);
-		//compositeUnitList.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		compositeUnitList.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		
-//		ToolBar listToolBar = new ToolBar(compositeUnitList, SWT.NONE);
-//		GridData toolbarLayoutData = new GridData(SWT.FILL, SWT.CENTER, true, true);
-//		toolbarLayoutData.minimumHeight = 50;
-//		listToolBar.setLayoutData(toolbarLayoutData);
-//		listToolBar.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
-//		
-//		buttonAddUnit = new ToolItem(listToolBar, SWT.NONE);
-//		buttonAddUnit.setText(ADD_UNIT);
-//		buttonAddUnit.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		//Warum werden die Buttons nicht angezeigt, wenns auf FillLayout geschaltet ist????
+		CoolBar menuBar = new CoolBar(compositeUnitList, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 2;
+		menuBar.setLayout(layout);
+		
+		Button addButton = new Button(menuBar, SWT.PUSH);
+		addButton.setImage(imageServer.createImageForButton("plus"));
+		addButton.setToolTipText(ADD);
+		
+		Button deleteButton = new Button(menuBar, SWT.PUSH);
+		deleteButton.setImage(imageServer.createImageForButton("trash-can"));
+		deleteButton.setToolTipText(DELETE);
 
 		unitListGroup = new Group(compositeUnitList, SWT.VERTICAL); 
 		unitListGroup.setText(LIST_VIEW);
@@ -122,12 +129,12 @@ public class UnitView implements View {
 		
 		selectionList = new List(unitListGroup, SWT.NONE);
 		selectionList.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		
 	}
 	
 	private void initalizeEditorView() {
 		compositeUnitEditor = new Composite(sashFormUnits, SWT.NONE);
 		compositeUnitEditor.setLayout(compositeFillLayout);
-		//compositeUnitEditor.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 		
 		Group unitEditorGroup = new Group(compositeUnitEditor, SWT.NONE);
 		unitEditorGroup.setText(GROUP_NAME);
@@ -140,7 +147,6 @@ public class UnitView implements View {
 		nameLabel.setText(UNIT_NAME); 
 		nameInput = new Text(unitEditorGroup, SWT.NONE);
 		nameInput.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		//nameInput.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		
 		placeholder(7, unitEditorGroup);
 		
