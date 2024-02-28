@@ -1,23 +1,17 @@
 package unit;
 
-import static utils.View.placeholder;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolBar;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolItem;
 
 import arch.Model;
 import arch.ModelList;
@@ -64,7 +58,7 @@ public class UnitView implements View {
 	@Getter private Button checkBoxIgnoreCover;
 	@Getter private List selectionList;
 	@Getter private Button addButton;
-	@Getter private Composite compositeUnitList;
+	@Getter private Button deleteButton;
 	
 	//"Recycled" Widgets - you mostly have to use draw() before using these
 	private Composite compositeUnitEditor;
@@ -94,7 +88,7 @@ public class UnitView implements View {
 	}
 	
 	private void _initializeListView() {
-		compositeUnitList = new Composite(compositeUnits, SWT.NONE);
+		Composite compositeUnitList = new Composite(compositeUnits, SWT.NONE);
 		GridData gridDataCompositeUnitList = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gridDataCompositeUnitList.horizontalSpan = 4;
 		compositeUnitList.setLayoutData(gridDataCompositeUnitList);
@@ -108,7 +102,7 @@ public class UnitView implements View {
 		addButton = new Button(menuBar, SWT.PUSH);
 		addButton.setImage(imageServer.createImageForButton("plus"));
 		addButton.setToolTipText(ADD);
-		Button deleteButton = new Button(menuBar, SWT.PUSH);
+		deleteButton = new Button(menuBar, SWT.PUSH);
 		deleteButton.setImage(imageServer.createImageForButton("trash-can"));
 		deleteButton.setToolTipText(DELETE);
 
@@ -145,7 +139,10 @@ public class UnitView implements View {
 		nameInputGridData.horizontalSpan = 3;
 		nameInput.setLayoutData(nameInputGridData);
 		
-		placeholder(5, unitEditorGroup);
+		Label placeholder = new Label(unitEditorGroup, SWT.NONE);
+		GridData placeholderGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		placeholderGridData.horizontalSpan = 4;
+		placeholder.setLayoutData(placeholderGridData);
 		
 		ButtonFactory buttonFactory = new ButtonFactory(unitEditorGroup);
 		checkBoxAddOneToHit = buttonFactory.createCheckBox(ADD_ONE_TO_HIT);

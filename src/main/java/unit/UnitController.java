@@ -11,6 +11,7 @@ import arch.Controller;
 import arch.Model;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
+import lombok.val;
 import utils.Lambda;
 
 public class UnitController implements Controller {
@@ -44,17 +45,36 @@ public class UnitController implements Controller {
 		
 		view.getNameInput().addModifyListener(Lambda.modify(()->{
 			Unit selectedUnit = unitList.getUnits().get(getIndex());
-			selectedUnit.setName(view.getNameInput().getText());
+			String newName = view.getNameInput().getText();
+			
+			selectedUnit.setName(newName);
 			unitList.getUnits().set(getIndex(), selectedUnit);
+			view.getSelectionList().setItem(getIndex(), newName);
 		}));
 		
 		view.getAddButton().addSelectionListener(Lambda.select(()->{
-			view.getSelectionList().add("New unit");
+			String nameOfNewUnit = "New unit";
+			view.getSelectionList().add(nameOfNewUnit);
 			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
+			
 			Unit unit = new Unit();
-			unit.setName("New unit");
+			unit.setName(nameOfNewUnit);
 			unitList.getUnits().add(unit);
 			view.getSelectionList().notifyListeners(SWT.Selection, new Event());
+		}));
+		
+		view.getDeleteButton().addSelectionListener(Lambda.select(()->{
+			val thereAreNoUnits = unitList.getUnits().isEmpty();
+			if(thereAreNoUnits) {
+				return;
+			}
+			
+			int currentUnit = getIndex();
+			int unitBeforeDeletedUnit = currentUnit - 1;
+			
+			unitList.getUnits().remove(currentUnit);
+			view.drawList(unitList);
+			view.getSelectionList().select(unitBeforeDeletedUnit);
 		}));
 		
 		HashMap<Button, SpecialRuleUnit> checkboxes = new HashMap<>();

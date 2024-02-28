@@ -1,5 +1,6 @@
 package integration.unit;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -141,6 +142,39 @@ class UnitControllerTest extends SWTGuiTestCase {
 		int numberOfUnits = 7;
 		assertEquals(numberOfUnits -1 , view.getSelectionList().getSelectionIndex());
 	}
+	
+	@Test
+	void testViewDeleteItemIfSelected() {
+		String nameUnit1 = "My new favorite unit";
+		when(unit1.getName()).thenReturn(nameUnit1);
+		String nameUnit2 = "AnotherUnit";
+		when(unit2.getName()).thenReturn(nameUnit2);
+		
+		refresh();
+		view.getSelectionList().select(1);
+		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
+		
+		assertEquals(1, view.getSelectionList().getItemCount());
+	}
+	
+	@Test
+	void testViewDeleteAllItems() {
+		String nameUnit1 = "My new favorite unit";
+		when(unit1.getName()).thenReturn(nameUnit1);
+		String nameUnit2 = "AnotherUnit";
+		when(unit2.getName()).thenReturn(nameUnit2);
+		
+		refresh();
+		view.getSelectionList().select(1);
+		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
+		view.getSelectionList().select(0);
+		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
+		
+		assertEquals(0, view.getSelectionList().getItemCount());
+	}
+	
+	
+	
 	
 	private void refresh() {
 		ArrayList<Unit> list = new ArrayList<>();

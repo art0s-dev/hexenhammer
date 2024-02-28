@@ -27,6 +27,7 @@ public class UnitViewTest {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell();
+		shell.setSize(1200, 900);
 		shell.setLayout(new GridLayout(1, true));
 		
 		TabFolder mainTab = new TabFolder(shell, SWT.NONE);
