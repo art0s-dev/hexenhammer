@@ -3,7 +3,9 @@ package unit;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Event;
 
 import arch.Controller;
 import arch.Model;
@@ -46,10 +48,14 @@ public class UnitController implements Controller {
 			unitList.getUnits().set(getIndex(), selectedUnit);
 		}));
 		
-		//view.getButtonAddUnit().addSelectionListener(Lambda.select(()->{
-		//	view.getSelectionList().add("NEW TODO");
-		//	view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
-		//}));
+		view.getAddButton().addSelectionListener(Lambda.select(()->{
+			view.getSelectionList().add("New unit");
+			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
+			Unit unit = new Unit();
+			unit.setName("New unit");
+			unitList.getUnits().add(unit);
+			view.getSelectionList().notifyListeners(SWT.Selection, new Event());
+		}));
 		
 		HashMap<Button, SpecialRuleUnit> checkboxes = new HashMap<>();
 		checkboxes.put(view.getCheckBoxAddOneToHit(), SpecialRuleUnit.ADD_ONE_TO_HIT);

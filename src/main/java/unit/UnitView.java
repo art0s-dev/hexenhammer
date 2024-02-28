@@ -63,14 +63,12 @@ public class UnitView implements View {
 	@Getter private Button checkBoxRerollWound;
 	@Getter private Button checkBoxIgnoreCover;
 	@Getter private List selectionList;
-	@Getter private ToolItem buttonAddUnit;
-	@Getter private Group unitListGroup;
+	@Getter private Button addButton;
 	@Getter private Composite compositeUnitList;
 	
 	//"Recycled" Widgets - you mostly have to use draw() before using these
 	private Composite compositeUnitEditor;
-	private SashForm sashFormUnits;
-	private FillLayout compositeFillLayout;
+	private Composite compositeUnits;
 	
 	public UnitView(TabFolder mainTab) {
 		this.mainTab = mainTab;
@@ -79,76 +77,75 @@ public class UnitView implements View {
 	
 	@Override
 	public void draw() {
-		initalizeGeneralView();
-		initializeListView();
-		initalizeEditorView();
+		_initalizeGeneralView();
+		_initializeListView();
+		_initalizeEditorView();
 	}
 	
-	private void initalizeGeneralView() {
+	private void _initalizeGeneralView() { 
 		unitTab = new TabItem(mainTab, SWT.NONE);
 		unitTab.setText(TAB_NAME);
 		
-		Composite compositeUnits = new Composite(mainTab, SWT.NONE);
-		compositeUnits.setLayout(new FillLayout());
+		compositeUnits = new Composite(mainTab, SWT.NONE);
 		unitTab.setControl(compositeUnits);
-		
-		sashFormUnits = new SashForm(compositeUnits, SWT.HORIZONTAL);
-		sashFormUnits.SASH_WIDTH = 3;
-		
-		GridLayout layout = new GridLayout(1, true);
-		layout.marginHeight = 5;
-		layout.marginWidth = 5;
-		
-		compositeFillLayout = new FillLayout();
-		compositeFillLayout.marginHeight = 5;
-		compositeFillLayout.marginWidth = 5;
-		compositeFillLayout.type = SWT.VERTICAL;
+		compositeUnits.setLayout(new GridLayout(1, true));
+		compositeUnits.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		compositeUnits.setLayout(new GridLayout(12, true));	
 	}
 	
-	private void initializeListView() {
-		compositeUnitList = new Composite(sashFormUnits, SWT.NONE);
-		compositeUnitList.setLayout(compositeFillLayout);
+	private void _initializeListView() {
+		compositeUnitList = new Composite(compositeUnits, SWT.NONE);
+		GridData gridDataCompositeUnitList = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gridDataCompositeUnitList.horizontalSpan = 4;
+		compositeUnitList.setLayoutData(gridDataCompositeUnitList);
+		compositeUnitList.setLayout(new GridLayout(1, true));
 		
-		//Warum werden die Buttons nicht angezeigt, wenns auf FillLayout geschaltet ist????
 		CoolBar menuBar = new CoolBar(compositeUnitList, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		menuBar.setLayout(layout);
-		
-		Button addButton = new Button(menuBar, SWT.PUSH);
+		GridData menuBarGridData = new GridData(SWT.FILL, SWT.FILL, false, false);
+		menuBarGridData.verticalSpan = 8;
+		menuBar.setLayoutData(menuBarGridData);
+		menuBar.setLayout(new GridLayout(2, true));
+		addButton = new Button(menuBar, SWT.PUSH);
 		addButton.setImage(imageServer.createImageForButton("plus"));
 		addButton.setToolTipText(ADD);
-		
 		Button deleteButton = new Button(menuBar, SWT.PUSH);
 		deleteButton.setImage(imageServer.createImageForButton("trash-can"));
 		deleteButton.setToolTipText(DELETE);
 
-		unitListGroup = new Group(compositeUnitList, SWT.VERTICAL); 
+		Group unitListGroup = new Group(compositeUnitList, SWT.VERTICAL); 
 		unitListGroup.setText(LIST_VIEW);
-		unitListGroup.setLayout(new FillLayout());
+		unitListGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		unitListGroup.setLayout(new GridLayout(1, true));
 		
-		selectionList = new List(unitListGroup, SWT.NONE);
-		selectionList.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		
+		Composite unitListComposite = new Composite(unitListGroup, SWT.NONE);
+		unitListComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		unitListComposite.setLayout(new GridLayout(1, true));
+
+		selectionList = new List(unitListComposite, SWT.NONE);
+		GridData listGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		selectionList.setLayoutData(listGridData);
 	}
 	
-	private void initalizeEditorView() {
-		compositeUnitEditor = new Composite(sashFormUnits, SWT.NONE);
-		compositeUnitEditor.setLayout(compositeFillLayout);
+	private void _initalizeEditorView() {
+		compositeUnitEditor = new Composite(compositeUnits, SWT.NONE);
+		GridData gridDataCompositeUnitEditor = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gridDataCompositeUnitEditor.horizontalSpan = 8;
+		compositeUnitEditor.setLayoutData(gridDataCompositeUnitEditor);
+		compositeUnitEditor.setLayout(new GridLayout(1, true));
 		
 		Group unitEditorGroup = new Group(compositeUnitEditor, SWT.NONE);
 		unitEditorGroup.setText(GROUP_NAME);
-		GridLayout fillLayoutUnitEditor = new GridLayout(4, true);
-		fillLayoutUnitEditor.marginHeight = 5;
-		fillLayoutUnitEditor.marginWidth = 5;
-		unitEditorGroup.setLayout(fillLayoutUnitEditor); 
+		unitEditorGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		unitEditorGroup.setLayout(new GridLayout(4, true));
 		
 		Label nameLabel = new Label(unitEditorGroup, SWT.NONE);
 		nameLabel.setText(UNIT_NAME); 
 		nameInput = new Text(unitEditorGroup, SWT.NONE);
-		nameInput.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		GridData nameInputGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		nameInputGridData.horizontalSpan = 3;
+		nameInput.setLayoutData(nameInputGridData);
 		
-		placeholder(7, unitEditorGroup);
+		placeholder(5, unitEditorGroup);
 		
 		ButtonFactory buttonFactory = new ButtonFactory(unitEditorGroup);
 		checkBoxAddOneToHit = buttonFactory.createCheckBox(ADD_ONE_TO_HIT);

@@ -121,7 +121,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 		assertTrue(testToggler.apply(view.getCheckBoxIgnoreCover()), "IgnoreCover");
 	}
 
-	@Test @Disabled
+	@Test
 	void testViewListCanAddItems() {
 		String nameUnit1 = "My new favorite unit";
 		when(unit1.getName()).thenReturn(nameUnit1);
@@ -131,11 +131,11 @@ class UnitControllerTest extends SWTGuiTestCase {
 		refresh();
 		
 		view.getSelectionList().select(0); //That would be unit1
-		view.getButtonAddUnit().notifyListeners(SWT.Selection, new Event());
-		view.getButtonAddUnit().notifyListeners(SWT.Selection, new Event());
-		view.getButtonAddUnit().notifyListeners(SWT.Selection, new Event());
-		view.getButtonAddUnit().notifyListeners(SWT.Selection, new Event());
-		view.getButtonAddUnit().notifyListeners(SWT.Selection, new Event());
+		view.getAddButton().notifyListeners(SWT.Selection, new Event());
+		view.getAddButton().notifyListeners(SWT.Selection, new Event());
+		view.getAddButton().notifyListeners(SWT.Selection, new Event());
+		view.getAddButton().notifyListeners(SWT.Selection, new Event());
+		view.getAddButton().notifyListeners(SWT.Selection, new Event());
 		//We assume that the method changes the selection auomatically to the new item
 		
 		int numberOfUnits = 7;
