@@ -174,8 +174,6 @@ class UnitControllerTest extends SWTGuiTestCase {
 	}
 	
 	
-	
-	
 	private void refresh() {
 		ArrayList<Unit> list = new ArrayList<>();
 		list.add(unit1);

@@ -8,11 +8,9 @@ import org.eclipse.swt.widgets.Display;
 
 public class ButtonFactory {
 	private final Composite parent;
-	private final Display display;
 	
 	public ButtonFactory(Composite parent) {
 		this.parent = parent;
-		this.display = parent.getShell().getDisplay();
 	}
 	
 	public Button createCheckBox(String label) {

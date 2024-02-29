@@ -5,12 +5,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
 
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
@@ -30,10 +27,7 @@ public class UnitViewTest {
 		shell.setSize(1200, 900);
 		shell.setLayout(new GridLayout(1, true));
 		
-		TabFolder mainTab = new TabFolder(shell, SWT.NONE);
-		mainTab.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		UnitView view = new UnitView(mainTab);
-		
+		UnitView view = new UnitView(shell);
 		Unit spaceMarines = new Unit();
 		spaceMarines.setName("My new favorite unit");
 		spaceMarines.add(SpecialRuleUnit.LETHAL_HITS);

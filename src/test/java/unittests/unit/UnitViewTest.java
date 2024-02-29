@@ -28,15 +28,11 @@ class UnitViewTest extends SWTGuiTestCase {
 	@BeforeEach
 	void setup() {
 		TabFolder mainTab = new TabFolder(shell, SWT.NONE);
-		view = new UnitView(mainTab);
+		view = new UnitView(shell);
 		view.draw();
 		selectionTriggerWasActivated = false;
 	}
 
-	@Test
-	void testViewCanBeCreatedAndShowALabel() {
-		assertEquals("Units", view.getUnitTab().getText());
-	} 
 	
 	@Test
 	void testUnitEditorWhenItsEmptyShowsCheckBoxDefaultFalse() {
