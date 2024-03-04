@@ -12,7 +12,6 @@ import lombok.val;
  * and the damage multiplier has been applied
  * @see SavingThrowDiceRoll
  */
-@Generated
 public final class FeelNoPainDiceRoll extends DiceRoll {
 
 	public FeelNoPainDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {

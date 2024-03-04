@@ -10,38 +10,65 @@ import lombok.val;
  * Takes hits from a weapon and wounds the target
  */
 public final class WoundDiceRoll extends DiceRoll {
+	
+	private final float probabilityToWound;
 
 	public WoundDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
 		super(unit, weapon, enemy, rules);
+		this.probabilityToWound = _determineWoundingProbability();
 	}
 
 	public DicePool roll(DicePool dicePool) {
-		val total  = dicePool.getResult();
-		val originalProbability = _compare(weapon.getStrength(), enemy.getToughness());
-		val modifiedProbability = _modifyProbability(originalProbability);
-		val probabilityToWound = rules.antiTypeWeapon() ? _antiType(modifiedProbability) : modifiedProbability;
-		
-		val wounds = total * probabilityToWound;
-		val fails = rules.rerollOnesToWound() ? total * Probability.SIX_UP : total - wounds;
-		val devastatingWounds = rules.devastatingWounds() ? total * Probability.SIX_UP : 0;
-		val firstRoll = new WoundDicePool(total, wounds, devastatingWounds);
+		val firstRoll = _firstRoll((HitDicePool) dicePool);
 		
 		val reroll = rules.rerollWoundRoll() || rules.rerollOnesToWound();
 		if(reroll) {
-			val rerolledWounds = fails * probabilityToWound;
-			val allWounds = wounds + rerolledWounds;
-			
-			val rerolledDevastatingWounds = fails * Probability.SIX_UP;
-			val allDevastatingWounds = rules.devastatingWounds() ? devastatingWounds + rerolledDevastatingWounds: 0;
-			return new WoundDicePool(total, allWounds, allDevastatingWounds);
+			return _secondRoll(firstRoll);
 		}
 		
 		return firstRoll;
 	} 
 	
 	/**
-	 * Determines the wound probability of a specifice type of enemy
+	 * The initial dice roll for wounding
 	 */
+	private WoundDicePool _firstRoll(HitDicePool hitDicePool) {
+		val total  = hitDicePool.getResult();
+		val wounds = total * probabilityToWound;
+		
+		val fails = rules.rerollOnesToWound() 
+				? total * Probability.SIX_UP 
+				: total - wounds;
+
+		val devastatingWounds = rules.devastatingWounds() 
+				? total * Probability.SIX_UP 
+				: 0;
+		
+		return new WoundDicePool(total, wounds)
+				.withFails(fails)
+				.withDevastatingWounds(devastatingWounds);
+	}
+	
+	/**
+	 * The reroll of the first roll
+	 */
+	private WoundDicePool _secondRoll(WoundDicePool firstRoll) {
+		val rerolledWounds = firstRoll.getFails() * probabilityToWound;
+		val allWounds = firstRoll.getResult() + rerolledWounds;
+		
+		val rerolledDevastatingWounds = firstRoll.getFails() * Probability.SIX_UP;
+		
+		val allDevastatingWounds = rules.devastatingWounds() 
+				? firstRoll.getDevastatingWounds() + rerolledDevastatingWounds
+				: 0;
+		
+		return new WoundDicePool(0, allWounds)
+				.withDevastatingWounds(allDevastatingWounds);
+	}
+	
+	/**
+	 * Determines the wound probability of a specifice type of enemy
+	 */ 
 	private float _antiType(float originalProbability) {
 		val noAntiType = !rules.antiTypeWeapon();
 		if(noAntiType) {
@@ -55,6 +82,18 @@ public final class WoundDiceRoll extends DiceRoll {
 		}
 		
 		return antiType.probability();
+	}
+	
+	/**
+	 * Determines the wounding probability for all wound dice Rolls
+	 */
+	private float _determineWoundingProbability() {
+		val originalProbability = _compare(weapon.getStrength(), enemy.getToughness());
+		val modifiedProbability = _modifyProbability(originalProbability);
+		 
+		return rules.antiTypeWeapon() 
+				 ? _antiType(modifiedProbability)
+				 : modifiedProbability;
 	}
 	 
 	/**

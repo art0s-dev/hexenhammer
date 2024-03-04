@@ -20,6 +20,7 @@ import core.Weapon.AntiType;
 import core.combat.CombatRules;
 import core.combat.DicePool;
 import core.combat.DiceRoll;
+import core.combat.HitDicePool;
 import core.combat.WoundDicePool;
 import core.combat.WoundDiceRoll;
 import lombok.val;
@@ -28,7 +29,7 @@ import lombok.val;
 class WoundDiceRollTest {
 	
 	private float total = 10;
-	private DicePool dicePool;
+	private HitDicePool dicePool;
 	private Unit unit;
 	private CombatRules rules;
 	private Enemy enemy;
@@ -38,7 +39,7 @@ class WoundDiceRollTest {
 	
 	@BeforeEach
 	void setup(){
-		dicePool = mock(DicePool.class);
+		dicePool = mock(HitDicePool.class);
 		//The wound roll uses the result of the hit roll
 		when(dicePool.getTotal()).thenReturn(0f);
 		when(dicePool.getResult()).thenReturn(total);
