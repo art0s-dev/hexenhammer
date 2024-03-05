@@ -1,4 +1,4 @@
-package utils;
+package arch;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -12,8 +12,13 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 
 import lombok.Getter;
+import utils.ImageServer;
 
-public class BaseView extends Composite {
+/**
+ * The Base View for all Forms in the Software
+ * This is basically an swt view for working in the window builder
+ */
+abstract public class BaseView extends Composite implements View {
 	
 	//Dependencys
 	protected final Composite parent;
@@ -44,12 +49,16 @@ public class BaseView extends Composite {
 	 */
 	protected Group entityEditorGroup;
 	
-	public BaseView(Composite parent) {
+	protected BaseView(Composite parent) {
 		super(parent, SWT.NONE);
 		this.parent = parent;
 		this.imageServer = new ImageServer(parent.getShell().getDisplay());
 		this.setLayout(new GridLayout(12, true));
 	}
+	
+	//The extending class shall implement the interface
+	abstract public void drawList(ModelList modelList);
+	abstract public void drawEditor(Model model);
 	
 	public void draw() {
 		_drawControllingComposite();
@@ -57,7 +66,10 @@ public class BaseView extends Composite {
 		_drawUnitList();
 		_drawEditor();
 	}
-
+	
+	/**
+	 * Implementation for the menu bar
+	 */
 	private void _drawMenu() {
 		CoolBar menuBar = new CoolBar(compositeEntityList, SWT.NONE);
 		GridData menuBarGridData = new GridData(SWT.FILL, SWT.FILL, false, false);
@@ -74,6 +86,9 @@ public class BaseView extends Composite {
 		deleteButton.setToolTipText(DELETE);
 	}
 	
+	/**
+	 * Implementation of the base grid
+	 */
 	private void _drawControllingComposite() {
 		controllingComposite = new Composite(parent, SWT.NONE);
 		controllingComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -101,6 +116,9 @@ public class BaseView extends Composite {
 		selectionList.setLayoutData(listGridData);
 	}
 
+	/**
+	 * Implementation of the basic editor 
+	 */
 	private void _drawEditor() {
 		Composite compositeEntityEditor = new Composite(controllingComposite, SWT.NONE);
 		GridData gridDateUnitEditor = new GridData(SWT.FILL, SWT.FILL, true, true);

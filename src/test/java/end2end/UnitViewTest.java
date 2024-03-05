@@ -47,7 +47,6 @@ public class UnitViewTest {
 		UnitController unitController = new UnitController(view, unitRepo);
 		unitController.loadModels();
 		unitController.initView();
-		
 		unitController.injectListener();
 
 		shell.open();

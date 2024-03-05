@@ -7,7 +7,7 @@ import core.Weapon;
 import lombok.val;
 
 /**
- * Takes the stats of a weapon and fires it at a given target  
+ * Takes the stats of a weapon and fires it at a given target   
  */
 public final class HitDiceRoll extends DiceRoll {
 
@@ -44,10 +44,9 @@ public final class HitDiceRoll extends DiceRoll {
 		
 		val lethalHits = rules.lethalHits() ? sixesInFirstRoll : 0f;
 		val sustainedHits = sixesInFirstRoll * weapon.getSustainedHits();
+		val totalHits = rules.sustainedHits() ? hits + sustainedHits : hits;
 		
-		val hitsAndSustainedHits = rules.sustainedHits() ? hits + sustainedHits : hits;
-		
-		return new HitDicePool(total, hitsAndSustainedHits)
+		return new HitDicePool(total, totalHits)
 				.withLethalHits(lethalHits)
 				.withSustainedHits(sustainedHits)
 				.withMisses(misses)
@@ -68,11 +67,10 @@ public final class HitDiceRoll extends DiceRoll {
 		
 		val rerolledSustainedHits = sixesInSecondRoll * weapon.getSustainedHits();
 		
-		val allHitsBothRerolledAndGenerated = 
-				firstRoll.getHits() + 
-				rerolledHits + 
-				firstRoll.getSustainedHits() + 
-				rerolledSustainedHits;
+		val allHitsBothRerolledAndGenerated = firstRoll.getHits() 
+				+ rerolledHits 
+				+ firstRoll.getSustainedHits() 
+				+ rerolledSustainedHits;
 		
 		return new HitDicePool(total, allHitsBothRerolledAndGenerated)
 				.withLethalHits(rerolledLethalHits);

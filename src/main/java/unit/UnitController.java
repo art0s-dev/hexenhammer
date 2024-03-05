@@ -40,16 +40,16 @@ public class UnitController implements Controller {
 	@Override
 	public void injectListener() { 
 		view.getSelectionList().addSelectionListener(Lambda.select(()->{
-			view.drawEditor(unitList.getUnits().get(getIndex()));
+			view.drawEditor(unitList.getUnits().get(_getIndex()));
 		}));
 		
 		view.getNameInput().addModifyListener(Lambda.modify(()->{
-			Unit selectedUnit = unitList.getUnits().get(getIndex());
+			Unit selectedUnit = unitList.getUnits().get(_getIndex());
 			String newName = view.getNameInput().getText();
 			
 			selectedUnit.setName(newName);
-			unitList.getUnits().set(getIndex(), selectedUnit);
-			view.getSelectionList().setItem(getIndex(), newName);
+			unitList.getUnits().set(_getIndex(), selectedUnit);
+			view.getSelectionList().setItem(_getIndex(), newName);
 		}));
 		
 		view.getAddButton().addSelectionListener(Lambda.select(()->{
@@ -69,7 +69,7 @@ public class UnitController implements Controller {
 				return;
 			}
 			
-			int currentUnit = getIndex();
+			int currentUnit = _getIndex();
 			int unitBeforeDeletedUnit = currentUnit - 1;
 			
 			unitList.getUnits().remove(currentUnit);
@@ -88,7 +88,7 @@ public class UnitController implements Controller {
 		checkboxes.put(view.getCheckBoxIgnoreCover(), SpecialRuleUnit.IGNORE_COVER);
 		
 		checkboxes.forEach((btn, rule) -> {
-			btn.addSelectionListener(Lambda.select(() -> toggle(btn, rule)));
+			btn.addSelectionListener(Lambda.select(() -> _toggle(btn, rule)));
 		});
 		
 	}
@@ -98,7 +98,7 @@ public class UnitController implements Controller {
 		// TODO Auto-generated method stub
 	}
 	
-	private void toggle(Button btn, SpecialRuleUnit rule) {
+	private void _toggle(Button btn, SpecialRuleUnit rule) {
 		int index = view.getSelectionList().getSelectionIndex();
 		Unit selectedUnit = unitList.getUnits().get(index);
 		boolean selected = btn.getSelection();
@@ -108,11 +108,9 @@ public class UnitController implements Controller {
 		} else {
 			selectedUnit.remove(rule);
 		}
-		
-		unitList.getUnits().set(index, selectedUnit);
 	}
 	
-	private int getIndex() {
+	private int _getIndex() {
 		return view.getSelectionList().getSelectionIndex();
 	}
 	

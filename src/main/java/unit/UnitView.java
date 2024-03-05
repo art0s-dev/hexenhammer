@@ -3,6 +3,7 @@ package unit;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
+import arch.BaseView;
 import arch.Model;
 import arch.ModelList;
 import arch.View;
@@ -10,18 +11,17 @@ import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
 import lombok.val;
-import utils.BaseView;
 import utils.ButtonFactory;
 
-public final class UnitView extends BaseView implements View {
+public final class UnitView extends BaseView {
 	
 	//Language Strings
 	protected final static String ADD = "Klick here, to add an entry to the chosen tab list";
 	protected final static String DELETE = "Klick here, to delete the selected entry from the chosen tab";
-	private final static String TAB_NAME = "Units";
-	private final static String LIST_VIEW = "Your units";
-	private final static String GROUP_NAME = "Special Rules";
-	private final static String UNIT_NAME = "Display name";
+	protected final static String TAB_NAME = "Units";
+	protected final static String LIST_VIEW = "Your units";
+	protected final static String GROUP_NAME = "Special Rules";
+	protected final static String UNIT_NAME = "Display name";
 	private final static String ADD_ONE_TO_HIT = "Add one to hit";
 	private final static String HAS_LETHAL_HITS = "Has Lethal hits";
 	private final static String REROLL_ONES_TO_HIT = "Reroll ones to hit";
