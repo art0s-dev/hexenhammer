@@ -5,6 +5,9 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * A small class for loading Images 
+ */
 public class ImageServer {
 	private static final int DEFAULT_BUTTON_HEIGHT = 20;
 	private static final String BUTTON_PATH = "assets/buttons/";
@@ -17,6 +20,9 @@ public class ImageServer {
 		this.display = display;
 	}
 	
+	/**
+	 * Loads a squared Image from a static path 
+	 */
 	public Image createImageForButton(String name) {
         LOADER.load(BUTTON_PATH + name + BUTTON_FILE_TYPE);
         ImageData[] imageDataArray = LOADER.data;

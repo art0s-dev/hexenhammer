@@ -6,6 +6,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * Use this class if you need
+ * to paint like 20 Checkboxes and you don't want to manually
+ * define all buttons
+ */
 public class ButtonFactory {
 	private final Composite parent;
 	

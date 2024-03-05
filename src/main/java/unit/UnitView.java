@@ -6,7 +6,6 @@ import org.eclipse.swt.widgets.Composite;
 import arch.BaseView;
 import arch.Model;
 import arch.ModelList;
-import arch.View;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import lombok.Getter;

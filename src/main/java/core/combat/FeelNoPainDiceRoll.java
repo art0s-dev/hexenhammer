@@ -3,8 +3,6 @@ package core.combat;
 import core.Enemy;
 import core.Unit;
 import core.Weapon;
-import lombok.AllArgsConstructor;
-import lombok.Generated;
 import lombok.val;
 
 /**
