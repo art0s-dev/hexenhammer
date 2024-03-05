@@ -39,44 +39,14 @@ public class UnitController implements Controller {
 
 	@Override
 	public void injectListener() { 
-		view.getSelectionList().addSelectionListener(Lambda.select(()->{
-			view.drawEditor(unitList.getUnits().get(_getIndex()));
-		}));
-		
-		view.getNameInput().addModifyListener(Lambda.modify(()->{
-			Unit selectedUnit = unitList.getUnits().get(_getIndex());
-			String newName = view.getNameInput().getText();
-			
-			selectedUnit.setName(newName);
-			unitList.getUnits().set(_getIndex(), selectedUnit);
-			view.getSelectionList().setItem(_getIndex(), newName);
-		}));
-		
-		view.getAddButton().addSelectionListener(Lambda.select(()->{
-			String nameOfNewUnit = "New unit";
-			view.getSelectionList().add(nameOfNewUnit);
-			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
-			
-			Unit unit = new Unit();
-			unit.setName(nameOfNewUnit);
-			unitList.getUnits().add(unit);
-			view.getSelectionList().notifyListeners(SWT.Selection, new Event());
-		}));
-		
-		view.getDeleteButton().addSelectionListener(Lambda.select(()->{
-			val thereAreNoUnits = unitList.getUnits().isEmpty();
-			if(thereAreNoUnits) {
-				return;
-			}
-			
-			int currentUnit = _getIndex();
-			int unitBeforeDeletedUnit = currentUnit - 1;
-			
-			unitList.getUnits().remove(currentUnit);
-			view.drawList(unitList);
-			view.getSelectionList().select(unitBeforeDeletedUnit);
-		}));
-		
+		_injectSelectionListListener();
+		_injectNameInputListener();
+		_injectAddListener();
+		_injectRemoveListener();
+		_injectCheckboxesListeners();
+	}
+
+	private void _injectCheckboxesListeners() {
 		HashMap<Button, SpecialRuleUnit> checkboxes = new HashMap<>();
 		checkboxes.put(view.getCheckBoxAddOneToHit(), SpecialRuleUnit.ADD_ONE_TO_HIT);
 		checkboxes.put(view.getCheckBoxLethalHits(), SpecialRuleUnit.LETHAL_HITS);
@@ -90,7 +60,52 @@ public class UnitController implements Controller {
 		checkboxes.forEach((btn, rule) -> {
 			btn.addSelectionListener(Lambda.select(() -> _toggle(btn, rule)));
 		});
-		
+	}
+
+	private void _injectRemoveListener() {
+		view.getDeleteButton().addSelectionListener(Lambda.select(()->{
+			val thereAreNoUnits = unitList.getUnits().isEmpty();
+			if(thereAreNoUnits) {
+				return;
+			}
+			
+			int currentUnit = _getIndex();
+			int unitBeforeDeletedUnit = currentUnit - 1;
+			
+			unitList.getUnits().remove(currentUnit);
+			view.drawList(unitList);
+			view.getSelectionList().select(unitBeforeDeletedUnit);
+		}));
+	}
+
+	private void _injectAddListener() {
+		view.getAddButton().addSelectionListener(Lambda.select(()->{
+			String nameOfNewUnit = "New unit";
+			view.getSelectionList().add(nameOfNewUnit);
+			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
+			
+			Unit unit = new Unit();
+			unit.setName(nameOfNewUnit);
+			unitList.getUnits().add(unit);
+			view.getSelectionList().notifyListeners(SWT.Selection, new Event());
+		}));
+	}
+
+	private void _injectNameInputListener() {
+		view.getNameInput().addModifyListener(Lambda.modify(()->{
+			Unit selectedUnit = unitList.getUnits().get(_getIndex());
+			String newName = view.getNameInput().getText();
+			
+			selectedUnit.setName(newName);
+			unitList.getUnits().set(_getIndex(), selectedUnit);
+			view.getSelectionList().setItem(_getIndex(), newName);
+		}));
+	}
+
+	private void _injectSelectionListListener() {
+		view.getSelectionList().addSelectionListener(Lambda.select(()->{
+			view.drawEditor(unitList.getUnits().get(_getIndex()));
+		}));
 	}
 
 	@Override
@@ -113,9 +128,4 @@ public class UnitController implements Controller {
 	private int _getIndex() {
 		return view.getSelectionList().getSelectionIndex();
 	}
-	
-	
-
-	
-
 }
