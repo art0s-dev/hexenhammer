@@ -26,6 +26,7 @@ import unit.UnitList;
 import unit.UnitRepository;
 import unit.UnitView;
 import unittests.gui.SWTGuiTestCase;
+import utils.I18n;
 
 @TestMethodOrder(MethodOrderer.Random.class)
 class UnitControllerTest extends SWTGuiTestCase {
@@ -41,7 +42,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 	void setupEach() {
 		unit1 = mock(Unit.class);
 		unit2 = mock(Unit.class);
-		view = new UnitView(new TabFolder(shell, SWT.NONE));
+		view = new UnitView(new TabFolder(shell, SWT.NONE), mock(I18n.class));
 	}
 
 	@Test
@@ -55,10 +56,10 @@ class UnitControllerTest extends SWTGuiTestCase {
 		
 		List selectionList = view.getSelectionList();
 		selectionList.select(0);
-		assertTrue(view.getNameInput().getText().equals(nameUnit1));
+		assertTrue(view.getInputName().getText().equals(nameUnit1));
 		selectionList.setSelection(1);
 		selectionList.notifyListeners(SWT.Selection, new Event());
-		assertTrue(view.getNameInput().getText().equals(nameUnit2));
+		assertTrue(view.getInputName().getText().equals(nameUnit2));
 	}
 	
 	@Test
@@ -74,15 +75,15 @@ class UnitControllerTest extends SWTGuiTestCase {
 		String newUnitName = "My new testable unit";
 		List selectionList = view.getSelectionList();
 		selectionList.select(0);
-		assertTrue(view.getNameInput().getText().equals(nameUnit1));
-		view.getNameInput().setText(newUnitName);
-		view.getNameInput().notifyListeners(SWT.Modify, new Event());
+		assertTrue(view.getInputName().getText().equals(nameUnit1));
+		view.getInputName().setText(newUnitName);
+		view.getInputName().notifyListeners(SWT.Modify, new Event());
 		
 		selectionList.select(1);
 		selectionList.notifyListeners(SWT.Selection, new Event());
 		selectionList.select(0);
 		selectionList.notifyListeners(SWT.Selection, new Event());
-		assertTrue(view.getNameInput().getText().equals(newUnitName));
+		assertTrue(view.getInputName().getText().equals(newUnitName));
 	}
 
 	@Test

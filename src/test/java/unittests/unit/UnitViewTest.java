@@ -19,6 +19,7 @@ import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import unit.UnitView;
 import unittests.gui.SWTGuiTestCase;
+import utils.I18n;
 
 class UnitViewTest extends SWTGuiTestCase {
 	
@@ -28,7 +29,7 @@ class UnitViewTest extends SWTGuiTestCase {
 	@BeforeEach
 	void setup() {
 		TabFolder mainTab = new TabFolder(shell, SWT.NONE);
-		view = new UnitView(shell);
+		view = new UnitView(shell, mock(I18n.class));
 		view.draw();
 		selectionTriggerWasActivated = false;
 	}

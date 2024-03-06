@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 
 import lombok.Getter;
+import utils.I18n;
 import utils.ImageServer;
 
 /**
@@ -23,24 +24,17 @@ abstract public class BaseView extends Composite implements View {
 	//Dependencys
 	protected final Composite parent;
 	protected final ImageServer imageServer;
+	protected final I18n i18n;
 	
 	//Internal Attributes
 	private Composite controllingComposite;
 	private Composite compositeEntityList;
 	
-	//Language Strings - these can be overwritten in the extending class to specify the string
-	protected final static String TAB_NAME = "Template";
-	protected final static String ADD = "Klick here, to add an entry to the chosen tab list";
-	protected final static String DELETE = "Klick here, to delete the selected entry from the chosen tab";
-	protected final static String LIST_VIEW = "Your Entities";
-	protected final static String GROUP_NAME = "Special Rules";
-	protected final static String UNIT_NAME = "Display name";
-	
 	//"Puppet strings" for the controller
-	@Getter protected List selectionList;
 	@Getter protected Button addButton;
 	@Getter protected Button deleteButton;
-	@Getter protected Text nameInput;
+	@Getter protected List selectionList;
+	@Getter protected Text inputName;
 
 	/**
 	 * You can use this to expand the editor.
@@ -48,9 +42,11 @@ abstract public class BaseView extends Composite implements View {
 	 * in order to add thing to the grid
 	 */
 	protected Group entityEditorGroup;
+	protected Group entityListGroup;
 	
-	protected BaseView(Composite parent) {
+	protected BaseView(Composite parent, I18n i18n) {
 		super(parent, SWT.NONE);
+		this.i18n = i18n;
 		this.parent = parent;
 		this.imageServer = new ImageServer(parent.getShell().getDisplay());
 		this.setLayout(new GridLayout(12, true));
@@ -68,7 +64,7 @@ abstract public class BaseView extends Composite implements View {
 	}
 	
 	/**
-	 * Implementation for the menu bar
+	 * Implementation for the menu bar 
 	 */
 	private void _drawMenu() {
 		CoolBar menuBar = new CoolBar(compositeEntityList, SWT.NONE);
@@ -79,11 +75,11 @@ abstract public class BaseView extends Composite implements View {
 		
 		addButton = new Button(menuBar, SWT.PUSH);
 		addButton.setImage(imageServer.createImageForButton("plus"));
-		addButton.setToolTipText(ADD);
+		addButton.setToolTipText(i18n.get("arch.BaseView.listView.addButtonToolTip"));
 		
 		deleteButton = new Button(menuBar, SWT.PUSH);
 		deleteButton.setImage(imageServer.createImageForButton("trash-can"));
-		deleteButton.setToolTipText(DELETE);
+		deleteButton.setToolTipText(i18n.get("arch.BaseView.listView.deleteButtonToolTip"));
 	}
 	
 	/**
@@ -102,8 +98,8 @@ abstract public class BaseView extends Composite implements View {
 	}
 
 	private void _drawUnitList() {
-		Group entityListGroup = new Group(compositeEntityList, SWT.VERTICAL); 
-		entityListGroup.setText(LIST_VIEW);
+		entityListGroup = new Group(compositeEntityList, SWT.VERTICAL); 
+		entityListGroup.setText(i18n.get("arch.BaseView.listView.label"));
 		entityListGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		entityListGroup.setLayout(new GridLayout(1, true));
 		
@@ -127,16 +123,16 @@ abstract public class BaseView extends Composite implements View {
 		compositeEntityEditor.setLayout(new GridLayout(1, true));
 		
 		entityEditorGroup = new Group(compositeEntityEditor, SWT.NONE);
-		entityEditorGroup.setText(GROUP_NAME);
+		entityEditorGroup.setText(i18n.get("arch.BaseView.editor.groupName"));
 		entityEditorGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		entityEditorGroup.setLayout(new GridLayout(4, true));
 		
 		Label nameLabel = new Label(entityEditorGroup, SWT.NONE);
-		nameLabel.setText(UNIT_NAME); 
-		nameInput = new Text(entityEditorGroup, SWT.NONE);
+		nameLabel.setText(i18n.get("arch.BaseView.editor.inputNameLabel")); 
+		inputName = new Text(entityEditorGroup, SWT.NONE);
 		GridData nameInputGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		nameInputGridData.horizontalSpan = 3;
-		nameInput.setLayoutData(nameInputGridData);
+		inputName.setLayoutData(nameInputGridData);
 		
 		Label placeholder = new Label(entityEditorGroup, SWT.NONE);
 		GridData placeholderGridData = new GridData(SWT.FILL, SWT.FILL, true, false);

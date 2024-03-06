@@ -1,12 +1,10 @@
 package end2end;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
 
+import utils.I18n;
 import weapon.WeaponView;
 
 public class WeaponViewTest {
@@ -16,13 +14,12 @@ public class WeaponViewTest {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell();
+		shell.setSize(1200, 900);
 		shell.setLayout(new GridLayout(1, true));
 		
-		TabFolder mainTab = new TabFolder(shell, SWT.NONE);
-		mainTab.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		WeaponView view = new WeaponView(mainTab);
+		WeaponView view = new WeaponView(shell, new I18n());
 		view.draw();
-
+		
 		shell.open();
 		while (!shell.isDisposed ()) {
 			if (!display.readAndDispatch ()) {

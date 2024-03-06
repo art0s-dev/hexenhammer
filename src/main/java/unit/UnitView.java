@@ -11,16 +11,13 @@ import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
 import lombok.val;
 import utils.ButtonFactory;
+import utils.I18n;
 
 public final class UnitView extends BaseView {
 	
 	//Language Strings
-	protected final static String ADD = "Klick here, to add an entry to the chosen tab list";
-	protected final static String DELETE = "Klick here, to delete the selected entry from the chosen tab";
-	protected final static String TAB_NAME = "Units";
-	protected final static String LIST_VIEW = "Your units";
-	protected final static String GROUP_NAME = "Special Rules";
-	protected final static String UNIT_NAME = "Display name";
+	
+	
 	private final static String ADD_ONE_TO_HIT = "Add one to hit";
 	private final static String HAS_LETHAL_HITS = "Has Lethal hits";
 	private final static String REROLL_ONES_TO_HIT = "Reroll ones to hit";
@@ -40,8 +37,8 @@ public final class UnitView extends BaseView {
 	@Getter private Button checkBoxRerollWound;
 	@Getter private Button checkBoxIgnoreCover;
 	
-	public UnitView(Composite parent) {
-		super(parent);
+	public UnitView(Composite parent, I18n i18n) {
+		super(parent, i18n);
 	}
 	
 	@Override
@@ -78,7 +75,7 @@ public final class UnitView extends BaseView {
 		}
 		
 		val unitHasNoName = unit.getName() == null;
-		nameInput.setText(unitHasNoName ? "" : unit.getName());
+		inputName.setText(unitHasNoName ? "" : unit.getName());
 		
 		checkBoxAddOneToHit.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_HIT));
 		checkBoxLethalHits.setSelection(unit.has(SpecialRuleUnit.LETHAL_HITS));

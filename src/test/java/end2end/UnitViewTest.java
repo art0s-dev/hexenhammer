@@ -15,6 +15,7 @@ import unit.UnitController;
 import unit.UnitList;
 import unit.UnitRepository;
 import unit.UnitView;
+import utils.I18n;
 
 public class UnitViewTest {
 	
@@ -27,7 +28,9 @@ public class UnitViewTest {
 		shell.setSize(1200, 900);
 		shell.setLayout(new GridLayout(1, true));
 		
-		UnitView view = new UnitView(shell);
+		I18n i18n = new I18n();
+		i18n.setLanguage(I18n.german());
+		UnitView view = new UnitView(shell, i18n);
 		Unit spaceMarines = new Unit();
 		spaceMarines.setName("My new favorite unit");
 		spaceMarines.add(SpecialRuleUnit.LETHAL_HITS);

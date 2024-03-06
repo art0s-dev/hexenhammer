@@ -7,6 +7,7 @@ import core.Enemy.Type;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Generated;
+import lombok.Getter;
 
 /**
  * The Weapons should just contain values
@@ -15,6 +16,7 @@ import lombok.Generated;
  */
 @Data @Generated @Builder
 public class Weapon {
+	@Getter private String name;
 	//is float because we can use 2.5 as default for a d6
 	private float attacks;
 	private float toHit;

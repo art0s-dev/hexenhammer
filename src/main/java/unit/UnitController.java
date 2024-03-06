@@ -92,9 +92,9 @@ public class UnitController implements Controller {
 	}
 
 	private void _injectNameInputListener() {
-		view.getNameInput().addModifyListener(Lambda.modify(()->{
+		view.getInputName().addModifyListener(Lambda.modify(()->{
 			Unit selectedUnit = unitList.getUnits().get(_getIndex());
-			String newName = view.getNameInput().getText();
+			String newName = view.getInputName().getText();
 			
 			selectedUnit.setName(newName);
 			unitList.getUnits().set(_getIndex(), selectedUnit);
