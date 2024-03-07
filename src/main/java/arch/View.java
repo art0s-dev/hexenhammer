@@ -28,4 +28,10 @@ public interface View {
 	void drawEditor(Model model);
 	
 
+	/**
+	 * Translates all labels and texts in the
+	 * current chosen language which is set via
+	 * the i18n object
+	 */
+	void translate();
 }

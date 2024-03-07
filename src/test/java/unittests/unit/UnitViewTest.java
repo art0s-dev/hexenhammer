@@ -29,7 +29,7 @@ class UnitViewTest extends SWTGuiTestCase {
 	@BeforeEach
 	void setup() {
 		TabFolder mainTab = new TabFolder(shell, SWT.NONE);
-		view = new UnitView(shell, mock(I18n.class));
+		view = new UnitView(shell, new I18n());
 		view.draw();
 		selectionTriggerWasActivated = false;
 	}

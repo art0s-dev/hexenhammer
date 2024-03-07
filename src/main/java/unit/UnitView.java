@@ -15,19 +15,6 @@ import utils.I18n;
 
 public final class UnitView extends BaseView {
 	
-	//Language Strings
-	
-	
-	private final static String ADD_ONE_TO_HIT = "Add one to hit";
-	private final static String HAS_LETHAL_HITS = "Has Lethal hits";
-	private final static String REROLL_ONES_TO_HIT = "Reroll ones to hit";
-	private final static String REROLL_HIT_ROLL = "Reroll hit roll";
-	private final static String ADD_ONE_TO_WOUND = "Add one to wound";
-	private final static String REROLL_ONES_TO_WOUND = "Reroll ones to wound";
-	private final static String REROLL_WOUND_ROLL = "Reroll wound roll";
-	private final static String IGNORE_COVER = "Ignore cover";
-	
-	//"Puppet strings" for the controller
 	@Getter private Button checkBoxAddOneToHit;
 	@Getter private Button checkBoxLethalHits;
 	@Getter private Button checkBoxRerollOnesToHit;
@@ -45,6 +32,22 @@ public final class UnitView extends BaseView {
 	public void draw() {
 		super.draw();
 		_initializeCheckBoxes();
+		translate();
+	}
+	
+	@Override
+	public void translate() {
+		super.translate();
+		
+		checkBoxAddOneToHit.setText(i18n.get("unit.UnitView.editor.checkBoxAddOneToHit"));
+		checkBoxLethalHits.setText(i18n.get("unit.UnitView.editor.checkBoxLethalHits"));
+		checkBoxRerollOnesToHit.setText(i18n.get("unit.UnitView.editor.checkRerollOnesToHit"));
+		checkBoxRerollHitRoll.setText(i18n.get("unit.UnitView.editor.checkBoxRerollHitRoll"));
+		
+		checkBoxAddOneToWound.setText(i18n.get("unit.UnitView.editor.checkBoxAddOneToWoundRoll"));
+		checkBoxRerollOnesToWound.setText(i18n.get("unit.UnitView.editor.checkBoxRerollOnesToWound"));
+		checkBoxRerollWound.setText(i18n.get("unit.UnitView.editor.checkBoxRerollWoundRoll"));
+		checkBoxIgnoreCover.setText(i18n.get("unit.UnitView.editor.checkBoxIgnoreCover"));
 	}
 	
 	@Override
@@ -87,17 +90,37 @@ public final class UnitView extends BaseView {
 		checkBoxRerollWound.setSelection(unit.has(SpecialRuleUnit.REROLL_WOUND_ROLL));
 		checkBoxIgnoreCover.setSelection(unit.has(SpecialRuleUnit.IGNORE_COVER));
 	}
-
+	
 	private void _initializeCheckBoxes() {
 		ButtonFactory buttonFactory = new ButtonFactory(entityEditorGroup);
-		checkBoxAddOneToHit = buttonFactory.createCheckBox(ADD_ONE_TO_HIT);
-		checkBoxLethalHits = buttonFactory.createCheckBox(HAS_LETHAL_HITS);
-		checkBoxRerollOnesToHit = buttonFactory.createCheckBox(REROLL_ONES_TO_HIT);
-		checkBoxRerollHitRoll = buttonFactory.createCheckBox(REROLL_HIT_ROLL);
+		checkBoxAddOneToHit = buttonFactory.createCheckBox();
+		checkBoxLethalHits = buttonFactory.createCheckBox();
+		checkBoxRerollOnesToHit = buttonFactory.createCheckBox();
+		checkBoxRerollHitRoll = buttonFactory.createCheckBox();
 		
-		checkBoxAddOneToWound = buttonFactory.createCheckBox(ADD_ONE_TO_WOUND);
-		checkBoxRerollOnesToWound = buttonFactory.createCheckBox(REROLL_ONES_TO_WOUND);
-		checkBoxRerollWound = buttonFactory.createCheckBox(REROLL_WOUND_ROLL);
-		checkBoxIgnoreCover = buttonFactory.createCheckBox(IGNORE_COVER);
+		checkBoxAddOneToWound = buttonFactory.createCheckBox();
+		checkBoxRerollOnesToWound = buttonFactory.createCheckBox();
+		checkBoxRerollWound = buttonFactory.createCheckBox();
+		checkBoxIgnoreCover = buttonFactory.createCheckBox();
+	}
+	
+	@Override
+	protected String defineAddButtonToolTip() { 
+		return "unit.UnitView.listView.addButtonToolTip";
+	}
+	
+	@Override
+	protected String defineDeleteButtonToolTip() {
+		return "unit.UnitView.listView.deleteButtonToolTip";
+	}
+	
+	@Override
+	protected String defineListViewLabel() {
+		return "unit.UnitView.listView.label";
+	}
+	
+	@Override
+	protected String defineEditorGroupName() {
+		return "unit.UnitView.editor.groupName";
 	}
 }

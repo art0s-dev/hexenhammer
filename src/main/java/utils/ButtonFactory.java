@@ -20,9 +20,8 @@ public class ButtonFactory {
 		this.parent = parent;
 	}
 	
-	public Button createCheckBox(String label) {
+	public Button createCheckBox() {
 		Button button = new Button(parent, SWT.CHECK);
-		button.setText(label);
 		button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		return button;
 	}

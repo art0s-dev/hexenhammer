@@ -42,7 +42,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 	void setupEach() {
 		unit1 = mock(Unit.class);
 		unit2 = mock(Unit.class);
-		view = new UnitView(new TabFolder(shell, SWT.NONE), mock(I18n.class));
+		view = new UnitView(new TabFolder(shell, SWT.NONE), new I18n());
 	}
 
 	@Test

@@ -29,6 +29,7 @@ abstract public class BaseView extends Composite implements View {
 	//Internal Attributes
 	private Composite controllingComposite;
 	private Composite compositeEntityList;
+	private Label inputNameLabel;
 	
 	//"Puppet strings" for the controller
 	@Getter protected Button addButton;
@@ -59,32 +60,18 @@ abstract public class BaseView extends Composite implements View {
 	public void draw() {
 		_drawControllingComposite();
 		_drawMenu();
-		_drawUnitList();
+		_drawEntityList();
 		_drawEditor();
 	}
-	
-	/**
-	 * Implementation for the menu bar 
-	 */
-	private void _drawMenu() {
-		CoolBar menuBar = new CoolBar(compositeEntityList, SWT.NONE);
-		GridData menuBarGridData = new GridData(SWT.FILL, SWT.FILL, false, false);
-		menuBarGridData.verticalSpan = 8;
-		menuBar.setLayoutData(menuBarGridData);
-		menuBar.setLayout(new GridLayout(2, true));
-		
-		addButton = new Button(menuBar, SWT.PUSH);
-		addButton.setImage(imageServer.createImageForButton("plus"));
-		addButton.setToolTipText(i18n.get("arch.BaseView.listView.addButtonToolTip"));
-		
-		deleteButton = new Button(menuBar, SWT.PUSH);
-		deleteButton.setImage(imageServer.createImageForButton("trash-can"));
-		deleteButton.setToolTipText(i18n.get("arch.BaseView.listView.deleteButtonToolTip"));
+
+	public void translate() {
+		addButton.setToolTipText(i18n.get(defineAddButtonToolTip()));
+		deleteButton.setToolTipText(i18n.get(defineDeleteButtonToolTip()));
+		entityListGroup.setText(i18n.get(defineListViewLabel()));
+		entityEditorGroup.setText(i18n.get(defineEditorGroupName()));
+		inputNameLabel.setText(i18n.get("arch.BaseView.editor.inputNameLabel")); 
 	}
 	
-	/**
-	 * Implementation of the base grid
-	 */
 	private void _drawControllingComposite() {
 		controllingComposite = new Composite(parent, SWT.NONE);
 		controllingComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -96,10 +83,23 @@ abstract public class BaseView extends Composite implements View {
 		compositeEntityList.setLayoutData(gridDataCompositeUnitList);
 		compositeEntityList.setLayout(new GridLayout(1, true));
 	}
+	
+	private void _drawMenu() {
+		CoolBar menuBar = new CoolBar(compositeEntityList, SWT.NONE);
+		GridData menuBarGridData = new GridData(SWT.FILL, SWT.FILL, false, false);
+		menuBarGridData.verticalSpan = 8;
+		menuBar.setLayoutData(menuBarGridData);
+		menuBar.setLayout(new GridLayout(2, true));
+		
+		addButton = new Button(menuBar, SWT.PUSH);
+		addButton.setImage(imageServer.createImageForButton("plus"));
+		
+		deleteButton = new Button(menuBar, SWT.PUSH);
+		deleteButton.setImage(imageServer.createImageForButton("trash-can"));
+	}
 
-	private void _drawUnitList() {
+	private void _drawEntityList() {
 		entityListGroup = new Group(compositeEntityList, SWT.VERTICAL); 
-		entityListGroup.setText(i18n.get("arch.BaseView.listView.label"));
 		entityListGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		entityListGroup.setLayout(new GridLayout(1, true));
 		
@@ -112,9 +112,6 @@ abstract public class BaseView extends Composite implements View {
 		selectionList.setLayoutData(listGridData);
 	}
 
-	/**
-	 * Implementation of the basic editor 
-	 */
 	private void _drawEditor() {
 		Composite compositeEntityEditor = new Composite(controllingComposite, SWT.NONE);
 		GridData gridDateUnitEditor = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -123,12 +120,10 @@ abstract public class BaseView extends Composite implements View {
 		compositeEntityEditor.setLayout(new GridLayout(1, true));
 		
 		entityEditorGroup = new Group(compositeEntityEditor, SWT.NONE);
-		entityEditorGroup.setText(i18n.get("arch.BaseView.editor.groupName"));
 		entityEditorGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		entityEditorGroup.setLayout(new GridLayout(4, true));
 		
-		Label nameLabel = new Label(entityEditorGroup, SWT.NONE);
-		nameLabel.setText(i18n.get("arch.BaseView.editor.inputNameLabel")); 
+		inputNameLabel = new Label(entityEditorGroup, SWT.NONE);
 		inputName = new Text(entityEditorGroup, SWT.NONE);
 		GridData nameInputGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		nameInputGridData.horizontalSpan = 3;
@@ -139,5 +134,21 @@ abstract public class BaseView extends Composite implements View {
 		placeholderGridData.horizontalSpan = 4;
 		placeholder.setLayoutData(placeholderGridData);
 	}
-
+	
+	protected String defineAddButtonToolTip() { 
+		return "arch.BaseView.listView.addButtonToolTip";
+	}
+	
+	protected String defineDeleteButtonToolTip() {
+		return "arch.BaseView.listView.deleteButtonToolTip";
+	}
+	
+	protected String defineListViewLabel() {
+		return "arch.BaseView.listView.label";
+	}
+	
+	protected String defineEditorGroupName() {
+		return "arch.BaseView.editor.groupName";
+	}
+	
 }
