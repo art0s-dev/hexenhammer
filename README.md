@@ -19,8 +19,8 @@ In order to achieve this we use the simple input-process-output model. You enter
 weapons into the editor and choose how the data is filtered and presented to you.
 
 ## Roadmap to Hexenhammer
-Here we have all our goals listed to get an MVP out to alpha. The MVP shall contain a usable program 
-to 
+Here we have all our goals listed to get an MVP out to alpha. The MVP shall contain a usable program.
+From there on we will implement the most useful features step by step to deliver the best user experience.
 
 - [x] - Start of the project
 - [x] - Core
