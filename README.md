@@ -22,17 +22,17 @@ weapons into the editor and choose how the data is filtered and presented to you
 Here we have all our goals listed to get an MVP out to alpha. The MVP shall contain a usable program 
 to 
 
-[x] - Start of the project
-[x] - Core
-[x] - architecture
-[x] - Units form
-[ ] - Weapons form
-[ ] - Weapon "arsenal" (attaching weapons to units)
-[ ] - Statistic Module (MVP) - Early alpha possible
-[ ] - Save & Load Mechanism
-[ ] - Introducing Factions
-[ ] - Quality of life improvements for the user interface
-[ ] - Battlescribe API 
+- [x] - Start of the project
+- [x] - Core
+- [x] - architecture
+- [x] - Units form
+- [ ] - Weapons form
+- [ ] - Weapon "arsenal" (attaching weapons to units)
+- [ ] - Statistic Module (MVP) - Early alpha possible
+- [ ] - Save & Load Mechanism
+- [ ] - Introducing Factions
+- [ ] - Quality of life improvements for the user interface
+- [ ] - Battlescribe API 
 
 ## Documentation
 Further Design documentation can be found under the folder documentation.
