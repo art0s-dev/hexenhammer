@@ -19,7 +19,7 @@ import utils.ImageServer;
  * The Base View for all Forms in the Software
  * This is basically an swt view for working in the window builder
  */
-abstract public class BaseView extends Composite implements View {
+abstract public class BaseView implements View {
 	
 	//Dependencys
 	protected final Composite parent;
@@ -46,11 +46,9 @@ abstract public class BaseView extends Composite implements View {
 	protected Group entityListGroup;
 	
 	protected BaseView(Composite parent, I18n i18n) {
-		super(parent, SWT.NONE);
 		this.i18n = i18n;
 		this.parent = parent;
 		this.imageServer = new ImageServer(parent.getShell().getDisplay());
-		this.setLayout(new GridLayout(12, true));
 	}
 	
 	//The extending class shall implement the interface
