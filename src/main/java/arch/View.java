@@ -26,7 +26,6 @@ public interface View {
 	 * @param model
 	 */
 	void drawEditor(Model model);
-	
 
 	/**
 	 * Translates all labels and texts in the

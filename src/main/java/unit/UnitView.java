@@ -1,7 +1,17 @@
 package unit;
 
+import java.util.HashMap;
+import java.util.function.Function;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Spinner;
 
 import arch.BaseView;
 import arch.Model;
@@ -9,12 +19,25 @@ import arch.ModelList;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.val;
-import utils.ButtonFactory;
+import utils.GuiFactory;
 import utils.I18n;
 
 public final class UnitView extends BaseView {
+
+	//Profile
+	@Getter private Spinner inputMovement;
+	@Getter private Spinner inputToughness;
+	@Getter private Combo inputArmorSave;
+	@Getter private Spinner inputHitPoints;
+	@Getter private Spinner inputLeadership;
+	@Getter private Spinner inputObjectControl;
+	@Getter private Combo inputInvulnerableSave;
+	@Getter private Combo inputFeelNoPain;
+	@Getter private Combo inputType;
 	
+	//Special Rules
 	@Getter private Button checkBoxAddOneToHit;
 	@Getter private Button checkBoxLethalHits;
 	@Getter private Button checkBoxRerollOnesToHit;
@@ -24,6 +47,57 @@ public final class UnitView extends BaseView {
 	@Getter private Button checkBoxRerollWound;
 	@Getter private Button checkBoxIgnoreCover;
 	
+	//Labels
+	private Group unitSpecialRules;
+	private Label inputLabelMovement;
+	private Label inputLabelToughness;
+	private Label inputLabelWounds;
+	private Label inputLabelLeadership;
+	private Label inputLabelObjectControl;
+	private Label inputLabelInvulnerableSave;
+	private Label inputLabelFeelNoPain;
+	private Label inputLabelArmorSave;
+	private Label inputLabelType;
+	
+	/**
+	 * This is the listing for the unit types that can be chosen  
+	 */
+	private static HashMap<Integer, String> UNIT_TYPES = new HashMap<>();
+	static {
+		String prefix = "unit.UnitView.editor.unitType.";
+		UNIT_TYPES.put(0, prefix + "infantry");
+		UNIT_TYPES.put(1, prefix + "monster");
+		UNIT_TYPES.put(2, prefix + "vehicle");
+	}
+	
+	/**
+	 * Maps the selectable Combo options of the unit type
+	 * to an enum for further processing
+	 */
+	public static Unit.Type mapUnitTypeComboSelectionToEnum(int index) {
+		return switch (index) {
+			case 1 -> Unit.Type.MONSTER;
+			case 2 -> Unit.Type.VEHICLE;
+			default -> Unit.Type.INFANTRY;
+		};
+	}
+	
+	/**
+	 * Maps a given unit type to the combo selection index
+	 */
+	public static int mapTypeEnumToComboSelection(Unit.Type type) {
+		if(type == null) {
+			//This is mainly caused by the mocks
+			return 0; 
+		}
+		
+		return switch (type) {
+			case Unit.Type.MONSTER -> 1;
+			case Unit.Type.VEHICLE -> 2;
+			default -> 0; //Infantry
+		};
+	}
+	
 	public UnitView(Composite parent, I18n i18n) {
 		super(parent, i18n);
 	}
@@ -31,6 +105,8 @@ public final class UnitView extends BaseView {
 	@Override
 	public void draw() {
 		super.draw();
+		_initializeProfileInputs();
+		_initializeUnitTypeCombo();
 		_initializeCheckBoxes();
 		translate();
 	}
@@ -38,16 +114,9 @@ public final class UnitView extends BaseView {
 	@Override
 	public void translate() {
 		super.translate();
-		
-		checkBoxAddOneToHit.setText(i18n.get("unit.UnitView.editor.checkBoxAddOneToHit"));
-		checkBoxLethalHits.setText(i18n.get("unit.UnitView.editor.checkBoxLethalHits"));
-		checkBoxRerollOnesToHit.setText(i18n.get("unit.UnitView.editor.checkRerollOnesToHit"));
-		checkBoxRerollHitRoll.setText(i18n.get("unit.UnitView.editor.checkBoxRerollHitRoll"));
-		
-		checkBoxAddOneToWound.setText(i18n.get("unit.UnitView.editor.checkBoxAddOneToWoundRoll"));
-		checkBoxRerollOnesToWound.setText(i18n.get("unit.UnitView.editor.checkBoxRerollOnesToWound"));
-		checkBoxRerollWound.setText(i18n.get("unit.UnitView.editor.checkBoxRerollWoundRoll"));
-		checkBoxIgnoreCover.setText(i18n.get("unit.UnitView.editor.checkBoxIgnoreCover"));
+		String prefix = "unit.UnitView.editor.";
+		_translateInputFields(prefix);
+		_translateCheckboxLabels(prefix);
 	}
 	
 	@Override
@@ -77,31 +146,115 @@ public final class UnitView extends BaseView {
 			return;
 		}
 		
+		_drawInputValues(unit);
+		_drawComboValues(unit);
+		_drawCheckboxValues(unit);
+	}
+
+	private void _translateCheckboxLabels(String prefix) {
+		unitSpecialRules.setText(i18n.get(prefix + "unitSpecialRulesGroup"));
+		checkBoxAddOneToHit.setText(i18n.get(prefix + "checkBoxAddOneToHit"));
+		checkBoxLethalHits.setText(i18n.get(prefix + "checkBoxLethalHits"));
+		checkBoxRerollOnesToHit.setText(i18n.get(prefix + "checkRerollOnesToHit"));
+		checkBoxRerollHitRoll.setText(i18n.get(prefix + "checkBoxRerollHitRoll"));
+		checkBoxAddOneToWound.setText(i18n.get(prefix + "checkBoxAddOneToWoundRoll"));
+		checkBoxRerollOnesToWound.setText(i18n.get(prefix + "checkBoxRerollOnesToWound"));
+		checkBoxRerollWound.setText(i18n.get(prefix + "checkBoxRerollWoundRoll"));
+		checkBoxIgnoreCover.setText(i18n.get(prefix + "checkBoxIgnoreCover"));
+	}
+
+	private void _translateInputFields(String prefix) {
+		inputLabelMovement.setText(i18n.get(prefix + "labelMovement"));
+		inputLabelToughness.setText(i18n.get(prefix + "labelToughness"));
+		inputLabelWounds.setText(i18n.get(prefix + "labelWounds"));
+		inputLabelLeadership.setText(i18n.get(prefix + "labelLeadership"));
+		inputLabelObjectControl.setText(i18n.get(prefix + "labelObjectControl"));
+		inputLabelInvulnerableSave.setText(i18n.get(prefix + "labelInvulnerableSave"));
+		inputLabelFeelNoPain.setText(i18n.get(prefix + "labelFeelNoPain"));
+		inputLabelArmorSave.setText(i18n.get(prefix + "labelArmorSave"));
+		inputLabelType.setText(i18n.get(prefix + "labelUnitType"));
+		UNIT_TYPES.forEach((key, value) -> inputType.add(i18n.get(value)));
+		inputType.select(0);
+	}
+
+	private void _drawInputValues(Unit unit) {
 		val unitHasNoName = unit.getName() == null;
 		inputName.setText(unitHasNoName ? "" : unit.getName());
-		
+		inputMovement.setSelection(unit.getMovement());
+		inputToughness.setSelection(unit.getToughness());
+		inputHitPoints.setSelection(unit.getHitPoints());
+		inputLeadership.setSelection(unit.getLeadership());
+		inputObjectControl.setSelection(unit.getObjectControl());
+	}
+	
+	private void _drawCheckboxValues(Unit unit) {
 		checkBoxAddOneToHit.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_HIT));
 		checkBoxLethalHits.setSelection(unit.has(SpecialRuleUnit.LETHAL_HITS));
 		checkBoxRerollOnesToHit.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_HIT));
 		checkBoxRerollHitRoll.setSelection(unit.has(SpecialRuleUnit.REROLL_HIT_ROLL));
-		
 		checkBoxAddOneToWound.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_WOUND));
 		checkBoxRerollOnesToWound.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND));
 		checkBoxRerollWound.setSelection(unit.has(SpecialRuleUnit.REROLL_WOUND_ROLL));
 		checkBoxIgnoreCover.setSelection(unit.has(SpecialRuleUnit.IGNORE_COVER));
 	}
 	
-	private void _initializeCheckBoxes() {
-		ButtonFactory buttonFactory = new ButtonFactory(entityEditorGroup);
-		checkBoxAddOneToHit = buttonFactory.createCheckBox();
-		checkBoxLethalHits = buttonFactory.createCheckBox();
-		checkBoxRerollOnesToHit = buttonFactory.createCheckBox();
-		checkBoxRerollHitRoll = buttonFactory.createCheckBox();
+	private void _initializeProfileInputs() {
+		GuiFactory factory = new GuiFactory(entityEditorGroup);
+		inputLabelMovement = factory.createLabel();
+		inputMovement = factory.createNumberInput();
+		inputLabelToughness = factory.createLabel();
+		inputToughness =  factory.createNumberInput();
+		inputLabelArmorSave = factory.createLabel();
+		inputArmorSave = factory.createProbabilityCombo();
+		inputLabelWounds = factory.createLabel();
+		inputHitPoints = factory.createNumberInput();
+		inputLabelLeadership = factory.createLabel();
+		inputLeadership = factory.createNumberInput();
+		inputLabelObjectControl = factory.createLabel();
+		inputObjectControl = factory.createNumberInput();
+		inputLabelInvulnerableSave = factory.createLabel();
+		inputInvulnerableSave = factory.createProbabilityCombo();
+		inputLabelFeelNoPain = factory.createLabel();
+		inputFeelNoPain = factory.createProbabilityCombo();
+	}
+
+	private void _initializeUnitTypeCombo() {
+		inputLabelType = new Label(entityEditorGroup, SWT.NONE);
+		inputType = new Combo(entityEditorGroup, SWT.NONE);
+		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		comboGridData.verticalIndent = 15;
+		inputType.setLayoutData(comboGridData);
+
 		
-		checkBoxAddOneToWound = buttonFactory.createCheckBox();
-		checkBoxRerollOnesToWound = buttonFactory.createCheckBox();
-		checkBoxRerollWound = buttonFactory.createCheckBox();
-		checkBoxIgnoreCover = buttonFactory.createCheckBox();
+		Label placeholder = new Label(entityEditorGroup, SWT.NONE);
+		GridData placeholderGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		placeholderGridData.horizontalSpan = GuiFactory.DEFAULT_VERTICAL_INDENT_COMBO;
+		placeholder.setLayoutData(placeholderGridData);
+	}
+	
+	private void _drawComboValues(Unit unit) {
+		Function<Float, Integer> map = (probability) -> GuiFactory.mapProbabilityToComboSelection(probability);
+		inputArmorSave.select(map.apply(unit.getArmorSave()));
+		inputArmorSave.select(map.apply(unit.getFeelNoPain()));
+		inputArmorSave.select(map.apply(unit.getInvulnerableSave()));
+		inputType.select(mapTypeEnumToComboSelection(unit.getType()));
+	}
+	
+	private void _initializeCheckBoxes() {
+		unitSpecialRules = new Group(entityEditorGroup, SWT.NONE);
+		unitSpecialRules.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1));
+		unitSpecialRules.setLayout(new GridLayout(2, true));
+
+		GuiFactory factory = new GuiFactory(unitSpecialRules);
+		checkBoxAddOneToHit = factory.createCheckBox();
+		checkBoxLethalHits = factory.createCheckBox();
+		checkBoxRerollOnesToHit = factory.createCheckBox();
+		checkBoxRerollHitRoll = factory.createCheckBox();
+		
+		checkBoxAddOneToWound = factory.createCheckBox();
+		checkBoxRerollOnesToWound = factory.createCheckBox();
+		checkBoxRerollWound = factory.createCheckBox();
+		checkBoxIgnoreCover = factory.createCheckBox();
 	}
 	
 	@Override

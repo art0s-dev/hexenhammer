@@ -9,6 +9,7 @@ public abstract class SWTEnd2EndTestcase {
 		Shell shell = new Shell();
 		shell.setSize(1200, 900);
 		shell.setLayout(new GridLayout(1, true));
+		shell.setText("Hexenhammer 40K - Your statistic servitor");
 		return shell;
 	}
 	

@@ -33,9 +33,12 @@ import lombok.val;
 @Builder
 public class Unit extends Model {
 	@Getter @Setter @Builder.Default private String name = "New Unit";
+	@Getter @Setter @Builder.Default private byte movement = 1;
 	@Getter @Setter @Builder.Default private byte toughness = 1;
 	@Getter @Setter @Builder.Default private float armorSave = Probability.NONE;
 	@Getter @Setter @Builder.Default private byte hitPoints = 1;
+	@Getter @Setter @Builder.Default private byte leadership = 1;
+	@Getter @Setter @Builder.Default private byte objectControl = 1;
 	@Getter @Setter @Builder.Default private float invulnerableSave = Probability.NONE;
 	@Getter @Setter @Builder.Default private float feelNoPain = Probability.NONE;
 	@Getter @Setter @Builder.Default private Type type = Type.INFANTRY;

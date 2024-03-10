@@ -10,7 +10,7 @@ import arch.BaseView;
 import arch.Model;
 import arch.ModelList;
 import lombok.Getter;
-import utils.ButtonFactory;
+import utils.GuiFactory;
 import utils.I18n;
 
 public class WeaponView extends BaseView {
@@ -45,7 +45,7 @@ public class WeaponView extends BaseView {
 	}
 
 	private void _initializeInputFields() {
-		ButtonFactory buttonFactory = new ButtonFactory(entityEditorGroup);
+		GuiFactory buttonFactory = new GuiFactory(entityEditorGroup);
 		inputAttacks = buttonFactory.createTextInput(INPUT_ATTACKS);
 		_initializeToHit();
 	}
