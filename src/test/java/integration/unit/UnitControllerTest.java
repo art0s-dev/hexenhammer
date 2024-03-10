@@ -38,19 +38,14 @@ class UnitControllerTest extends SWTGuiTestCase {
 	UnitList unitList;
 	UnitController controller;
 	UnitRepository unitRepo;
+	Unit wraithGuard;
 	
 	@BeforeEach
 	void setupEach() {
 		unit1 = mock(Unit.class);
 		unit2 = mock(Unit.class);
 		view = new UnitView(new TabFolder(shell, SWT.NONE), new I18n());
-	}
-	
-	@Test
-	void userCanEnterAWholeUnit() {
-		//Declare a unit from a random warhammer datasheet
-		//We take a random datacard of the aeldari datacards (like i expect the user would do)
-		Unit wraithGuard = Unit.builder()
+		wraithGuard = Unit.builder()
 				.name("Wraithguard")
 				.movement((byte) 6)
 				.toughness((byte) 7)
@@ -59,49 +54,74 @@ class UnitControllerTest extends SWTGuiTestCase {
 				.leadership((byte) 6)
 				.objectControl((byte) 1)
 				.build();
-		
-		//Build the Controller before adding stuff to the gui
-		refresh();
-		
-		//Enter the unit into the GUI at the first selected list item
-		//... and send the events to trigger all logic in the controller
-		view.getInputName().setText(wraithGuard.getName());
-		view.getInputName().notifyListeners(SWT.Selection, new Event());
-		view.getInputMovement().setSelection(wraithGuard.getMovement());
-		view.getInputObjectControl().notifyListeners(SWT.Selection, new Event());
-		view.getInputToughness().setSelection(wraithGuard.getToughness());
-		view.getInputObjectControl().notifyListeners(SWT.Selection, new Event());
-		view.getInputArmorSave().select(GuiFactory.mapProbabilityToComboSelection(wraithGuard.getArmorSave()));
-		view.getInputObjectControl().notifyListeners(SWT.Selection, new Event());
-		view.getInputHitPoints().setSelection(wraithGuard.getHitPoints());
-		view.getInputObjectControl().notifyListeners(SWT.Selection, new Event());
-		view.getInputLeadership().setSelection(wraithGuard.getLeadership());
-		view.getInputObjectControl().notifyListeners(SWT.Selection, new Event());
-		view.getInputObjectControl().setSelection(wraithGuard.getObjectControl());
-		view.getInputObjectControl().notifyListeners(SWT.Selection, new Event());
-		
-		//change list items 
-		view.getSelectionList().select(1); 
-		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
-		view.getSelectionList().select(0);
-		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
-		
-		//We expect, that all values have stayed the same
-		assertEquals(wraithGuard.getName(), view.getInputName().getText());
-		assertEquals(wraithGuard.getMovement(), (byte) view.getInputMovement().getSelection());
-		
-		//... whats interesting is if the combo boxes are selected correctly
-		float selectedProbabilityForArmorSave = 
-				GuiFactory.mapComboSelectionToProbability(view.getInputArmorSave().getSelectionIndex());
-		assertEquals(wraithGuard.getArmorSave(), selectedProbabilityForArmorSave);
-		
-		// ... whats also interesting if the NOT selected combos behave correct
-		// we haven't entered a Feel no pain for instance. We expect the unit to have none
-		float selectedProbabilityForFeelNoPain = 
-				GuiFactory.mapComboSelectionToProbability(view.getInputFeelNoPain().getSelectionIndex());
-		assertEquals(Probability.NONE, selectedProbabilityForFeelNoPain);
 	}
 	
+	@Test
+	void userCanEnterUnitName() {
+		refresh();
+		view.getInputName().setText(wraithGuard.getName());
+		switchUnits();
+		assertEquals(wraithGuard.getName(), view.getInputName().getText());
+	}
+	
+	@Test
+	void userCanEnterUnitMovement() {
+		refresh();
+		view.getInputMovement().setSelection(wraithGuard.getMovement());
+		switchUnits();
+		assertEquals(wraithGuard.getMovement(), (byte) view.getInputMovement().getSelection());
+	}
+	
+	@Test 
+	void userCanEnterUnitsToghness() {
+		refresh();
+		view.getInputToughness().setSelection(wraithGuard.getToughness());
+		switchUnits();
+		assertEquals(wraithGuard.getToughness(), (byte) view.getInputToughness().getSelection());
+	}
+	
+	@Test
+	void userCanEnterArmorSave() {
+		refresh();
+		view.getInputArmorSave().select(GuiFactory.mapProbabilityToComboSelection(wraithGuard.getArmorSave()));
+		switchUnits();
+		assertEquals(wraithGuard.getArmorSave(), 
+				GuiFactory.mapComboSelectionToProbability(view.getInputArmorSave().getSelectionIndex()));
+	}
+	
+	@Test 
+	void userCanEnterHitPoins() {
+		refresh();
+		view.getInputHitPoints().setSelection(wraithGuard.getHitPoints());
+		switchUnits();
+		assertEquals(wraithGuard.getHitPoints(), (byte) view.getInputHitPoints().getSelection());
+	}
+	
+	@Test 
+	void userCanEnterLeadership() {
+		refresh();
+		view.getInputLeadership().setSelection(wraithGuard.getLeadership());
+		switchUnits();
+		assertEquals(wraithGuard.getLeadership(), (byte) view.getInputLeadership().getSelection());
+	}
+	
+	@Test 
+	void userCanEnterObjectiveControl() {
+		refresh();
+		view.getInputObjectControl().setSelection(wraithGuard.getObjectControl());
+		assertEquals(wraithGuard.getObjectControl(), (byte) view.getInputObjectControl().getSelection());
+	}
+	
+	@Test
+	void userCanUseComboBox() {
+		refresh();
+		view.getSelectionList().select(1);
+		view.getInputInvulnerableSave().select(1);
+		view.getInputInvulnerableSave().notifyListeners(SWT.Selection, new Event());
+		float invulSaveProbability = 
+				GuiFactory.mapComboSelectionToProbability(view.getInputInvulnerableSave().getSelectionIndex());
+		assertEquals(Probability.SIX_UP, invulSaveProbability);
+	}
 
 	@Test
 	void testSwitchingUnitsInUnitsList() {
@@ -137,10 +157,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 		view.getInputName().setText(newUnitName);
 		view.getInputName().notifyListeners(SWT.Modify, new Event());
 		
-		selectionList.select(1);
-		selectionList.notifyListeners(SWT.Selection, new Event());
-		selectionList.select(0);
-		selectionList.notifyListeners(SWT.Selection, new Event());
+		switchUnits();
 		assertTrue(view.getInputName().getText().equals(newUnitName));
 	}
 

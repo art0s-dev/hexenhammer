@@ -86,8 +86,8 @@ public final class UnitView extends BaseView {
 	 * Maps a given unit type to the combo selection index
 	 */
 	public static int mapTypeEnumToComboSelection(Unit.Type type) {
-		if(type == null) {
-			//This is mainly caused by the mocks
+		boolean noTypeWasSet = type == null;
+		if(noTypeWasSet) {
 			return 0; 
 		}
 		
@@ -235,8 +235,8 @@ public final class UnitView extends BaseView {
 	private void _drawComboValues(Unit unit) {
 		Function<Float, Integer> map = (probability) -> GuiFactory.mapProbabilityToComboSelection(probability);
 		inputArmorSave.select(map.apply(unit.getArmorSave()));
-		inputArmorSave.select(map.apply(unit.getFeelNoPain()));
-		inputArmorSave.select(map.apply(unit.getInvulnerableSave()));
+		inputFeelNoPain.select(map.apply(unit.getFeelNoPain()));
+		inputInvulnerableSave.select(map.apply(unit.getInvulnerableSave()));
 		inputType.select(mapTypeEnumToComboSelection(unit.getType()));
 	}
 	

@@ -60,6 +60,7 @@ public class GuiFactory {
 	}
 	
 	public final static int mapProbabilityToComboSelection(float probability) {
+		
 		if(probability == Probability.SIX_UP) {
 			return 1;
 		}

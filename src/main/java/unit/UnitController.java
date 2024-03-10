@@ -83,8 +83,10 @@ public class UnitController implements Controller {
 			view.getSelectionList().add(nameOfNewUnit);
 			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
 			
-			Unit unit = Unit.builder().build();
-			unit.setName(nameOfNewUnit);
+			Unit unit = Unit.builder()
+					.name(nameOfNewUnit)
+					.build();
+			
 			unitList.getUnits().add(unit);
 			view.getSelectionList().notifyListeners(SWT.Selection, new Event());
 		}));
@@ -121,11 +123,10 @@ public class UnitController implements Controller {
 	}
 	
 	private void _injectComboListeners() {
-		Unit unit = _getUnit();
 		HashMap<Combo, Consumer<Float>> combosToUnitAttributes = new HashMap<>();
-		combosToUnitAttributes.put(view.getInputArmorSave(), (value) -> unit.setArmorSave(value));
-		combosToUnitAttributes.put(view.getInputFeelNoPain(), (value) -> unit.setFeelNoPain(value));
-		combosToUnitAttributes.put(view.getInputInvulnerableSave(), (value) -> unit.setInvulnerableSave(value));
+		combosToUnitAttributes.put(view.getInputArmorSave(), (value) -> _getUnit().setArmorSave(value));
+		combosToUnitAttributes.put(view.getInputFeelNoPain(), (value) -> _getUnit().setFeelNoPain(value));
+		combosToUnitAttributes.put(view.getInputInvulnerableSave(), (value) -> _getUnit().setInvulnerableSave(value));
 		
 		combosToUnitAttributes.forEach((combo, setter) -> combo.addSelectionListener(Lambda.select(() -> {
 			float probability = GuiFactory.mapComboSelectionToProbability(combo.getSelectionIndex());

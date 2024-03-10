@@ -14,10 +14,12 @@ import org.eclipse.swt.widgets.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import core.Probability;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import unit.UnitView;
 import unittests.gui.SWTGuiTestCase;
+import utils.GuiFactory;
 import utils.I18n;
 
 class UnitViewTest extends SWTGuiTestCase {
@@ -90,4 +92,15 @@ class UnitViewTest extends SWTGuiTestCase {
 		view.drawEditor(unit2);
 		assertFalse(view.getCheckBoxAddOneToHit().getSelection());
 	}
+	
+	@Test 
+	void testComboProbabilityMapping() {
+		float SIX_UP = Probability.SIX_UP;
+		assertEquals(SIX_UP, 1 / 6f);
+		
+		assertEquals(1, GuiFactory.mapProbabilityToComboSelection(SIX_UP));
+		assertEquals(SIX_UP, GuiFactory.mapComboSelectionToProbability(1));
+	}
+	
+	
 }
