@@ -9,12 +9,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Use this class if you need
- * to paint like 20 Checkboxes and you don't want to manually
+ * Use this class if you need to paint like 20 
+ * Checkboxes and you don't want to manually
  * define all buttons
  */
 public class ButtonFactory {
 	private final Composite parent;
+	private final GridData defaultLayout = new GridData(SWT.FILL, SWT.CENTER, true, false);
 	
 	public ButtonFactory(Composite parent) {
 		this.parent = parent;
@@ -22,16 +23,16 @@ public class ButtonFactory {
 	
 	public Button createCheckBox() {
 		Button button = new Button(parent, SWT.CHECK);
-		button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		button.setLayoutData(defaultLayout);
 		return button;
 	}
 	
 	public Text createTextInput(String label) {
 		Label inputLabel = new Label(parent, SWT.NONE);
-		inputLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		inputLabel.setLayoutData(defaultLayout);
 		inputLabel.setText(label);
 		Text text = new Text(parent, SWT.NONE);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		text.setLayoutData(defaultLayout);
 		return text;
 	}
 }
