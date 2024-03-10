@@ -23,7 +23,7 @@ class ImageServerTest extends SWTGuiTestCase {
 	void testIsNullWhenImageIsNotThere() {
 		assertThrows(SWTException.class, new ThrowingRunnable() {
 			public void run() {
-				Image image = new ImageServer(display).createImageForButton("somethingReallyUnusual");
+				new ImageServer(display).createImageForButton("somethingReallyUnusual");
 			}	
 		});
 	}

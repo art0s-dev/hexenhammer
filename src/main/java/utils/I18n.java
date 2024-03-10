@@ -3,8 +3,6 @@ package utils;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import lombok.Setter;
-
 public final class I18n {
 	private ResourceBundle translations;
 	

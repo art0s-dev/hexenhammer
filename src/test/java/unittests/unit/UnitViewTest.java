@@ -11,7 +11,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.TabFolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +27,6 @@ class UnitViewTest extends SWTGuiTestCase {
 	
 	@BeforeEach
 	void setup() {
-		TabFolder mainTab = new TabFolder(shell, SWT.NONE);
 		view = new UnitView(shell, new I18n());
 		view.draw();
 		selectionTriggerWasActivated = false;

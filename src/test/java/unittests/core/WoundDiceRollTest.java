@@ -18,7 +18,6 @@ import core.Unit;
 import core.Weapon;
 import core.Weapon.AntiType;
 import core.combat.CombatRules;
-import core.combat.DicePool;
 import core.combat.DiceRoll;
 import core.combat.HitDicePool;
 import core.combat.WoundDicePool;
