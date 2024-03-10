@@ -1,32 +1,25 @@
 package end2end;
 
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import utils.I18n;
 import weapon.WeaponView;
 
-public class WeaponViewTest {
+public class WeaponViewTest extends SWTEnd2EndTestcase {
 	/**
 	 * Just the main method for running an SWT application
 	 */
 	public static void main(String[] args) {
-		Display display = new Display();
-		Shell shell = new Shell();
-		shell.setSize(1200, 900);
-		shell.setLayout(new GridLayout(1, true));
-		
-		WeaponView view = new WeaponView(shell, new I18n());
+		Shell shell = before();
+		test(shell);
+		after(shell);
+	}
+
+	private static void test(Shell shell) {
+		I18n i18n = new I18n();
+		i18n.setLanguage(I18n.german());
+		WeaponView view = new WeaponView(shell, i18n);
 		view.draw();
-		
-		shell.open();
-		while (!shell.isDisposed ()) {
-			if (!display.readAndDispatch ()) {
-				display.sleep ();
-			}
-		}
-		display.dispose ();
 	}
 }
 

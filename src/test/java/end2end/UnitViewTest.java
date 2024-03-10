@@ -17,17 +17,18 @@ import unit.UnitRepository;
 import unit.UnitView;
 import utils.I18n;
 
-public class UnitViewTest {
+public class UnitViewTest extends SWTEnd2EndTestcase {
 	
 	/**
 	 * Just the main method for running an SWT application 
 	 */
 	public static void main(String[] args) {
-		Display display = new Display();
-		Shell shell = new Shell();
-		shell.setSize(1200, 900);
-		shell.setLayout(new GridLayout(1, true));
-		
+		Shell shell = before();
+		test(shell);
+		after(shell);
+	}
+
+	private static void test(Shell shell) {
 		I18n i18n = new I18n();
 		i18n.setLanguage(I18n.german());
 		UnitView view = new UnitView(shell, i18n);
@@ -51,13 +52,5 @@ public class UnitViewTest {
 		unitController.loadModels();
 		unitController.initView();
 		unitController.injectListener();
-
-		shell.open();
-		while (!shell.isDisposed ()) {
-			if (!display.readAndDispatch ()) {
-				display.sleep ();
-			}
-		}
-		display.dispose ();
 	}
 }
