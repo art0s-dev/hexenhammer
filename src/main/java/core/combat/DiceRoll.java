@@ -1,6 +1,5 @@
 package core.combat;
 
-import core.Enemy;
 import core.Unit;
 import core.Weapon;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,7 @@ public abstract class DiceRoll {
 	
 	protected final Unit unit;
 	protected final Weapon weapon;
-	protected final Enemy enemy;
+	protected final Unit enemy;
 	protected final CombatRules rules;
 
 	

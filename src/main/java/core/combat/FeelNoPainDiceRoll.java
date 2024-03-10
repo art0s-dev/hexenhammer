@@ -1,6 +1,5 @@
 package core.combat;
 
-import core.Enemy;
 import core.Unit;
 import core.Weapon;
 import lombok.val;
@@ -12,7 +11,7 @@ import lombok.val;
  */
 public final class FeelNoPainDiceRoll extends DiceRoll {
 
-	public FeelNoPainDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
+	public FeelNoPainDiceRoll(Unit unit, Weapon weapon, Unit enemy, CombatRules rules) {
 		super(unit, weapon, enemy, rules);
 	}
 

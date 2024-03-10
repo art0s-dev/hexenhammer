@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import core.Enemy;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
@@ -23,7 +22,7 @@ class FeelNoPainDiceRollTest {
 	private DicePool dicePool;
 	private Unit unit;
 	private CombatRules rules;
-	private Enemy enemy;
+	private Unit enemy;
 	private Weapon weapon;
 	
 	@BeforeEach
@@ -36,7 +35,7 @@ class FeelNoPainDiceRollTest {
 		unit = mock(Unit.class);
 		weapon = mock(Weapon.class);
 		rules = mock(CombatRules.class);
-		enemy = mock(Enemy.class);
+		enemy = mock(Unit.class);
 	}
 
 	@Test @DisplayName("Test Feel No Pain")

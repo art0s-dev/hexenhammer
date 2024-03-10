@@ -1,6 +1,5 @@
 package core.combat;
 
-import core.Enemy;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
@@ -13,7 +12,7 @@ public final class WoundDiceRoll extends DiceRoll {
 	
 	private final float probabilityToWound;
 
-	public WoundDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
+	public WoundDiceRoll(Unit unit, Weapon weapon, Unit enemy, CombatRules rules) {
 		super(unit, weapon, enemy, rules);
 		this.probabilityToWound = _determineWoundingProbability();
 	}

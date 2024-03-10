@@ -11,8 +11,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import core.Enemy;
-import core.Enemy.SpecialRuleEnemy;
 import core.Probability;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
@@ -30,9 +28,9 @@ class UnitAttackFeaturesTest {
 	
 	Weapon bolter;
 	Weapon heavyBolter;
-	Enemy guardsmen;
-	Enemy aberrants;
-	Enemy lemanRussTank;
+	Unit guardsmen;
+	Unit aberrants;
+	Unit lemanRussTank;
 	
 	@BeforeEach
 	void setup() {
@@ -49,18 +47,18 @@ class UnitAttackFeaturesTest {
 		when(heavyBolter.getStrength()).thenReturn((byte)5);
 		when(heavyBolter.getArmorPenetration()).thenReturn((byte)2);
 		
-		guardsmen = mock(Enemy.class);
+		guardsmen = mock(Unit.class);
 		when(guardsmen.getToughness()).thenReturn((byte)3);
 		when(guardsmen.getArmorSave()).thenReturn(Probability.FIVE_UP);
 		when(guardsmen.getHitPoints()).thenReturn((byte)1);
 		
-		aberrants = mock(Enemy.class);
+		aberrants = mock(Unit.class);
 		when(aberrants.getToughness()).thenReturn((byte)6);
 		when(aberrants.getArmorSave()).thenReturn(Probability.FIVE_UP);
 		when(aberrants.getFeelNoPain()).thenReturn(Probability.FOUR_UP);
 		when(aberrants.getHitPoints()).thenReturn((byte)3);
 		
-		lemanRussTank = mock(Enemy.class);
+		lemanRussTank = mock(Unit.class);
 		when(lemanRussTank.getToughness()).thenReturn((byte)11);
 		when(lemanRussTank.getArmorSave()).thenReturn(Probability.TWO_UP);
 		when(lemanRussTank.getHitPoints()).thenReturn((byte)13);
@@ -72,7 +70,7 @@ class UnitAttackFeaturesTest {
 	@Test @DisplayName("Base Mechanic - Base Case")
 	void GivenSpaceMarinesEquippedWithBolter_WhenAttackingGuardsmen_ThenDamageIsCalculatedCorrect() {
 		byte quantity = 5;
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
 		float damage = spaceMarines.attack(guardsmen);
 		
@@ -93,13 +91,13 @@ class UnitAttackFeaturesTest {
 	@Test @DisplayName("Base Mechanic - Invul Save")
 	void GivenEldarRangerAsTarget_WhenArmorSaveIsLoweThanInvulSave_ThenTakeInvulSave() {
 
-		Enemy eldarRangers = mock(Enemy.class);
+		Unit eldarRangers = mock(Unit.class);
 		when(eldarRangers.getToughness()).thenReturn((byte)3);
 		when(eldarRangers.getArmorSave()).thenReturn(Probability.FIVE_UP);
 		when(eldarRangers.getInvulnerableSave()).thenReturn(Probability.FIVE_UP);
 		
 		byte quantity = 4;
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, heavyBolter);
 		float damage = spaceMarines.attack(eldarRangers);
 		
@@ -119,7 +117,7 @@ class UnitAttackFeaturesTest {
 	void GivenAberrantsAsTarget_WhenEquippedWithHeavyBolter_ThenCalculateTheDamageCorrect() {
 		
 		byte quantity = 4;
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, heavyBolter);
 		float damage = spaceMarines.attack(aberrants);
 		
@@ -147,7 +145,7 @@ class UnitAttackFeaturesTest {
 		when(combatKnife.getDamage()).thenReturn(1f);
 		
 		byte quantity = 5;
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.setPhase(Phase.FIGHT);
 		spaceMarines.equip(quantity, combatKnife);
 		spaceMarines.equip(quantity, heavyBolter);
@@ -167,7 +165,7 @@ class UnitAttackFeaturesTest {
 	@Test @DisplayName("Rerolls - Reroll full hit")
 	void GivenSpaceMarinesWithRerollHitRoll_WhenAttack_ThenCalculateRerollCorrect() {
 		byte quantity = 5;
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.add(SpecialRuleUnit.REROLL_HIT_ROLL);
 		spaceMarines.equip(quantity, bolter);
 		float damage = spaceMarines.attack(guardsmen);
@@ -191,7 +189,7 @@ class UnitAttackFeaturesTest {
 	@Test @DisplayName("Rerolls - Reroll full wound")
 	void GivenSpaceMarinesWithRerollWounds_WhenAttack_ThenCalculateRerollCorrect() {
 		byte quantity = 5;
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
 		spaceMarines.add(SpecialRuleUnit.REROLL_WOUND_ROLL);
 		float damage = spaceMarines.attack(guardsmen);
@@ -216,10 +214,10 @@ class UnitAttackFeaturesTest {
 		when(bolter.getPhase()).thenReturn(Phase.SHOOTING);
 		
 		//Profile has to be in cover
-		when(guardsmen.has(SpecialRuleEnemy.HAS_COVER)).thenReturn(true);
+		when(guardsmen.has(SpecialRuleUnit.HAS_COVER)).thenReturn(true);
 		
 		byte quantity = 5;
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
 		float damage = spaceMarines.attack(guardsmen);
 		
@@ -239,7 +237,7 @@ class UnitAttackFeaturesTest {
 		when(bolter.has(SpecialRuleWeapon.DEVASTATING_WOUNDS)).thenReturn(true);
 		
 		byte quantity = 5;
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
 		float damage = spaceMarines.attack(guardsmen);
 		
@@ -261,7 +259,7 @@ class UnitAttackFeaturesTest {
 		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
 		
 		byte quantity = 5;
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
 		spaceMarines.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
 		float damage = spaceMarines.attack(guardsmen);

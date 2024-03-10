@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import core.Enemy;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
@@ -20,13 +19,13 @@ class CombatTest {
 				.strength((byte)4)
 				.build();
 		
-		Enemy guardsmen = Enemy.builder()
+		Unit guardsmen = Unit.builder()
 				.toughness((byte)3)
 				.armorSave(Probability.FIVE_UP)
 				.build();
 		
 		val total = (byte) 5;
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(total, bolter);
 		
 		val hits = (bolter.getAttacks() * total) * bolter.getToHit();

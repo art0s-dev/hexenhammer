@@ -11,8 +11,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import core.Enemy;
-import core.Enemy.SpecialRuleEnemy;
 import core.Probability;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
@@ -37,8 +35,8 @@ class ModificationTests {
 	
 	
 	Weapon scorpionPulsar;
-	Enemy mortarion;
-	Unit scorpionTank = new Unit();
+	Unit mortarion;
+	Unit scorpionTank = Unit.builder().build();
 	
 	@BeforeEach
 	void setup() {
@@ -51,7 +49,7 @@ class ModificationTests {
 		when(scorpionPulsar.has(SpecialRuleWeapon.REROLL_WOUND_ROLL)).thenReturn(true);
 		scorpionTank.equip((byte)1, scorpionPulsar);
 		
-		mortarion = mock(Enemy.class);
+		mortarion = mock(Unit.class);
 		when(mortarion.getToughness()).thenReturn((byte)12);
 		when(mortarion.getHitPoints()).thenReturn((byte)16);
 		when(mortarion.getArmorSave()).thenReturn(Probability.TWO_UP);
@@ -102,7 +100,7 @@ class ModificationTests {
 	
 	@Test @DisplayName("Mod test / -1 hit ")
 	void GivenScorpionTank_WhenSubtractToHit_ThenTheDamageIsLower() {
-		when(mortarion.has(SpecialRuleEnemy.SUBTRACT_ONE_FROM_HIT_ROLL)).thenReturn(true);
+		when(mortarion.has(SpecialRuleUnit.SUBTRACT_ONE_FROM_HIT_ROLL)).thenReturn(true);
 		
 		float expectedDamage = calculateScorpionDamage(Probability.FOUR_UP,Probability.THREE_UP);
 		float damage = scorpionTank.attack(mortarion);
@@ -113,7 +111,7 @@ class ModificationTests {
 	@Test @DisplayName("Mod test / no mods ")
 	void GivenScorpionBothModifiers_WhenItAttacks_ThenDamageIsSameAsBaseCase() {
 		scorpionTank.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
-		when(mortarion.has(SpecialRuleEnemy.SUBTRACT_ONE_FROM_HIT_ROLL)).thenReturn(true);
+		when(mortarion.has(SpecialRuleUnit.SUBTRACT_ONE_FROM_HIT_ROLL)).thenReturn(true);
 		
 		float expectedDamage = calculateScorpionDamage(Probability.THREE_UP,Probability.THREE_UP);
 		float damage = scorpionTank.attack(mortarion);
@@ -133,7 +131,7 @@ class ModificationTests {
 	
 	@Test @DisplayName("Mod test / -1 wound ")
 	void GivenScorpionTank_WhenSubtractToWound_ThenTheDamageIsLower() {
-		when(mortarion.has(SpecialRuleEnemy.SUBTRACT_ONE_FROM_WOUND_ROLL)).thenReturn(true);
+		when(mortarion.has(SpecialRuleUnit.SUBTRACT_ONE_FROM_WOUND_ROLL)).thenReturn(true);
 		
 		float expectedDamage = calculateScorpionDamage(Probability.THREE_UP,Probability.FOUR_UP);
 		float damage = scorpionTank.attack(mortarion);

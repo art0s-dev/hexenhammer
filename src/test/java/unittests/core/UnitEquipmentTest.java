@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Probability;
-import core.Enemy;
 import core.Unit;
 import core.Weapon;
 
@@ -23,7 +22,7 @@ import core.Weapon;
 class UnitEquipmentTest {
 	
 	Weapon bolter;
-	Enemy guardsmen;
+	Unit guardsmen;
 	
 	@BeforeEach
 	void setup() {
@@ -34,7 +33,7 @@ class UnitEquipmentTest {
 		when(bolter.getDamage()).thenReturn(1f);	
 		when(bolter.getToHit()).thenReturn(Probability.THREE_UP);
 		
-		guardsmen = mock(Enemy.class);
+		guardsmen = mock(Unit.class);
 		when(guardsmen.getToughness()).thenReturn((byte)3);
 		when(guardsmen.getArmorSave()).thenReturn(Probability.FIVE_UP);
 		when(guardsmen.getHitPoints()).thenReturn((byte)1);
@@ -42,7 +41,7 @@ class UnitEquipmentTest {
 
 	@Test @DisplayName("Add Equipment") 
 	void GivenSpaceMarines_WhenEquippedWithBolter_ThenDamageIncreases(){	
-		Unit unit = new Unit();
+		Unit unit = Unit.builder().build();
 		unit.equip((byte)5, bolter);
 		float damage = unit.attack(guardsmen);
 		
@@ -51,14 +50,14 @@ class UnitEquipmentTest {
 	
 	@Test @DisplayName("No Equipment")
 	void GivenSpaceMarines_WhenNoEquipment_ThenThereIsNoDamage() {	
-		Unit unit = new Unit();
+		Unit unit = Unit.builder().build();
 		
 		assertEquals(0.00, unit.attack(guardsmen));
 	}
 	
 	@Test @DisplayName("Remove Equipment") 
 	void GivenSpaceMarines_WhenEquipmentIsRemoves_ThenThereIsNoDamage(){	
-		Unit unit = new Unit();
+		Unit unit = Unit.builder().build();
 		unit.equip((byte)9, bolter);
 		unit.equip((byte)-99, bolter);
 		
@@ -67,7 +66,7 @@ class UnitEquipmentTest {
 	
 	@Test @DisplayName("Increase Equipment") 
 	void GivenSpaceMarines_WhenEquipmentIsIncreased_ThenTheDamageIncreases(){	
-		Unit unit = new Unit();
+		Unit unit = Unit.builder().build();
 		unit.equip((byte) 5, bolter);
 		float initialDamage = unit.attack(guardsmen);
 		unit.equip((byte) 10, bolter);

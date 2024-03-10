@@ -3,10 +3,9 @@ package core.combat;
 import java.util.Collections;
 import java.util.HashMap;
 
-import core.Enemy;
-import core.Enemy.SpecialRuleEnemy;
 import core.Probability;
 import core.Unit;
+import core.Unit.SpecialRuleUnit;
 import core.Weapon;
 import lombok.val;
 
@@ -16,7 +15,7 @@ import lombok.val;
  */
 public final class SavingThrowDiceRoll extends DiceRoll {
 
-	public SavingThrowDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
+	public SavingThrowDiceRoll(Unit unit, Weapon weapon, Unit enemy, CombatRules rules) {
 		super(unit, weapon, enemy, rules);
 	}
 
@@ -25,7 +24,7 @@ public final class SavingThrowDiceRoll extends DiceRoll {
 		val armourSave = enemy.getArmorSave();
 		val invulSave = enemy.getInvulnerableSave();
 		
-		val cover = enemy.has(SpecialRuleEnemy.HAS_COVER) ? 1 : 0;
+		val cover = enemy.has(SpecialRuleUnit.HAS_COVER) ? 1 : 0;
 		val modifiedArmourSave = (byte) (ARMOR_SAVES.get(armourSave) - weapon.getArmorPenetration() + cover);
 		val armorSaveProbability = modifiedArmourSave / 6f;
 		val mustTakeInvulSave = invulSave > armorSaveProbability;

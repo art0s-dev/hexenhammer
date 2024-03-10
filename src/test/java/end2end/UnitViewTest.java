@@ -32,11 +32,11 @@ public class UnitViewTest extends SWTEnd2EndTestcase {
 		I18n i18n = new I18n();
 		i18n.setLanguage(I18n.german());
 		UnitView view = new UnitView(shell, i18n);
-		Unit spaceMarines = new Unit();
+		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.setName("My new favorite unit");
 		spaceMarines.add(SpecialRuleUnit.LETHAL_HITS);
 		
-		Unit anotherUnit = new Unit();
+		Unit anotherUnit = Unit.builder().build();
 		anotherUnit.setName("AnotherUnit");
 		anotherUnit.add(SpecialRuleUnit.ADD_ONE_TO_WOUND);
 		

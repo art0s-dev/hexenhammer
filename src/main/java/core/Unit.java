@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import arch.Model;
-import core.Enemy.SpecialRuleEnemy;
 import core.Weapon.Phase;
 import core.Weapon.SpecialRuleWeapon;
 import core.combat.CombatRules;
@@ -17,6 +16,7 @@ import core.combat.HitDiceRoll;
 import core.combat.SavingThrowDiceRoll;
 import core.combat.WoundDicePool;
 import core.combat.WoundDiceRoll;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -30,8 +30,15 @@ import lombok.val;
  * - equip() the weapons and maybe add() some special rules
  * - attack() the enemy profile  
  */
+@Builder
 public class Unit extends Model {
-	@Getter @Setter String name;
+	@Getter @Setter @Builder.Default private String name = "New Unit";
+	@Getter @Setter @Builder.Default private byte toughness = 1;
+	@Getter @Setter @Builder.Default private float armorSave = Probability.NONE;
+	@Getter @Setter @Builder.Default private byte hitPoints = 1;
+	@Getter @Setter @Builder.Default private float invulnerableSave = Probability.NONE;
+	@Getter @Setter @Builder.Default private float feelNoPain = Probability.NONE;
+	@Getter @Setter @Builder.Default private Type type = Type.INFANTRY;
 	
 	/**
 	 * With this method we add, delete and edit the weapons of a unit. 
@@ -62,6 +69,7 @@ public class Unit extends Model {
 	 * a SpecialRuleWeapon which will be applied before the global rule if it is better 
 	 */
 	public enum SpecialRuleUnit{
+		//For Attack
 		REROLL_ONES_TO_HIT,
 		REROLL_HIT_ROLL,
 		REROLL_ONES_TO_WOUND,
@@ -69,7 +77,11 @@ public class Unit extends Model {
 		ADD_ONE_TO_HIT,
 		ADD_ONE_TO_WOUND,
 		IGNORE_COVER,
-		LETHAL_HITS
+		LETHAL_HITS,
+		//For defense
+		SUBTRACT_ONE_FROM_HIT_ROLL, 
+		SUBTRACT_ONE_FROM_WOUND_ROLL, 
+		HAS_COVER
 	}
 	
 	public void add(SpecialRuleUnit specialRule) {
@@ -79,6 +91,14 @@ public class Unit extends Model {
 	public void remove(SpecialRuleUnit specialRule) {
 		this.specialRules.remove(specialRule);
 	}
+
+	/**
+	 * The unit type an enemy has. 
+	 * It is used to determine wounds for anti weapon capabilities.
+	 */
+	public enum Type {
+		INFANTRY, MONSTER, VEHICLE
+	}
 	
 	/**
 	 * The attack interface for every unit calculates
@@ -86,7 +106,7 @@ public class Unit extends Model {
 	 * from that unit and uses the combat class for further calculations
 	 * @see Combat
 	 */
-	public float attack(Enemy enemy) {
+	public float attack(Unit enemy) {
 		val filteredWeapons = _filter(weapons, phase);
 		return filteredWeapons
 				.map(weaponAndQuantity -> _dealDamage(weaponAndQuantity, enemy))
@@ -102,7 +122,7 @@ public class Unit extends Model {
 		this.phase = phase;
 	}
 
-	private Phase phase = Phase.BOTH;
+	@Builder.Default Phase phase = Phase.BOTH;
 	
 	/**
 	 * This is the register of weapons a unit has.
@@ -110,7 +130,7 @@ public class Unit extends Model {
 	 * It contains the signature of the object as a key 
 	 * and a quantity as the value. 
 	 */
-	private HashMap<Weapon, Byte> weapons = new HashMap<>();
+	@Builder.Default private HashMap<Weapon, Byte> weapons = new HashMap<>();
 	
 	/**
 	 * Filters the weapons before attacking according to the phase
@@ -129,7 +149,7 @@ public class Unit extends Model {
 	 * The Set of special rules each unit has.
 	 * @see SpecialRuleUnit
 	 */
-	private HashSet<SpecialRuleUnit> specialRules = new HashSet<>();
+	@Builder.Default private HashSet<SpecialRuleUnit> specialRules = new HashSet<>();
 	
 	public boolean has(SpecialRuleUnit specialRule) {
 		return this.specialRules.contains(specialRule);
@@ -139,7 +159,7 @@ public class Unit extends Model {
 	 * Calculates the damage of a single weapon against a given enemy
 	 * @implNote shall utilize the combat package
 	 */
-	private float _dealDamage(Entry<Weapon, Byte> weaponAndQuantity, Enemy enemy) {
+	private float _dealDamage(Entry<Weapon, Byte> weaponAndQuantity, Unit enemy) {
 		val weapon = weaponAndQuantity.getKey();
 		val quantity = weaponAndQuantity.getValue();
 		val rules = _setRules(weapon, enemy);
@@ -168,20 +188,20 @@ public class Unit extends Model {
 	 * Creates the feature flags for the battle sequence
 	 * this method gets called before the damage of a new weapon is calculated
 	 */
-	private CombatRules _setRules(Weapon weapon, Enemy enemy) {
+	private CombatRules _setRules(Weapon weapon, Unit enemy) {
 		return new CombatRules(
 			this.has(SpecialRuleUnit.ADD_ONE_TO_HIT),
-			enemy.has(SpecialRuleEnemy.SUBTRACT_ONE_FROM_HIT_ROLL),
+			enemy.has(SpecialRuleUnit.SUBTRACT_ONE_FROM_HIT_ROLL),
 			this.has(SpecialRuleUnit.LETHAL_HITS) || weapon.has(SpecialRuleWeapon.LETHAL_HITS),
 			this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT),
 			this.has(SpecialRuleUnit.REROLL_HIT_ROLL),
 			weapon.has(SpecialRuleWeapon.TORRENT),
 			this.has(SpecialRuleUnit.ADD_ONE_TO_WOUND),
-			enemy.has(SpecialRuleEnemy.SUBTRACT_ONE_FROM_WOUND_ROLL),
+			enemy.has(SpecialRuleUnit.SUBTRACT_ONE_FROM_WOUND_ROLL),
 			this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND),
 			this.has(SpecialRuleUnit.REROLL_WOUND_ROLL) || weapon.has(SpecialRuleWeapon.REROLL_WOUND_ROLL),
 			weapon.getAntiType().isPresent(),
-			enemy.has(SpecialRuleEnemy.HAS_COVER),
+			enemy.has(SpecialRuleUnit.HAS_COVER),
 			this.has(SpecialRuleUnit.IGNORE_COVER),
 			weapon.getSustainedHits() > 0,
 			weapon.getMelter() > 0,

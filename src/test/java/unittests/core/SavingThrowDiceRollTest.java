@@ -10,14 +10,13 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import core.Enemy;
-import core.Enemy.SpecialRuleEnemy;
+import core.Probability;
+import core.Unit;
+import core.Unit.SpecialRuleUnit;
+import core.Weapon;
 import core.combat.CombatRules;
 import core.combat.DicePool;
 import core.combat.SavingThrowDiceRoll;
-import core.Probability;
-import core.Unit;
-import core.Weapon;
 import lombok.val;
 
 @TestMethodOrder(MethodOrderer.Random.class)
@@ -27,7 +26,7 @@ class SavingThrowDiceRollTest {
 	private DicePool dicePool;
 	private Unit unit;
 	private CombatRules combatRules;
-	private Enemy enemy;
+	private Unit enemy;
 	private Weapon weapon;
 	
 	@BeforeEach
@@ -40,7 +39,7 @@ class SavingThrowDiceRollTest {
 		unit = mock(Unit.class);
 		weapon = mock(Weapon.class);
 		combatRules = mock(CombatRules.class);
-		enemy = mock(Enemy.class);
+		enemy = mock(Unit.class);
 	}
 
 	@Test @DisplayName("Test saving throws - normal - without modifier")
@@ -81,7 +80,7 @@ class SavingThrowDiceRollTest {
 	@Test @DisplayName("Test saving throws - with mods - no invul - cover")
 	void testCover() {
 		when(enemy.getArmorSave()).thenReturn(Probability.FIVE_UP);
-		when(enemy.has(SpecialRuleEnemy.HAS_COVER)).thenReturn(true);
+		when(enemy.has(SpecialRuleUnit.HAS_COVER)).thenReturn(true);
 		
 		val diceRoll = new SavingThrowDiceRoll(unit, weapon, enemy, combatRules);
 		val resultPool = diceRoll.roll(dicePool);

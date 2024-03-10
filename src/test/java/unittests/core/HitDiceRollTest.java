@@ -9,7 +9,6 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import core.Enemy;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
@@ -26,7 +25,7 @@ class HitDiceRollTest {
 	private DicePool dicePool;
 	private Unit unit;
 	private CombatRules rules;
-	private Enemy enemy;
+	private Unit enemy;
 	private Weapon weapon;
 
 	private DiceRoll hitRoll;
@@ -40,7 +39,7 @@ class HitDiceRollTest {
 		unit = mock(Unit.class);
 		weapon = mock(Weapon.class);
 		rules = mock(CombatRules.class);
-		enemy = mock(Enemy.class);
+		enemy = mock(Unit.class);
 	}
 
 	@Test

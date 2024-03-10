@@ -63,7 +63,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 	@Test
 	void testCanEnterNewUnitName() {
 		String nameUnit1 = "My new unit";
-		unit1 = new Unit();
+		unit1 = Unit.builder().build();
 		unit1.setName(nameUnit1);
 		String nameUnit2 = "AnotherUnit";
 		when(unit2.getName()).thenReturn(nameUnit2);
@@ -86,7 +86,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 
 	@Test
 	void testCheckBoxesStayCheckedAfterSwitching() {
-		unit1 = new Unit();
+		unit1 = Unit.builder().build();
 		refresh();
 		List selectionList = view.getSelectionList();
 

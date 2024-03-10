@@ -1,6 +1,5 @@
 package core.combat;
 
-import core.Enemy;
 import core.Probability;
 import core.Unit;
 import core.Weapon;
@@ -11,7 +10,7 @@ import lombok.val;
  */
 public final class HitDiceRoll extends DiceRoll {
 
-	public HitDiceRoll(Unit unit, Weapon weapon, Enemy enemy, CombatRules rules) {
+	public HitDiceRoll(Unit unit, Weapon weapon, Unit enemy, CombatRules rules) {
 		super(unit, weapon, enemy, rules);
 	}
 

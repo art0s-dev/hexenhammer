@@ -84,7 +84,7 @@ public class UnitController implements Controller {
 			view.getSelectionList().add(nameOfNewUnit);
 			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
 			
-			Unit unit = new Unit();
+			Unit unit = Unit.builder().build();
 			unit.setName(nameOfNewUnit);
 			unitList.getUnits().add(unit);
 			view.getSelectionList().notifyListeners(SWT.Selection, new Event());

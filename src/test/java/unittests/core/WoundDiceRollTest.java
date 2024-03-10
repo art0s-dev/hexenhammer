@@ -11,10 +11,9 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import core.Enemy;
-import core.Enemy.Type;
 import core.Probability;
 import core.Unit;
+import core.Unit.Type;
 import core.Weapon;
 import core.Weapon.AntiType;
 import core.combat.CombatRules;
@@ -31,7 +30,7 @@ class WoundDiceRollTest {
 	private HitDicePool dicePool;
 	private Unit unit;
 	private CombatRules rules;
-	private Enemy enemy;
+	private Unit enemy;
 	private Weapon weapon;
 	
 	private DiceRoll woundRoll;
@@ -46,7 +45,7 @@ class WoundDiceRollTest {
 		unit = mock(Unit.class);
 		weapon = mock(Weapon.class);
 		rules = mock(CombatRules.class);
-		enemy = mock(Enemy.class);
+		enemy = mock(Unit.class);
 	}
 	
 	//We test the different Wounding probabilities of the compare method
