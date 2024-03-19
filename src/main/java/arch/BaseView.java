@@ -16,8 +16,7 @@ import utils.I18n;
 import utils.ImageServer;
 
 /**
- * The Base View for all Forms in the Software
- * This is basically an swt view for working in the window builder
+ * The Base View for all forms in the Software
  */
 abstract public class BaseView implements View {
 	

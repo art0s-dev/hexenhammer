@@ -1,10 +1,14 @@
 package weapon;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Spinner;
 
 import arch.BaseView;
 import arch.Model;
@@ -12,19 +16,34 @@ import arch.ModelList;
 import lombok.Getter;
 import utils.GuiFactory;
 import utils.I18n;
+import utils.Theme;
 
 public class WeaponView extends BaseView {
-	protected final static String LIST_VIEW = "Your Weapons";
-	protected final static String GROUP_NAME = "Profile";
-	protected static final String TAB_NAME = "Weapons";
-	private static final String INPUT_ATTACKS = "Attacks";
-	private static final String TO_HIT = "To hit";
-	
-	@Getter private Text inputAttacks;
+
+	//Inputs
+	@Getter private Spinner inputAttacks;
 	@Getter private Combo inputToHit;
-	@Getter private Text inputStrenght;
-	@Getter private Text inputArmorPenetration;
-	@Getter private Text inputDamage;
+	@Getter private Spinner inputStrenght;
+	@Getter private Spinner inputArmorPenetration;
+	@Getter private Spinner inputDamage;
+	@Getter private Spinner inputSustainedHits;
+	@Getter private Spinner inputMelter;
+	@Getter private Button checkBoxTorrent;
+	@Getter private Button checkBoxHeavyAndStationary;
+	
+	//Labels
+	private Button weaponRangeShooting;
+	private Button weaponRangeMeelee;
+	private Group weaponRange;
+	private Label labelAttacks;
+	private Label labelToHit;
+	private Label labelStrength;
+	private Label labelArmorPenetration;
+	private Label labelDamage;
+	private Label labelSustainedHits;
+	private Label labelMelter;
+	private Group weaponSpecialRules;
+	
 	
 	public WeaponView(Composite parent, I18n i18n) {
 		super(parent, i18n);
@@ -33,31 +52,112 @@ public class WeaponView extends BaseView {
 	@Override
 	public void draw() {
 		super.draw();
+		_initializeWeaponRangeSwitch();
 		_initializeInputFields();
+		_initializeCheckboxes();
+		translate();
+	}
+	
+	@Override
+	public void translate() {
+		super.translate();
+		String prefix = "weapon.WeaponView.editor.";
+		_translateRangeSwitcher(prefix);
+		_translateInputFields(prefix);
+		_translateSpecialRules(prefix);
 	}
 
+	
+	
+	@Override
 	public void drawList(ModelList modelList) {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub 
 	}
-
+	
+	@Override
 	public void drawEditor(Model model) {
 		
 	}
 
 	private void _initializeInputFields() {
-		GuiFactory buttonFactory = new GuiFactory(entityEditorGroup);
-		inputAttacks = buttonFactory.createTextInput(INPUT_ATTACKS);
-		_initializeToHit();
+		GuiFactory factory = new GuiFactory(entityEditorGroup);
+		labelAttacks = factory.createLabel();
+		inputAttacks = factory.createNumberInput();
+		labelToHit = factory.createLabel();
+		inputToHit = factory.createProbabilityCombo();
+		labelStrength = factory.createLabel();
+		inputStrenght = factory.createNumberInput();
+		labelArmorPenetration = factory.createLabel();
+		inputArmorPenetration = factory.createNumberInput();
+		labelDamage = factory.createLabel();
+		inputDamage = factory.createNumberInput();
+		labelSustainedHits = factory.createLabel();
+		inputSustainedHits = factory.createNumberInput();
+		labelMelter = factory.createLabel();
+		inputMelter = factory.createNumberInput();
+	}
+
+	private void _initializeWeaponRangeSwitch() {
+		weaponRange = new Group(entityEditorGroup, SWT.NONE);
+		weaponRange.setLayout(new GridLayout(2, true));
+		weaponRange.setLayoutData(Theme.FULL_WIDTH_GROUP);
+		GuiFactory factory = new GuiFactory(weaponRange);
+		weaponRangeShooting = factory.createRadioButton();
+		weaponRangeMeelee = factory.createRadioButton();
 	}
 	
-	private void _initializeToHit() {
-		Label labelToHit = new Label(entityEditorGroup, SWT.NONE);
-		labelToHit.setText(TO_HIT);
-		inputToHit = new Combo(entityEditorGroup, SWT.NONE);
-		inputToHit.add("2+");
-		inputToHit.add("3+");
-		inputToHit.add("4+");
-		inputToHit.add("5+");
-		inputToHit.add("6+");
+	private void _initializeCheckboxes() {
+		weaponSpecialRules = new Group(entityEditorGroup, SWT.NONE);
+		weaponSpecialRules.setLayoutData(Theme.FULL_WIDTH_GROUP);
+		weaponSpecialRules.setLayout(new GridLayout(2, true));
+
+		GuiFactory factory = new GuiFactory(weaponSpecialRules);
+		checkBoxTorrent = factory.createCheckBox();
+		checkBoxHeavyAndStationary = factory.createCheckBox();
 	}
+	
+	private void _translateSpecialRules(String prefix) {
+		checkBoxTorrent.setText(i18n.get(prefix + "checkBoxTorrent"));
+		checkBoxHeavyAndStationary.setText(i18n.get(prefix + "checkBoxHeavyAndStationary"));
+		weaponSpecialRules.setText(i18n.get(prefix + "weaponSpecialRules"));
+	}
+
+	private void _translateInputFields(String prefix) {
+		labelAttacks.setText(i18n.get(prefix + "labelAttacks"));
+		labelToHit.setText(i18n.get(prefix + "labelToHit"));
+		labelStrength.setText(i18n.get(prefix + "labelStrength"));
+		labelArmorPenetration.setText(i18n.get(prefix + "labelArmorPenetration"));
+		labelDamage.setText(i18n.get(prefix + "labelDamage"));
+		labelSustainedHits.setText(i18n.get(prefix + "labelSustainedHits"));
+		labelMelter.setText(i18n.get(prefix + "labelMelter"));
+		inputSustainedHits.setToolTipText(i18n.get(prefix + "zeroTurnsOffExplanation"));
+		inputMelter.setToolTipText(i18n.get(prefix + "zeroTurnsOffExplanation"));
+	}
+
+	private void _translateRangeSwitcher(String prefix) {
+		weaponRange.setText(i18n.get(prefix + "weaponRange"));
+		weaponRangeMeelee.setText(i18n.get(prefix + "weaponRangeMelee"));
+		weaponRangeShooting.setText(i18n.get(prefix + "weaponRangeShooting"));
+	}
+	
+	@Override
+	protected String defineAddButtonToolTip() { 
+		return "weapon.WeaponView.listView.addButtonToolTip";
+	}
+	
+	@Override
+	protected String defineDeleteButtonToolTip() {
+		return "weapon.WeaponView.listView.deleteButtonToolTip";
+	}
+	
+	@Override
+	protected String defineListViewLabel() {
+		return "weapon.WeaponView.listView.label";
+	}
+	
+	@Override
+	protected String defineEditorGroupName() {
+		return "weapon.WeaponView.editor.groupName";
+	}
+
 }

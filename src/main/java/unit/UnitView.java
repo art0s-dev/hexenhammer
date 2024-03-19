@@ -19,10 +19,10 @@ import arch.ModelList;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.val;
 import utils.GuiFactory;
 import utils.I18n;
+import utils.Theme;
 
 public final class UnitView extends BaseView {
 
@@ -228,7 +228,7 @@ public final class UnitView extends BaseView {
 		
 		Label placeholder = new Label(entityEditorGroup, SWT.NONE);
 		GridData placeholderGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		placeholderGridData.horizontalSpan = GuiFactory.DEFAULT_VERTICAL_INDENT_COMBO;
+		placeholderGridData.horizontalSpan = Theme.DEFAULT_VERTICAL_INDENT_COMBO;
 		placeholder.setLayoutData(placeholderGridData);
 	}
 	
@@ -242,7 +242,7 @@ public final class UnitView extends BaseView {
 	
 	private void _initializeCheckBoxes() {
 		unitSpecialRules = new Group(entityEditorGroup, SWT.NONE);
-		unitSpecialRules.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1));
+		unitSpecialRules.setLayoutData(Theme.FULL_WIDTH_GROUP);
 		unitSpecialRules.setLayout(new GridLayout(2, true));
 
 		GuiFactory factory = new GuiFactory(unitSpecialRules);

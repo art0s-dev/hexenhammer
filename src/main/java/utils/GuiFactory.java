@@ -20,9 +20,6 @@ import core.Probability;
  */
 public class GuiFactory {
 
-	public final static GridData DEFAULT_GRID_DATA = new GridData(SWT.FILL, SWT.FILL, true, false);
-	public final static int DEFAULT_VERTICAL_INDENT_COMBO = 15;
-	
 	/**
 	 * The possible max for an input field
 	 * its 40 because no value in the rulebook of 40k is
@@ -46,6 +43,12 @@ public class GuiFactory {
 		COMBO_PROBABILITY_LISTING.put(3, "4+");
 		COMBO_PROBABILITY_LISTING.put(4, "3+");
 		COMBO_PROBABILITY_LISTING.put(5, "2+");
+	}
+	
+	private final Composite parent;
+	
+	public GuiFactory(Composite parent) {
+		this.parent = parent;
 	}
 	
 	public final static float mapComboSelectionToProbability(int index) {
@@ -84,19 +87,12 @@ public class GuiFactory {
 		return 0;
 	}
 	
-	/**
-	 * The parent to which the Gui factory attaches the created elements
-	 */
-	private final Composite parent;
-	
-	public GuiFactory(Composite parent) {
-		this.parent = parent;
+	public Button createRadioButton() {
+		return _createButton(SWT.RADIO);
 	}
 	
 	public Button createCheckBox() {
-		Button button = new Button(parent, SWT.CHECK);
-		button.setLayoutData(DEFAULT_GRID_DATA);
-		return button;
+		return _createButton(SWT.CHECK);
 	}
 	
 	public Text createTextInput(String label) {
@@ -104,13 +100,13 @@ public class GuiFactory {
 		inputLabel.setText(label);
 		
 		Text text = new Text(parent, SWT.NONE);
-		text.setLayoutData(DEFAULT_GRID_DATA);
+		text.setLayoutData(Theme.DEFAULT_GRID_DATA);
 		return text;
 	}
 	
 	public Spinner createNumberInput() {
 		Spinner spinner = new Spinner(parent, SWT.NONE);
-		spinner.setLayoutData(DEFAULT_GRID_DATA);
+		spinner.setLayoutData(Theme.DEFAULT_GRID_DATA);
 		spinner.setMaximum(INPUT_MAX);
 		spinner.setMinimum(INPUT_MIN);
 		return spinner;
@@ -118,8 +114,8 @@ public class GuiFactory {
 	
 	public Combo createProbabilityCombo() {
 		Combo probabilityCombo = new Combo(parent, SWT.NONE);
-		GridData comboLayout = DEFAULT_GRID_DATA;
-		comboLayout.verticalIndent = DEFAULT_VERTICAL_INDENT_COMBO;
+		GridData comboLayout = Theme.DEFAULT_GRID_DATA;
+		comboLayout.verticalIndent = Theme.DEFAULT_VERTICAL_INDENT_COMBO;
 		probabilityCombo.setLayoutData(comboLayout);
 		COMBO_PROBABILITY_LISTING.forEach((key, value) -> probabilityCombo.add(value, key));
 		probabilityCombo.select(0);
@@ -128,8 +124,14 @@ public class GuiFactory {
 	
 	public Label createLabel() {
 		Label label = new Label(parent, SWT.NONE);
-		label.setLayoutData(DEFAULT_GRID_DATA);
+		label.setLayoutData(Theme.DEFAULT_GRID_DATA);
 		return label;
+	}
+	
+	private Button _createButton(int style) {
+		Button button = new Button(parent, style);
+		button.setLayoutData(Theme.DEFAULT_GRID_DATA);
+		return button;
 	}
 	
 }
