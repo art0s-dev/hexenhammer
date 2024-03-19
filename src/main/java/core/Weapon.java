@@ -7,6 +7,7 @@ import arch.Model;
 import core.Probability.Dice;
 import core.Unit.Type;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -16,18 +17,18 @@ import lombok.val;
  * and be attached to units. This entity will be used for comparation 
  * against the Profile entity.  
  */
-@Builder
+@Builder @Data
 public class Weapon extends Model {
 	
-	@Getter @Setter private String name;
-	@Getter @Setter @Builder.Default private Optional<UserNumberInput> attackInput = Optional.empty();
-	@Getter @Setter @Builder.Default private float toHit = Probability.SIX_UP;
-	@Getter @Setter @Builder.Default private byte strength = 1;
-	@Getter @Setter @Builder.Default private byte armorPenetration = 0;
-	@Getter @Setter @Builder.Default private Optional<UserNumberInput> damageInput = Optional.empty();
-	@Getter @Setter @Builder.Default private byte sustainedHits = 0;
-	@Getter @Setter @Builder.Default private byte melter = 0;
-	@Getter @Setter @Builder.Default private Phase phase = Phase.SHOOTING; 
+	private String name;
+	@Builder.Default private Optional<UserNumberInput> attackInput = Optional.empty();
+	@Builder.Default private float toHit = Probability.SIX_UP;
+	@Builder.Default private byte strength = 1;
+	@Builder.Default private byte armorPenetration = 0;
+	@Builder.Default private Optional<UserNumberInput> damageInput = Optional.empty();
+	@Builder.Default private byte sustainedHits = 0;
+	@Builder.Default private byte melter = 0;
+	@Builder.Default private Phase phase = Phase.SHOOTING; 
 	
 	/**
 	 * calculates the number of attacks dependant on

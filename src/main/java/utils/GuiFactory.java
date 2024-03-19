@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
 import core.Probability;
+import core.Probability.Dice;
 
 /**
  * Use this class if you need to paint like 20 
@@ -32,6 +33,47 @@ public class GuiFactory {
 	 */
 	private final static int INPUT_MIN = 0;
 	
+	private final Composite parent;
+	
+	public GuiFactory(Composite parent) {
+		this.parent = parent;
+	}
+	
+	public Button createRadioButton() {
+		return _createButton(SWT.RADIO);
+	}
+	
+	public Button createCheckBox() {
+		return _createButton(SWT.CHECK);
+	}
+	
+	public Text createTextInput(String label) {
+		Label inputLabel = createLabel();
+		inputLabel.setText(label);
+		
+		Text text = new Text(parent, SWT.NONE);
+		text.setLayoutData(Theme.DEFAULT_GRID_DATA);
+		return text;
+	}
+	
+	public Spinner createNumberInput() {
+		Spinner spinner = new Spinner(parent, SWT.NONE);
+		spinner.setLayoutData(Theme.DEFAULT_GRID_DATA);
+		spinner.setMaximum(INPUT_MAX);
+		spinner.setMinimum(INPUT_MIN);
+		return spinner;
+	}
+	
+	public Combo createProbabilityCombo() {
+		Combo probabilityCombo = new Combo(parent, SWT.NONE);
+		GridData comboLayout = Theme.DEFAULT_GRID_DATA;
+		comboLayout.verticalIndent = Theme.DEFAULT_VERTICAL_INDENT_COMBO;
+		probabilityCombo.setLayoutData(comboLayout);
+		COMBO_PROBABILITY_LISTING.forEach((key, value) -> probabilityCombo.add(value, key));
+		probabilityCombo.select(0);
+		return probabilityCombo;
+	}
+	
 	/**
 	 * The list of all possible probabilities, that can be selected by the combos
 	 */
@@ -43,12 +85,6 @@ public class GuiFactory {
 		COMBO_PROBABILITY_LISTING.put(3, "4+");
 		COMBO_PROBABILITY_LISTING.put(4, "3+");
 		COMBO_PROBABILITY_LISTING.put(5, "2+");
-	}
-	
-	private final Composite parent;
-	
-	public GuiFactory(Composite parent) {
-		this.parent = parent;
 	}
 	
 	public final static float mapComboSelectionToProbability(int index) {
@@ -87,39 +123,37 @@ public class GuiFactory {
 		return 0;
 	}
 	
-	public Button createRadioButton() {
-		return _createButton(SWT.RADIO);
+	public Combo createDiceCombo() {
+		Combo diceChooser = new Combo(parent, SWT.NONE);
+		diceChooser.add("W3");
+		diceChooser.add("W6");
+		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		comboGridData.verticalIndent = Theme.DEFAULT_VERTICAL_INDENT_COMBO;
+		diceChooser.setLayoutData(comboGridData);
+		return diceChooser;
 	}
 	
-	public Button createCheckBox() {
-		return _createButton(SWT.CHECK);
+	/**
+	 * The list of all possible chosen dices
+	 */
+	private final static HashMap<Integer, String> COMBO_DICES= new HashMap<>();
+	static {
+		COMBO_DICES.put(0, "W3");
+		COMBO_DICES.put(1, "W6");
 	}
 	
-	public Text createTextInput(String label) {
-		Label inputLabel = createLabel();
-		inputLabel.setText(label);
-		
-		Text text = new Text(parent, SWT.NONE);
-		text.setLayoutData(Theme.DEFAULT_GRID_DATA);
-		return text;
+	public final static int mapDiceToComboSelection(Dice dice) {
+		return switch(dice) {
+			case d6 -> 1;
+			default -> 0;
+		};
 	}
 	
-	public Spinner createNumberInput() {
-		Spinner spinner = new Spinner(parent, SWT.NONE);
-		spinner.setLayoutData(Theme.DEFAULT_GRID_DATA);
-		spinner.setMaximum(INPUT_MAX);
-		spinner.setMinimum(INPUT_MIN);
-		return spinner;
-	}
-	
-	public Combo createProbabilityCombo() {
-		Combo probabilityCombo = new Combo(parent, SWT.NONE);
-		GridData comboLayout = Theme.DEFAULT_GRID_DATA;
-		comboLayout.verticalIndent = Theme.DEFAULT_VERTICAL_INDENT_COMBO;
-		probabilityCombo.setLayoutData(comboLayout);
-		COMBO_PROBABILITY_LISTING.forEach((key, value) -> probabilityCombo.add(value, key));
-		probabilityCombo.select(0);
-		return probabilityCombo;
+	public final static Dice mapComboSelectionToDice(int index) {
+		return switch(index) {
+			case 1 -> Dice.d6;
+			default -> Dice.d3;
+		};
 	}
 	
 	public Label createLabel() {
