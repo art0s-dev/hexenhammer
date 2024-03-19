@@ -187,6 +187,14 @@ public final class UnitView extends BaseView {
 		inputObjectControl.setSelection(unit.getObjectControl());
 	}
 	
+	private void _drawComboValues(Unit unit) {
+		Function<Float, Integer> map = (probability) -> GuiFactory.mapProbabilityToComboSelection(probability);
+		inputArmorSave.select(map.apply(unit.getArmorSave()));
+		inputFeelNoPain.select(map.apply(unit.getFeelNoPain()));
+		inputInvulnerableSave.select(map.apply(unit.getInvulnerableSave()));
+		inputType.select(mapTypeEnumToComboSelection(unit.getType()));
+	}
+	
 	private void _drawCheckboxValues(Unit unit) {
 		checkBoxAddOneToHit.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_HIT));
 		checkBoxLethalHits.setSelection(unit.has(SpecialRuleUnit.LETHAL_HITS));
@@ -232,13 +240,7 @@ public final class UnitView extends BaseView {
 		placeholder.setLayoutData(placeholderGridData);
 	}
 	
-	private void _drawComboValues(Unit unit) {
-		Function<Float, Integer> map = (probability) -> GuiFactory.mapProbabilityToComboSelection(probability);
-		inputArmorSave.select(map.apply(unit.getArmorSave()));
-		inputFeelNoPain.select(map.apply(unit.getFeelNoPain()));
-		inputInvulnerableSave.select(map.apply(unit.getInvulnerableSave()));
-		inputType.select(mapTypeEnumToComboSelection(unit.getType()));
-	}
+	
 	
 	private void _initializeCheckBoxes() {
 		unitSpecialRules = new Group(entityEditorGroup, SWT.NONE);

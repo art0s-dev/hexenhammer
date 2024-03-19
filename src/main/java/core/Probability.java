@@ -73,4 +73,9 @@ public final class Probability {
 			this.value = value;
 		}
 	}
+	
+	public enum Dice {
+		d3,
+		d6
+	}
 }

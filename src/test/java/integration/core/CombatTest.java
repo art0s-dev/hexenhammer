@@ -2,10 +2,13 @@ package integration.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 
 import core.Probability;
 import core.Unit;
+import core.UserNumberInput;
 import core.Weapon;
 import lombok.val;
 
@@ -15,7 +18,8 @@ class CombatTest {
 	void testFullCombatMechanic() {
 		Weapon bolter = Weapon.builder()
 				.toHit(Probability.THREE_UP)
-				.attacks(2)
+				.attackInput(Optional.of(UserNumberInput.withNumber((byte) 2)))
+				.damageInput(Optional.of(UserNumberInput.withNumber((byte) 1)))
 				.strength((byte)4)
 				.build();
 		

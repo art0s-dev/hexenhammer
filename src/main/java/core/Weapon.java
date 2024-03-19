@@ -3,40 +3,85 @@ package core;
 import java.util.HashSet;
 import java.util.Optional;
 
+import arch.Model;
+import core.Probability.Dice;
 import core.Unit.Type;
 import lombok.Builder;
-import lombok.Data;
-import lombok.Generated;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.val;
 
 /**
  * The Weapons should just contain values
  * and be attached to units. This entity will be used for comparation 
- * against the Profile entity.
+ * against the Profile entity.  
  */
-@Data @Generated @Builder
-public class Weapon {
-	@Getter private String name;
-	@Builder.Default private float attacks = 1;
-	@Builder.Default private float toHit = Probability.SIX_UP;
-	@Builder.Default private byte strength = 1;
-	@Builder.Default private byte armorPenetration = 0;
-	@Builder.Default private float damage = 1;
-	@Builder.Default private byte sustainedHits = 0;
-	@Builder.Default private Phase phase = Phase.SHOOTING; 
+@Builder
+public class Weapon extends Model {
+	
+	@Getter @Setter private String name;
+	@Getter @Setter @Builder.Default private Optional<UserNumberInput> attackInput = Optional.empty();
+	@Getter @Setter @Builder.Default private float toHit = Probability.SIX_UP;
+	@Getter @Setter @Builder.Default private byte strength = 1;
+	@Getter @Setter @Builder.Default private byte armorPenetration = 0;
+	@Getter @Setter @Builder.Default private Optional<UserNumberInput> damageInput = Optional.empty();
+	@Getter @Setter @Builder.Default private byte sustainedHits = 0;
+	@Getter @Setter @Builder.Default private byte melter = 0;
+	@Getter @Setter @Builder.Default private Phase phase = Phase.SHOOTING; 
 	
 	/**
-	 * Describes the extra damage that is done 
-	 * when this value is greater then 0
+	 * calculates the number of attacks dependant on
+	 * the userNumberInput to provide the user with the choice to either enter
+	 * a attacknumber or to generate a number through a quantity and a die
 	 */
-	@Builder.Default private byte melter = 0; 
+	public float getAttacks() {
+		if(attackInput.isEmpty()) {
+			return 0f;
+		}
+		
+		UserNumberInput attackInput = this.attackInput.orElseThrow();
+		
+		if(attackInput.useDice()) {
+			val diceValue = attackInput.dice().equals(Dice.d3) 
+					? Probability.MEDIAN_D3 
+					: Probability.MEDIAN_D6;
+			
+			return attackInput.quantity() * diceValue;
+		}
+		
+		return attackInput.number();
+	}
+	
+	/**
+	 * calculates the damages based on the
+	 * userNumberInput for the damage. Same one as getAttacks(), 
+	 * we want the user to choose either to enter a number of attacks or
+	 * a quantity and a die.
+	 */
+	public float getDamage() {
+		if(damageInput.isEmpty()) {
+			return 0f;
+		}
+		
+		UserNumberInput damageInput = this.damageInput.orElseThrow();
+		
+		if(damageInput.useDice()) {
+			val diceValue = damageInput.dice().equals(Dice.d3) 
+					? Probability.MEDIAN_D3 
+					: Probability.MEDIAN_D6;
+			
+			return damageInput.quantity() * diceValue;
+		}
+		
+		return damageInput.number();
+	}
 	
 	/**
 	 * This is a tuple explains the specific efficiency for wound rolls
 	 * against a certain profile type.
 	 */
 	public record AntiType(Type type, Float probability) {}
-	@Builder.Default private Optional<AntiType> antiType = Optional.empty();
+	@Getter @Setter @Builder.Default private Optional<AntiType> antiType = Optional.empty();
 	
 	/**
 	 * Distinguishes the weapon between a combat and a shooting weapon 

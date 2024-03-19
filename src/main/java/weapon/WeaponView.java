@@ -1,7 +1,6 @@
 package weapon;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -13,7 +12,10 @@ import org.eclipse.swt.widgets.Spinner;
 import arch.BaseView;
 import arch.Model;
 import arch.ModelList;
+import core.Weapon;
+import core.Weapon.SpecialRuleWeapon;
 import lombok.Getter;
+import lombok.val;
 import utils.GuiFactory;
 import utils.I18n;
 import utils.Theme;
@@ -55,6 +57,7 @@ public class WeaponView extends BaseView {
 		_initializeWeaponRangeSwitch();
 		_initializeInputFields();
 		_initializeCheckboxes();
+		//Da muss anti type noch rein als switcher
 		translate();
 	}
 	
@@ -76,13 +79,30 @@ public class WeaponView extends BaseView {
 	
 	@Override
 	public void drawEditor(Model model) {
+		Weapon weapon = (Weapon) model;
 		
+		val formIsInitialized = model == null;
+		if(formIsInitialized) {
+			return;
+		}
+		
+		/**inputStrenght.setSelection(weapon.getStrength());
+		inputArmorPenetration.setSelection(weapon.getArmorPenetration());
+		//inputDamage.setSelection(weapon.getDamage()); Dumbo das is auch n float!!!
+		inputToHit.select(GuiFactory.mapProbabilityToComboSelection(weapon.getToHit()));
+		inputMelter.setSelection(weapon.getMelter());
+		inputSustainedHits.setSelection(weapon.getSustainedHits());
+		
+		checkBoxTorrent.setSelection(weapon.has(SpecialRuleWeapon.TORRENT));
+		checkBoxHeavyAndStationary.setSelection(weapon.has(SpecialRuleWeapon.HEAVY_AND_UNIT_REMAINED_STATIONARY));
+		*/
 	}
 
 	private void _initializeInputFields() {
 		GuiFactory factory = new GuiFactory(entityEditorGroup);
 		labelAttacks = factory.createLabel();
 		inputAttacks = factory.createNumberInput();
+		inputAttacks.setDigits(1);
 		labelToHit = factory.createLabel();
 		inputToHit = factory.createProbabilityCombo();
 		labelStrength = factory.createLabel();
@@ -91,6 +111,7 @@ public class WeaponView extends BaseView {
 		inputArmorPenetration = factory.createNumberInput();
 		labelDamage = factory.createLabel();
 		inputDamage = factory.createNumberInput();
+		inputDamage.setDigits(1);
 		labelSustainedHits = factory.createLabel();
 		inputSustainedHits = factory.createNumberInput();
 		labelMelter = factory.createLabel();
