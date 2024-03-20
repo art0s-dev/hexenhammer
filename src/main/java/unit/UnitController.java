@@ -137,7 +137,7 @@ public class UnitController implements Controller {
 	private void _injectUnitTypeComboListener() {
 		view.getInputType().addSelectionListener(Lambda.select(() -> {
 			int index = view.getInputType().getSelectionIndex();
-			Unit.Type type = UnitView.mapUnitTypeComboSelectionToEnum(index);
+			Unit.Type type = GuiFactory.mapUnitTypeComboSelectionToEnum(index);
 			_getUnit().setType(type);
 		}));
 	}

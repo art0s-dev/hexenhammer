@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
 import core.Probability;
+import core.Unit;
 import core.Probability.Dice;
 
 /**
@@ -166,6 +167,45 @@ public class GuiFactory {
 		Button button = new Button(parent, style);
 		button.setLayoutData(Theme.DEFAULT_GRID_DATA);
 		return button;
+	}
+	
+	/**
+	 * This is the listing for the unit types that can be chosen  
+	 */
+	public static HashMap<Integer, String> UNIT_TYPES = new HashMap<>();
+	static {
+		String prefix = "unit.UnitView.editor.unitType.";
+		UNIT_TYPES.put(0, prefix + "infantry");
+		UNIT_TYPES.put(1, prefix + "monster");
+		UNIT_TYPES.put(2, prefix + "vehicle");
+	}
+	
+	/**
+	 * Maps the selectable Combo options of the unit type
+	 * to an enum for further processing
+	 */
+	public static Unit.Type mapUnitTypeComboSelectionToEnum(int index) {
+		return switch (index) {
+			case 1 -> Unit.Type.MONSTER;
+			case 2 -> Unit.Type.VEHICLE;
+			default -> Unit.Type.INFANTRY;
+		};
+	}
+	
+	/**
+	 * Maps a given unit type to the combo selection index
+	 */
+	public static int mapTypeEnumToComboSelection(Unit.Type type) {
+		boolean noTypeWasSet = type == null;
+		if(noTypeWasSet) {
+			return 0; 
+		}
+		
+		return switch (type) {
+			case Unit.Type.MONSTER -> 1;
+			case Unit.Type.VEHICLE -> 2;
+			default -> 0; //Infantry
+		};
 	}
 	
 }

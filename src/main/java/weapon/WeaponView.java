@@ -45,6 +45,8 @@ public class WeaponView extends BaseView {
 	@Getter private Spinner inputDamageNumber;
 	@Getter private Spinner inputDamageDiceNumber;
 	@Getter private Combo inputDamageDiceChooser;
+	@Getter private Combo antiTypeCombo;
+	@Getter private Combo antiTypeProbability;
 	
 	//Labels
 	private Group weaponRange;
@@ -56,8 +58,7 @@ public class WeaponView extends BaseView {
 	private Group weaponSpecialRules;
 	private Group attacksGroup;
 	private Group damageGroup;
-
-	
+	private Group antiTypeGroup;
 	
 	public WeaponView(Composite parent, I18n i18n) {
 		super(parent, i18n);
@@ -67,14 +68,13 @@ public class WeaponView extends BaseView {
 	public void draw() {
 		super.draw();
 		_initializeWeaponRangeSwitch();
-		_initalizeAttackInputs();
-		_initalizeDamageInputs();
+		_initializeAttackInputs();
+		_initializeDamageInputs();
 		_initializeInputFields();
+		_initializeAntiType();
 		_initializeCheckboxes();
 		translate();
 	}
-
-	
 	
 	@Override
 	public void translate() {
@@ -83,9 +83,9 @@ public class WeaponView extends BaseView {
 		_translateRangeSwitcher(prefix);
 		_translateInputFields(prefix);
 		_translateSpecialRules(prefix);
+		GuiFactory.UNIT_TYPES.forEach((key, value) -> antiTypeCombo.add(i18n.get(value)));
 	}
 
-	
 	
 	@Override
 	public void drawList(ModelList modelList) {
@@ -122,7 +122,7 @@ public class WeaponView extends BaseView {
 		weaponRangeMeelee = factory.createRadioButton();
 	}
 	
-	private void _initalizeAttackInputs() {
+	private void _initializeAttackInputs() {
 		GridData groupGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1);
 		groupGridData.heightHint = 60;
 		attacksGroup = new Group(entityEditorGroup, SWT.NONE);
@@ -136,7 +136,7 @@ public class WeaponView extends BaseView {
 		inputAttackDiceChooser = factory.createDiceCombo();
 	}
 	
-	private void _initalizeDamageInputs() {
+	private void _initializeDamageInputs() {
 		GridData groupGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1);
 		groupGridData.heightHint = 60;
 		damageGroup = new Group(entityEditorGroup, SWT.NONE);
@@ -162,6 +162,19 @@ public class WeaponView extends BaseView {
 		inputSustainedHits = factory.createNumberInput();
 		labelMelter = factory.createLabel();
 		inputMelter = factory.createNumberInput();
+	}
+	
+	private void _initializeAntiType() {
+		antiTypeGroup = new Group(entityEditorGroup, SWT.NONE);
+		antiTypeGroup.setLayoutData(Theme.getFullWidthGroupWithOptimalComboHeight());
+		antiTypeGroup.setText("Antityp Waffe");
+		antiTypeGroup.setLayout(new GridLayout(2, true));
+		GuiFactory factory = new GuiFactory(antiTypeGroup);
+		antiTypeCombo =  new Combo(antiTypeGroup, SWT.NONE);
+		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		comboGridData.verticalIndent = 15;
+		antiTypeCombo.setLayoutData(comboGridData);
+		antiTypeProbability = factory.createProbabilityCombo();
 	}
 	
 	private void _initializeCheckboxes() {
