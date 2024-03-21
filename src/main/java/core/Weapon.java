@@ -1,10 +1,13 @@
 package core;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 
 import arch.Model;
 import core.Probability.Dice;
+import core.Unit.Phase;
+import core.Unit.SpecialRuleUnit;
 import core.Unit.Type;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +31,7 @@ public class Weapon extends Model {
 	@Builder.Default private Optional<UserNumberInput> damageInput = Optional.empty();
 	@Builder.Default private byte sustainedHits = 0;
 	@Builder.Default private byte melter = 0;
-	@Builder.Default private Phase phase = Phase.SHOOTING; 
+	@Builder.Default private Range range = Range.SHOOTING;  
 	
 	/**
 	 * calculates the number of attacks dependant on
@@ -47,10 +50,10 @@ public class Weapon extends Model {
 					? Probability.MEDIAN_D3 
 					: Probability.MEDIAN_D6;
 			
-			return attackInput.quantity() * diceValue;
+			return attackInput.diceQuantity() * diceValue;
 		}
 		
-		return attackInput.number();
+		return attackInput.fixedNumber();
 	}
 	
 	/**
@@ -71,10 +74,10 @@ public class Weapon extends Model {
 					? Probability.MEDIAN_D3 
 					: Probability.MEDIAN_D6;
 			
-			return damageInput.quantity() * diceValue;
+			return damageInput.diceQuantity() * diceValue;
 		}
 		
-		return damageInput.number();
+		return damageInput.fixedNumber();
 	}
 	
 	/**
@@ -85,9 +88,11 @@ public class Weapon extends Model {
 	@Getter @Setter @Builder.Default private Optional<AntiType> antiType = Optional.empty();
 	
 	/**
-	 * Distinguishes the weapon between a combat and a shooting weapon 
+	 * Defines a range on the weapon, which decides how the weapon is used
+	 * the user can choose to use only weapons with shooting, meele or bother
+	 * weapons can only be shooting or meelee
 	 */
-	public enum Phase { SHOOTING, FIGHT, BOTH }
+	public enum Range { SHOOTING, MELEE }
 	
 	/**
 	 * The Set of special rules each weapon can have

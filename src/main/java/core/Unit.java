@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import arch.Model;
-import core.Weapon.Phase;
+import core.Weapon.Range;
 import core.Weapon.SpecialRuleWeapon;
 import core.combat.CombatRules;
 import core.combat.DicePool;
@@ -17,8 +17,7 @@ import core.combat.SavingThrowDiceRoll;
 import core.combat.WoundDicePool;
 import core.combat.WoundDiceRoll;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.val;
 
 /**
@@ -30,18 +29,18 @@ import lombok.val;
  * - equip() the weapons and maybe add() some special rules
  * - attack() the enemy profile  
  */
-@Builder
+@Builder @Data
 public class Unit extends Model {
-	@Getter @Setter @Builder.Default private String name = "New Unit";
-	@Getter @Setter @Builder.Default private byte movement = 1;
-	@Getter @Setter @Builder.Default private byte toughness = 1;
-	@Getter @Setter @Builder.Default private float armorSave = Probability.NONE;
-	@Getter @Setter @Builder.Default private byte hitPoints = 1;
-	@Getter @Setter @Builder.Default private byte leadership = 1;
-	@Getter @Setter @Builder.Default private byte objectControl = 1;
-	@Getter @Setter @Builder.Default private float invulnerableSave = Probability.NONE;
-	@Getter @Setter @Builder.Default private float feelNoPain = Probability.NONE;
-	@Getter @Setter @Builder.Default private Type type = Type.INFANTRY;
+	@Builder.Default private String name = "New Unit";
+	@Builder.Default private byte movement = 1;
+	@Builder.Default private byte toughness = 1;
+	@Builder.Default private float armorSave = Probability.NONE;
+	@Builder.Default private byte hitPoints = 1;
+	@Builder.Default private byte leadership = 1;
+	@Builder.Default private byte objectControl = 1;
+	@Builder.Default private float invulnerableSave = Probability.NONE;
+	@Builder.Default private float feelNoPain = Probability.NONE;
+	@Builder.Default private Type type = Type.INFANTRY;
 	
 	/**
 	 * With this method we add, delete and edit the weapons of a unit. 
@@ -104,6 +103,22 @@ public class Unit extends Model {
 	}
 	
 	/**
+	 * Distinguishes the weapon between a combat and a shooting weapon 
+	 */
+	public enum Phase { SHOOTING, FIGHT, BOTH }
+	
+	/**
+	 * Sets the Filter which weapons shall be used for the attack sequence
+	 * @implNote The default is set to both phases
+	 * @param phase
+	 */
+	public void usePhase(Phase phase) {
+		this.phase = phase;
+	}
+
+	@Builder.Default Phase phase = Phase.BOTH;
+	
+	/**
 	 * The attack interface for every unit calculates
 	 * the total damage from every equipped and filtered weapon 
 	 * from that unit and uses the combat class for further calculations
@@ -115,17 +130,6 @@ public class Unit extends Model {
 				.map(weaponAndQuantity -> _dealDamage(weaponAndQuantity, enemy))
 				.reduce(0f, (sum, damage) -> sum + damage);
 	}
-	
-	/**
-	 * Sets the Filter which weapons shall be used for the attack sequence
-	 * @implNote The default is set to both phases
-	 * @param phase
-	 */
-	public void setPhase(Phase phase) {
-		this.phase = phase;
-	}
-
-	@Builder.Default Phase phase = Phase.BOTH;
 	
 	/**
 	 * This is the register of weapons a unit has.
@@ -145,8 +149,29 @@ public class Unit extends Model {
 		val weaponStream = weapons.entrySet().parallelStream();
 		val isForBothPhases = phase.equals(Phase.BOTH);
 		return isForBothPhases ? weaponStream 
-				: weaponStream.filter(entry -> entry.getKey().getPhase() == phase);
+				: weaponStream.filter(entry -> _filterWeaponRange(entry.getKey(), phase));
 	} 
+	
+	/**
+	 * evaluates the range of a weapon and the picked phase
+	 * so that only the user can "just use shooting weapons" and such 
+	 */
+	private static boolean _filterWeaponRange(Weapon weapon, Phase phase) {
+		boolean shootingIsPickedAndRangeIsShooting = phase.equals(Phase.SHOOTING) 
+				&& weapon.getRange().equals(Range.SHOOTING);
+		if(shootingIsPickedAndRangeIsShooting) {
+			return true;
+		}
+		
+		boolean meeleIsPickedAndRangeIsMelee = phase.equals(Phase.FIGHT) 
+				&& weapon.getRange().equals(Range.MELEE);
+
+		if(meeleIsPickedAndRangeIsMelee) {
+			return true;
+		}
+		
+		return false;
+	}
 	
 	/**
 	 * The Set of special rules each unit has.

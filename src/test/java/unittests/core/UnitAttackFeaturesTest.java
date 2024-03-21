@@ -13,9 +13,10 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Probability;
 import core.Unit;
+import core.Unit.Phase;
 import core.Unit.SpecialRuleUnit;
 import core.Weapon;
-import core.Weapon.Phase;
+import core.Weapon.Range;
 import core.Weapon.SpecialRuleWeapon;
 
 
@@ -39,12 +40,14 @@ class UnitAttackFeaturesTest {
 		when(bolter.getStrength()).thenReturn((byte)4);
 		when(bolter.getArmorPenetration()).thenReturn((byte)0);
 		when(bolter.getDamage()).thenReturn(1f);	
+		when(bolter.getRange()).thenReturn(Range.SHOOTING);
 		when(bolter.getToHit()).thenReturn(Probability.THREE_UP);
 		
 		heavyBolter = mock(Weapon.class);
 		when(heavyBolter.getAttacks()).thenReturn(3f);
 		when(heavyBolter.getToHit()).thenReturn(Probability.THREE_UP);
 		when(heavyBolter.getStrength()).thenReturn((byte)5);
+		when(heavyBolter.getRange()).thenReturn(Range.SHOOTING);
 		when(heavyBolter.getArmorPenetration()).thenReturn((byte)2);
 		
 		guardsmen = mock(Unit.class);
@@ -141,12 +144,12 @@ class UnitAttackFeaturesTest {
 		when(combatKnife.getAttacks()).thenReturn(2f);
 		when(combatKnife.getToHit()).thenReturn(Probability.THREE_UP);
 		when(combatKnife.getStrength()).thenReturn((byte)4);
-		when(combatKnife.getPhase()).thenReturn(Phase.FIGHT);
+		when(combatKnife.getRange()).thenReturn(Range.MELEE);
 		when(combatKnife.getDamage()).thenReturn(1f);
 		
 		byte quantity = 5;
 		Unit spaceMarines = Unit.builder().build();
-		spaceMarines.setPhase(Phase.FIGHT);
+		spaceMarines.usePhase(Phase.FIGHT);
 		spaceMarines.equip(quantity, combatKnife);
 		spaceMarines.equip(quantity, heavyBolter);
 		float damage = spaceMarines.attack(guardsmen);
@@ -211,7 +214,7 @@ class UnitAttackFeaturesTest {
 	@Test @DisplayName("Special Rules - Cover") 
 	void GivenSpaceMarines_WhenGuardsmenHaveCover_ThenSpaceMarinesDealLessDamage() {
 		//Weapon has to be shooting weapon
-		when(bolter.getPhase()).thenReturn(Phase.SHOOTING);
+		when(bolter.getRange()).thenReturn(Range.SHOOTING);
 		
 		//Profile has to be in cover
 		when(guardsmen.has(SpecialRuleUnit.HAS_COVER)).thenReturn(true);

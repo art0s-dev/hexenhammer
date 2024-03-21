@@ -12,15 +12,15 @@ import core.Probability.Dice;
  */
 public record UserNumberInput(
 		boolean useDice,
-		byte number,
-		byte quantity,
+		byte fixedNumber,
+		byte diceQuantity,
 		Probability.Dice dice
 ) {
-	public static UserNumberInput withNumber(byte number) {
-		return new UserNumberInput(false, number, (byte)0, Dice.d3);
+	public static UserNumberInput withNumber(byte fixedNumber) {
+		return new UserNumberInput(false, fixedNumber, (byte)0, Dice.d3);
 	}
 	
-	public static UserNumberInput withDice(byte quantity, Dice dice) {
-		return new UserNumberInput(true, (byte)0, quantity, dice);
+	public static UserNumberInput withDice(byte diceQuantity, Dice dice) {
+		return new UserNumberInput(true, (byte)0, diceQuantity, dice);
 	}
 }

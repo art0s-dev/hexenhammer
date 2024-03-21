@@ -84,7 +84,7 @@ abstract public class BaseView implements View {
 	private void _drawMenu() {
 		CoolBar menuBar = new CoolBar(compositeEntityList, SWT.NONE);
 		GridData menuBarGridData = new GridData(SWT.FILL, SWT.FILL, false, false);
-		menuBarGridData.verticalSpan = 8;
+		menuBarGridData.verticalSpan = 9;
 		menuBar.setLayoutData(menuBarGridData);
 		menuBar.setLayout(new GridLayout(2, true));
 		

@@ -13,7 +13,9 @@ import org.eclipse.swt.widgets.Spinner;
 import arch.BaseView;
 import arch.Model;
 import arch.ModelList;
+import core.UserNumberInput;
 import core.Weapon;
+import core.Weapon.Range;
 import core.Weapon.SpecialRuleWeapon;
 import lombok.Getter;
 import lombok.val;
@@ -35,18 +37,18 @@ public class WeaponView extends BaseView {
 	@Getter private Button checkBoxHeavyAndStationary;
 	@Getter private Button weaponRangeShooting;
 	@Getter private Button weaponRangeMeelee;
-	@Getter private Button radioAttackNumberInput;
-	@Getter private Button radioAttackNumberDice;
-	@Getter private Spinner inputAttackNumber;
-	@Getter private Spinner inputAttackDiceNumber;
-	@Getter private Combo inputAttackDiceChooser;
-	@Getter private Button radioDamageInput;
-	@Getter private Button radioDamageDice;
-	@Getter private Spinner inputDamageNumber;
-	@Getter private Spinner inputDamageDiceNumber;
-	@Getter private Combo inputDamageDiceChooser;
-	@Getter private Combo antiTypeCombo;
-	@Getter private Combo antiTypeProbability;
+	@Getter private Button radioAttackInputFixedNumber;
+	@Getter private Button radioAttackInputDice;
+	@Getter private Spinner inputAttackInputFixedNumber;
+	@Getter private Spinner inputAttackInputDice;
+	@Getter private Combo inputAttackInputDiceChooser;
+	@Getter private Button radioDamageInputFixedNumber;
+	@Getter private Button radioDamageInputDice;
+	@Getter private Spinner inputDamageInputFixedNumber;
+	@Getter private Spinner inputDamageInputDice;
+	@Getter private Combo inputDamageInputDiceChooser;
+	@Getter private Combo antiTypeUnitTypeCombo;
+	@Getter private Combo antiTypeProbabilityCombo;
 	
 	//Labels
 	private Group weaponRange;
@@ -83,7 +85,7 @@ public class WeaponView extends BaseView {
 		_translateRangeSwitcher(prefix);
 		_translateInputFields(prefix);
 		_translateSpecialRules(prefix);
-		GuiFactory.UNIT_TYPES.forEach((key, value) -> antiTypeCombo.add(i18n.get(value)));
+		GuiFactory.UNIT_TYPES.forEach((key, value) -> antiTypeUnitTypeCombo.add(i18n.get(value)));
 	}
 
 	
@@ -101,6 +103,57 @@ public class WeaponView extends BaseView {
 			return;
 		}
 		
+		_drawWeaponRange(weapon);
+		_drawAttackInputValues(weapon);
+		_enableAttackInputFields(weapon);
+		_drawInputValues(weapon);
+	}
+	
+	private void _drawWeaponRange(Weapon weapon) {
+		boolean rangeNotSet = weapon.getRange() == null;
+		if(rangeNotSet) {
+			weaponRangeShooting.setSelection(true);
+			weaponRangeMeelee.setSelection(false);
+			return;
+		} 
+		
+		Range range = weapon.getRange();
+		weaponRangeShooting.setSelection(range.equals(Weapon.Range.SHOOTING));
+		weaponRangeMeelee.setSelection(range.equals(Weapon.Range.MELEE));
+	}
+	
+	
+
+	private void _drawAttackInputValues(Weapon weapon) {
+		boolean attackInputWasNotEntered = weapon.getAttackInput().isEmpty();
+		if(attackInputWasNotEntered) {
+			inputAttackInputFixedNumber.setSelection(0);
+			return;
+		} 
+		
+		UserNumberInput attackInput = weapon.getAttackInput().orElseThrow();
+		inputAttackInputDice.setSelection(attackInput.diceQuantity());
+		inputAttackInputDiceChooser.select(GuiFactory.mapDiceToComboSelection(attackInput.dice()));
+		inputAttackInputFixedNumber.setSelection(attackInput.fixedNumber());
+	}
+	
+	private void _enableAttackInputFields(Weapon weapon) {
+		boolean attackInputIsPresent = weapon.getAttackInput().isPresent();
+		boolean useDice = false;
+		if(attackInputIsPresent) {
+			UserNumberInput attackInput = weapon.getAttackInput().orElseThrow();
+			useDice = attackInput.useDice();
+		}
+		
+		//Enable based on selection
+		radioAttackInputFixedNumber.setSelection(!useDice);
+		radioAttackInputDice.setSelection(useDice);
+		inputAttackInputFixedNumber.setEnabled(!useDice);
+		inputAttackInputDice.setEnabled(useDice);
+		inputAttackInputDiceChooser.setEnabled(useDice);
+	}
+	
+	private void _drawInputValues(Weapon weapon) {
 		inputStrenght.setSelection(weapon.getStrength());
 		inputArmorPenetration.setSelection(weapon.getArmorPenetration());
 		inputToHit.select(GuiFactory.mapProbabilityToComboSelection(weapon.getToHit()));
@@ -110,8 +163,6 @@ public class WeaponView extends BaseView {
 		checkBoxHeavyAndStationary
 		.setSelection(weapon.has(SpecialRuleWeapon.HEAVY_AND_UNIT_REMAINED_STATIONARY));
 	}
-
-	
 
 	private void _initializeWeaponRangeSwitch() {
 		weaponRange = new Group(entityEditorGroup, SWT.NONE);
@@ -129,11 +180,11 @@ public class WeaponView extends BaseView {
 		attacksGroup.setLayoutData(groupGridData);
 		attacksGroup.setLayout(new GridLayout(5, true));
 		GuiFactory factory = new GuiFactory(attacksGroup);
-		radioAttackNumberInput = factory.createRadioButton();
-		inputAttackNumber = factory.createNumberInput();
-		radioAttackNumberDice = factory.createRadioButton();
-		inputAttackDiceNumber = factory.createNumberInput();
-		inputAttackDiceChooser = factory.createDiceCombo();
+		radioAttackInputFixedNumber = factory.createRadioButton();
+		inputAttackInputFixedNumber = factory.createNumberInput();
+		radioAttackInputDice = factory.createRadioButton();
+		inputAttackInputDice = factory.createNumberInput();
+		inputAttackInputDiceChooser = factory.createDiceCombo();
 	}
 	
 	private void _initializeDamageInputs() {
@@ -143,11 +194,11 @@ public class WeaponView extends BaseView {
 		damageGroup.setLayoutData(groupGridData);
 		damageGroup.setLayout(new GridLayout(5, true));
 		GuiFactory factory = new GuiFactory(damageGroup);
-		radioDamageInput = factory.createRadioButton();
-		inputDamageNumber = factory.createNumberInput();
-		radioDamageDice = factory.createRadioButton();
-		inputDamageDiceNumber = factory.createNumberInput();
-		inputDamageDiceChooser = factory.createDiceCombo();
+		radioDamageInputFixedNumber = factory.createRadioButton();
+		inputDamageInputFixedNumber = factory.createNumberInput();
+		radioDamageInputDice = factory.createRadioButton();
+		inputDamageInputDice = factory.createNumberInput();
+		inputDamageInputDiceChooser = factory.createDiceCombo();
 	}
 	
 	private void _initializeInputFields() {
@@ -170,11 +221,11 @@ public class WeaponView extends BaseView {
 		antiTypeGroup.setText("Antityp Waffe");
 		antiTypeGroup.setLayout(new GridLayout(2, true));
 		GuiFactory factory = new GuiFactory(antiTypeGroup);
-		antiTypeCombo =  new Combo(antiTypeGroup, SWT.NONE);
+		antiTypeUnitTypeCombo =  new Combo(antiTypeGroup, SWT.NONE);
 		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		comboGridData.verticalIndent = 15;
-		antiTypeCombo.setLayoutData(comboGridData);
-		antiTypeProbability = factory.createProbabilityCombo();
+		antiTypeUnitTypeCombo.setLayoutData(comboGridData);
+		antiTypeProbabilityCombo = factory.createProbabilityCombo();
 	}
 	
 	private void _initializeCheckboxes() {
@@ -203,11 +254,11 @@ public class WeaponView extends BaseView {
 		inputMelter.setToolTipText(i18n.get(prefix + "zeroTurnsOffExplanation"));
 		
 		attacksGroup.setText(i18n.get(prefix + "labelAttacks"));
-		radioAttackNumberInput.setText(i18n.get(prefix + "fixed"));
-		radioAttackNumberDice.setText(i18n.get(prefix + "dice"));
+		radioAttackInputFixedNumber.setText(i18n.get(prefix + "fixed"));
+		radioAttackInputDice.setText(i18n.get(prefix + "dice"));
 		damageGroup.setText(i18n.get(prefix + "labelDamage"));
-		radioDamageInput.setText(i18n.get(prefix + "fixed"));
-		radioDamageDice.setText(i18n.get(prefix + "fixed"));
+		radioDamageInputFixedNumber.setText(i18n.get(prefix + "fixed"));
+		radioDamageInputDice.setText(i18n.get(prefix + "fixed"));
 	}
 
 	private void _translateRangeSwitcher(String prefix) {
