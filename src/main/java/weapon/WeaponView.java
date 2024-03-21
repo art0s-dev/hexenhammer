@@ -13,8 +13,11 @@ import org.eclipse.swt.widgets.Spinner;
 import arch.BaseView;
 import arch.Model;
 import arch.ModelList;
+import core.Probability;
+import core.Unit.Type;
 import core.UserNumberInput;
 import core.Weapon;
+import core.Weapon.AntiType;
 import core.Weapon.Range;
 import core.Weapon.SpecialRuleWeapon;
 import lombok.Getter;
@@ -87,11 +90,10 @@ public class WeaponView extends BaseView {
 		_translateSpecialRules(prefix);
 		GuiFactory.UNIT_TYPES.forEach((key, value) -> antiTypeUnitTypeCombo.add(i18n.get(value)));
 	}
-
 	
 	@Override
 	public void drawList(ModelList modelList) {
-		// TODO Auto-generated method stub 
+		// TODO Auto-generated method stub  
 	}
 	
 	@Override
@@ -105,10 +107,13 @@ public class WeaponView extends BaseView {
 		
 		_drawWeaponRange(weapon);
 		_drawAttackInputValues(weapon);
+		_drawDamageInputValues(weapon);
 		_enableAttackInputFields(weapon);
+		_enableDamageInputFields(weapon);
+		_drawAntiType(weapon);
 		_drawInputValues(weapon);
 	}
-	
+
 	private void _drawWeaponRange(Weapon weapon) {
 		boolean rangeNotSet = weapon.getRange() == null;
 		if(rangeNotSet) {
@@ -121,8 +126,6 @@ public class WeaponView extends BaseView {
 		weaponRangeShooting.setSelection(range.equals(Weapon.Range.SHOOTING));
 		weaponRangeMeelee.setSelection(range.equals(Weapon.Range.MELEE));
 	}
-	
-	
 
 	private void _drawAttackInputValues(Weapon weapon) {
 		boolean attackInputWasNotEntered = weapon.getAttackInput().isEmpty();
@@ -135,6 +138,19 @@ public class WeaponView extends BaseView {
 		inputAttackInputDice.setSelection(attackInput.diceQuantity());
 		inputAttackInputDiceChooser.select(GuiFactory.mapDiceToComboSelection(attackInput.dice()));
 		inputAttackInputFixedNumber.setSelection(attackInput.fixedNumber());
+	}
+	
+	private void _drawDamageInputValues(Weapon weapon) {
+		boolean damageInputWasNotEntered = weapon.getDamageInput().isEmpty();
+		if(damageInputWasNotEntered) {
+			inputDamageInputFixedNumber.setSelection(0);
+			return;
+		} 
+		
+		UserNumberInput damageInput = weapon.getDamageInput().orElseThrow();
+		inputDamageInputFixedNumber.setSelection(damageInput.fixedNumber());
+		inputDamageInputDiceChooser.select(GuiFactory.mapDiceToComboSelection(damageInput.dice()));
+		inputDamageInputDice.setSelection(damageInput.diceQuantity());
 	}
 	
 	private void _enableAttackInputFields(Weapon weapon) {
@@ -151,6 +167,34 @@ public class WeaponView extends BaseView {
 		inputAttackInputFixedNumber.setEnabled(!useDice);
 		inputAttackInputDice.setEnabled(useDice);
 		inputAttackInputDiceChooser.setEnabled(useDice);
+	}
+	
+	private void _enableDamageInputFields(Weapon weapon) {
+		boolean damageInputIsPresent = weapon.getDamageInput().isPresent();
+		boolean useDice = false;
+		if(damageInputIsPresent) {
+			UserNumberInput damageInput = weapon.getDamageInput().orElseThrow();
+			useDice = damageInput.useDice();
+		}
+		
+		//Enable based on selection
+		radioDamageInputFixedNumber.setSelection(!useDice);
+		radioDamageInputDice.setSelection(useDice);
+		inputDamageInputFixedNumber.setEnabled(!useDice);
+		inputDamageInputDice.setEnabled(useDice);
+		inputDamageInputDiceChooser.setEnabled(useDice);
+	}
+	
+	private void _drawAntiType(Weapon weapon) {
+		if(weapon.getAntiType().isEmpty()) {
+			antiTypeProbabilityCombo.select(GuiFactory.mapProbabilityToComboSelection(Probability.NONE));
+			antiTypeUnitTypeCombo.select(GuiFactory.mapTypeEnumToComboSelection(Type.INFANTRY));
+			return;
+		} 
+		
+		AntiType antiType = weapon.getAntiType().orElseThrow();
+		antiTypeProbabilityCombo.select(GuiFactory.mapProbabilityToComboSelection(antiType.probability()));
+		antiTypeUnitTypeCombo.select(GuiFactory.mapTypeEnumToComboSelection(antiType.type()));
 	}
 	
 	private void _drawInputValues(Weapon weapon) {
@@ -218,7 +262,7 @@ public class WeaponView extends BaseView {
 	private void _initializeAntiType() {
 		antiTypeGroup = new Group(entityEditorGroup, SWT.NONE);
 		antiTypeGroup.setLayoutData(Theme.getFullWidthGroupWithOptimalComboHeight());
-		antiTypeGroup.setText("Antityp Waffe");
+		
 		antiTypeGroup.setLayout(new GridLayout(2, true));
 		GuiFactory factory = new GuiFactory(antiTypeGroup);
 		antiTypeUnitTypeCombo =  new Combo(antiTypeGroup, SWT.NONE);
@@ -239,6 +283,7 @@ public class WeaponView extends BaseView {
 	}
 	
 	private void _translateSpecialRules(String prefix) {
+		antiTypeGroup.setText(i18n.get(prefix + "labelAntiType"));
 		checkBoxTorrent.setText(i18n.get(prefix + "checkBoxTorrent"));
 		checkBoxHeavyAndStationary.setText(i18n.get(prefix + "checkBoxHeavyAndStationary"));
 		weaponSpecialRules.setText(i18n.get(prefix + "weaponSpecialRules"));

@@ -9,11 +9,15 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import core.Probability;
 import core.Probability.Dice;
+import core.Unit.Type;
 import core.UserNumberInput;
 import core.Weapon;
+import core.Weapon.AntiType;
 import core.Weapon.Range;
 import core.Weapon.SpecialRuleWeapon;
 import unittests.gui.SWTGuiTestCase;
@@ -96,7 +100,7 @@ class WeaponViewTest extends SWTGuiTestCase {
 	}
 	
 	@Test
-	void testEditorDrawsUnit_whennAttackInputIsFixed_thenDiceInputIsDisabled() {
+	void testEditorDrawsUnit_whenAttackInputIsFixed_thenDiceInputIsDisabled() {
 		Optional<UserNumberInput> attackInput = Optional.of(UserNumberInput.withNumber((byte) 22));
 		when(weapon.getAttackInput()).thenReturn(attackInput);
 		view.drawEditor(weapon);
@@ -105,6 +109,73 @@ class WeaponViewTest extends SWTGuiTestCase {
 		assertFalse(view.getInputAttackInputDiceChooser().isEnabled());
 	}
 	
+	@Test
+	void testEditorDrawsUnit_DamageInputIsEmpty_thenFixedNumberIsDisplayedAndSetToZero() {
+		when(weapon.getDamageInput()).thenReturn(Optional.empty());
+		view.drawEditor(weapon);
+		assertEquals(0, view.getInputDamageInputFixedNumber().getSelection());
+	}
+	
+	@Test
+	void testEditorDrawsUnit_givenFixedNumberDamageInput_thenDisplayItCorrect() {
+		Optional<UserNumberInput> damageInput = Optional.of(UserNumberInput.withNumber((byte) 22));
+		when(weapon.getDamageInput()).thenReturn(damageInput);
+		view.drawEditor(weapon);
+		assertEquals(22, view.getInputDamageInputFixedNumber().getSelection());
+	}
+	
+	
+	@Test
+	void testEditorDrawsUnit_givenDiceDamageInput_thenDisplayItCorrect() {
+		Optional<UserNumberInput> damageInput = 
+				Optional.of(UserNumberInput.withDice((byte)5, Dice.d6));
+		
+		when(weapon.getDamageInput()).thenReturn(damageInput);
+		view.drawEditor(weapon);
+		
+		assertEquals(5, view.getInputDamageInputDice().getSelection());
+		int index = view.getInputDamageInputDiceChooser().getSelectionIndex();
+		assertEquals(Dice.d6, GuiFactory.mapComboSelectionToDice(index));
+	}
+	
+	@Test
+	void testEditorDrawsUnit_givenDiceDamageInput_thenDisableFixedNumberInput() {
+		Optional<UserNumberInput> damageInput = 
+				Optional.of(UserNumberInput.withDice((byte)5, Dice.d6));
+		
+		when(weapon.getDamageInput()).thenReturn(damageInput);
+		view.drawEditor(weapon);
+		
+		assertFalse(view.getInputDamageInputFixedNumber().isEnabled());
+	}
+	
+	@Test
+	void testEditorDrawsUnit_givenNoAntiType_thenDefaultIsSet() {
+		when(weapon.getAntiType()).thenReturn(Optional.empty());
+		view.drawEditor(weapon);
+		
+		assertEquals( GuiFactory.mapProbabilityToComboSelection(Probability.NONE),
+				view.getAntiTypeProbabilityCombo().getSelectionIndex());
+		int antiTypeUnitTypeIndexSelected = view.getAntiTypeUnitTypeCombo().getSelectionIndex();
+		assertEquals(Type.INFANTRY,
+				GuiFactory.mapUnitTypeComboSelectionToEnum(antiTypeUnitTypeIndexSelected));
+	}
+	
+	
+	@Test
+	void testEditorDrawsUnit_givenAntiInfantery_thenTypeAndProbabilityAreSelected() {
+		when(weapon.getAntiType())
+		.thenReturn(Optional.of(new AntiType(Type.MONSTER, Probability.FOUR_UP)));
+		view.drawEditor(weapon);
+		
+		int antiTypeProbabilityIndexSelected = view.getAntiTypeProbabilityCombo().getSelectionIndex();
+		int antiTypeUnitTypeIndexSelected = view.getAntiTypeUnitTypeCombo().getSelectionIndex();
+		
+		assertEquals(GuiFactory.mapProbabilityToComboSelection(Probability.FOUR_UP),
+				antiTypeProbabilityIndexSelected);
+		assertEquals(Type.MONSTER,
+				GuiFactory.mapUnitTypeComboSelectionToEnum(antiTypeUnitTypeIndexSelected));
+	}
 	
 
 }

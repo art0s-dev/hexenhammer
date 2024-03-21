@@ -17,7 +17,8 @@ import core.combat.SavingThrowDiceRoll;
 import core.combat.WoundDicePool;
 import core.combat.WoundDiceRoll;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 
 /**
@@ -29,18 +30,18 @@ import lombok.val;
  * - equip() the weapons and maybe add() some special rules
  * - attack() the enemy profile  
  */
-@Builder @Data
+@Builder
 public class Unit extends Model {
-	@Builder.Default private String name = "New Unit";
-	@Builder.Default private byte movement = 1;
-	@Builder.Default private byte toughness = 1;
-	@Builder.Default private float armorSave = Probability.NONE;
-	@Builder.Default private byte hitPoints = 1;
-	@Builder.Default private byte leadership = 1;
-	@Builder.Default private byte objectControl = 1;
-	@Builder.Default private float invulnerableSave = Probability.NONE;
-	@Builder.Default private float feelNoPain = Probability.NONE;
-	@Builder.Default private Type type = Type.INFANTRY;
+	@Getter @Setter @Builder.Default private String name = "New Unit";
+	@Getter @Setter @Builder.Default private byte movement = 1;
+	@Getter @Setter @Builder.Default private byte toughness = 1;
+	@Getter @Setter @Builder.Default private float armorSave = Probability.NONE;
+	@Getter @Setter @Builder.Default private byte hitPoints = 1;
+	@Getter @Setter @Builder.Default private byte leadership = 1;
+	@Getter @Setter @Builder.Default private byte objectControl = 1;
+	@Getter @Setter @Builder.Default private float invulnerableSave = Probability.NONE;
+	@Getter @Setter @Builder.Default private float feelNoPain = Probability.NONE;
+	@Getter @Setter @Builder.Default private Type type = Type.INFANTRY;
 	
 	/**
 	 * With this method we add, delete and edit the weapons of a unit. 

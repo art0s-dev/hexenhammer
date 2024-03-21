@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 import arch.ModelList;
 import core.Unit;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@Data
+@AllArgsConstructor
 public class UnitList extends ModelList {
-	final ArrayList<Unit> units;
+	@Getter final ArrayList<Unit> units;
 }
