@@ -59,7 +59,9 @@ public class GuiFactory {
 	
 	public Spinner createNumberInput() {
 		Spinner spinner = new Spinner(parent, SWT.NONE);
-		spinner.setLayoutData(Theme.DEFAULT_GRID_DATA);
+		GridData comboLayout = Theme.DEFAULT_GRID_DATA;
+		comboLayout.heightHint = 2 * Theme.DEFAULT_VERTICAL_INDENT_COMBO;
+		spinner.setLayoutData(comboLayout);
 		spinner.setMaximum(INPUT_MAX);
 		spinner.setMinimum(INPUT_MIN);
 		return spinner;
@@ -126,8 +128,7 @@ public class GuiFactory {
 	
 	public Combo createDiceCombo() {
 		Combo diceChooser = new Combo(parent, SWT.NONE);
-		diceChooser.add("W3");
-		diceChooser.add("W6");
+		COMBO_DICES.forEach((key, value) -> diceChooser.add(value));
 		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		comboGridData.verticalIndent = Theme.DEFAULT_VERTICAL_INDENT_COMBO;
 		diceChooser.setLayoutData(comboGridData);
