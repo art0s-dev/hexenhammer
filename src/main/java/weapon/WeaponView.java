@@ -14,6 +14,7 @@ import arch.BaseView;
 import arch.Model;
 import arch.ModelList;
 import core.Probability;
+import core.Unit;
 import core.Unit.Type;
 import core.UserNumberInput;
 import core.Weapon;
@@ -22,6 +23,7 @@ import core.Weapon.Range;
 import core.Weapon.SpecialRuleWeapon;
 import lombok.Getter;
 import lombok.val;
+import unit.UnitList;
 import utils.GuiFactory;
 import utils.I18n;
 import utils.Theme;
@@ -93,7 +95,20 @@ public class WeaponView extends BaseView {
 	
 	@Override
 	public void drawList(ModelList modelList) {
-		// TODO Auto-generated method stub  
+		WeaponList weaponList = (WeaponList) modelList;
+		selectionList.removeAll();
+		
+		val weaponListIsEmpty = modelList == null;
+		if(weaponListIsEmpty) {
+			return;
+		}
+		
+		for(Weapon weapon: weaponList.getWeapons()) {
+			val weaponHasNoName = weapon.getName() == null;
+			selectionList.add(weaponHasNoName ? "" : weapon.getName());
+		}
+		
+		selectionList.setSelection(0);
 	}
 	
 	@Override
@@ -199,6 +214,8 @@ public class WeaponView extends BaseView {
 	}
 	
 	private void _drawInputValues(Weapon weapon) {
+		val weaponHasNoName = weapon.getName() == null;
+		inputName.setText(weaponHasNoName ? "" : weapon.getName());
 		inputStrenght.setSelection(weapon.getStrength());
 		inputArmorPenetration.setSelection(weapon.getArmorPenetration());
 		inputToHit.select(GuiFactory.mapProbabilityToComboSelection(weapon.getToHit()));
@@ -304,7 +321,7 @@ public class WeaponView extends BaseView {
 		radioAttackInputDice.setText(i18n.get(prefix + "dice"));
 		damageGroup.setText(i18n.get(prefix + "labelDamage"));
 		radioDamageInputFixedNumber.setText(i18n.get(prefix + "fixed"));
-		radioDamageInputDice.setText(i18n.get(prefix + "fixed"));
+		radioDamageInputDice.setText(i18n.get(prefix + "dice"));
 	}
 
 	private void _translateRangeSwitcher(String prefix) {

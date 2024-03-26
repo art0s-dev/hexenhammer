@@ -23,7 +23,7 @@ import lombok.val;
 @Builder
 public class Weapon extends Model {
 	
-	private String name;
+	@Getter @Setter @Builder.Default private String name;
 	@Getter @Setter @Builder.Default private Optional<UserNumberInput> attackInput = Optional.empty();
 	@Getter @Setter @Builder.Default private float toHit = Probability.SIX_UP;
 	@Getter @Setter @Builder.Default private byte strength = 1;

@@ -22,24 +22,24 @@ import utils.Lambda;
 public class UnitController implements Controller {
 	
 	private final UnitView view;
-	private final UnitRepository unitRepository;
-	private UnitList unitList;
+	private final UnitRepository repository;
+	private UnitList list;
 	
 	public UnitController(UnitView view, UnitRepository unitRepository) {
 		this.view = view;
-		this.unitRepository = unitRepository;
+		this.repository = unitRepository;
 	}
 
 	@Override
 	public void loadModels() {
-		unitList = (UnitList) unitRepository.load();
+		list = (UnitList) repository.load();
 	}
 	
 	@Override
 	public void initView() {
 		view.draw();
-		view.drawList(unitList);
-		view.drawEditor(unitList.getUnits().get(0));
+		view.drawList(list);
+		view.drawEditor(list.getUnits().get(0));
 	}
 
 	@Override
@@ -62,17 +62,17 @@ public class UnitController implements Controller {
 
 	private void _injectSelectionListListener() {
 		view.getSelectionList().addSelectionListener(Lambda.select(()->{
-			view.drawEditor(unitList.getUnits().get(_getIndex()));
+			view.drawEditor(list.getUnits().get(_getIndex()));
 		}));
 	}
 	
 	private void _injectNameInputListener() {
 		view.getInputName().addModifyListener(Lambda.modify(()->{
-			Unit selectedUnit = unitList.getUnits().get(_getIndex());
+			Unit selectedUnit = list.getUnits().get(_getIndex());
 			String newName = view.getInputName().getText();
 			
 			selectedUnit.setName(newName);
-			unitList.getUnits().set(_getIndex(), selectedUnit);
+			list.getUnits().set(_getIndex(), selectedUnit);
 			view.getSelectionList().setItem(_getIndex(), newName);
 		}));
 	}
@@ -87,14 +87,14 @@ public class UnitController implements Controller {
 					.name(nameOfNewUnit)
 					.build();
 			
-			unitList.getUnits().add(unit);
+			list.getUnits().add(unit);
 			view.getSelectionList().notifyListeners(SWT.Selection, new Event());
 		}));
 	}
 	
 	private void _injectRemoveListener() {
 		view.getDeleteButton().addSelectionListener(Lambda.select(()->{
-			val thereAreNoUnits = unitList.getUnits().isEmpty();
+			val thereAreNoUnits = list.getUnits().isEmpty();
 			if(thereAreNoUnits) {
 				return;
 			}
@@ -102,8 +102,8 @@ public class UnitController implements Controller {
 			int currentUnit = _getIndex();
 			int unitBeforeDeletedUnit = currentUnit - 1;
 			
-			unitList.getUnits().remove(currentUnit);
-			view.drawList(unitList);
+			list.getUnits().remove(currentUnit);
+			view.drawList(list);
 			view.getSelectionList().select(unitBeforeDeletedUnit);
 		}));
 	}
@@ -174,6 +174,6 @@ public class UnitController implements Controller {
 	}
 	
 	private Unit _getUnit() {
-		return unitList.getUnits().get(_getIndex());
+		return list.getUnits().get(_getIndex());
 	}
 }
