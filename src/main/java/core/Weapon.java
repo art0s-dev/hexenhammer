@@ -103,8 +103,6 @@ public class Weapon extends Model {
 	public enum SpecialRuleWeapon{
 		TORRENT,
 		HEAVY_AND_UNIT_REMAINED_STATIONARY,
-		REROLL_WOUND_ROLL, 
-		LETHAL_HITS,
 		DEVASTATING_WOUNDS,
 	}
 	

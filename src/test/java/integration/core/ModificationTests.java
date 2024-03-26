@@ -33,7 +33,6 @@ import lombok.val;
 @TestMethodOrder(MethodOrderer.Random.class)
 class ModificationTests {
 	
-	
 	Weapon scorpionPulsar;
 	Unit mortarion;
 	Unit scorpionTank = Unit.builder().build();
@@ -46,7 +45,7 @@ class ModificationTests {
 		when(scorpionPulsar.getStrength()).thenReturn((byte)18);
 		when(scorpionPulsar.getArmorPenetration()).thenReturn((byte)5);
 		when(scorpionPulsar.getDamage()).thenReturn(5f);
-		when(scorpionPulsar.has(SpecialRuleWeapon.REROLL_WOUND_ROLL)).thenReturn(true);
+		scorpionTank.add(SpecialRuleUnit.REROLL_WOUND_ROLL);
 		scorpionTank.equip((byte)1, scorpionPulsar);
 		
 		mortarion = mock(Unit.class);

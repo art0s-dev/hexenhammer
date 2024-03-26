@@ -34,7 +34,6 @@ class UnitViewTest extends SWTGuiTestCase {
 		selectionTriggerWasActivated = false;
 	}
 
-	
 	@Test
 	void testUnitEditorWhenItsEmptyShowsCheckBoxDefaultFalse() {
 		view.drawEditor(null);

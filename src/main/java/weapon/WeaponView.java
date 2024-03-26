@@ -186,7 +186,8 @@ public class WeaponView extends BaseView {
 	}
 	
 	private void _drawAntiType(Weapon weapon) {
-		if(weapon.getAntiType().isEmpty()) {
+		boolean noAntiTypeWasEntered = weapon.getAntiType().isEmpty();
+		if(noAntiTypeWasEntered) {
 			antiTypeProbabilityCombo.select(GuiFactory.mapProbabilityToComboSelection(Probability.NONE));
 			antiTypeUnitTypeCombo.select(GuiFactory.mapTypeEnumToComboSelection(Type.INFANTRY));
 			return;

@@ -16,7 +16,6 @@ public abstract class DiceRoll {
 	protected final Weapon weapon;
 	protected final Unit enemy;
 	protected final CombatRules rules;
-
 	
 	/**
 	 * Applies the implemented Functionality to the dice pool 

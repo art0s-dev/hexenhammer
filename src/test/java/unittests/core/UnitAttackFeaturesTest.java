@@ -259,12 +259,13 @@ class UnitAttackFeaturesTest {
 	 */ 
 	@Test @DisplayName("Special Rules - Lethal Hits on 5") @Disabled
 	void GivenSpaceMarinesWithLethalHitsWeapons_WhenAddOneToHit_ThenMoreLethalHitsAreProduced() {
-		when(bolter.has(SpecialRuleWeapon.LETHAL_HITS)).thenReturn(true);
+		
 		
 		byte quantity = 5;
 		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
 		spaceMarines.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
+		when(spaceMarines.has(SpecialRuleUnit.LETHAL_HITS)).thenReturn(true);
 		float damage = spaceMarines.attack(guardsmen);
 		
 		float hitPool = quantity * bolter.getAttacks();
