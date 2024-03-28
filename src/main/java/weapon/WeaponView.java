@@ -150,9 +150,9 @@ public class WeaponView extends BaseView {
 		} 
 		
 		UserNumberInput attackInput = weapon.getAttackInput().orElseThrow();
-		inputAttackInputDice.setSelection(attackInput.diceQuantity());
-		inputAttackInputDiceChooser.select(GuiFactory.mapDiceToComboSelection(attackInput.dice()));
-		inputAttackInputFixedNumber.setSelection(attackInput.fixedNumber());
+		inputAttackInputDice.setSelection(attackInput.getDiceQuantity());
+		inputAttackInputDiceChooser.select(GuiFactory.mapDiceToComboSelection(attackInput.getDice()));
+		inputAttackInputFixedNumber.setSelection(attackInput.getFixedNumber());
 	}
 	
 	private void _drawDamageInputValues(Weapon weapon) {
@@ -163,9 +163,9 @@ public class WeaponView extends BaseView {
 		} 
 		
 		UserNumberInput damageInput = weapon.getDamageInput().orElseThrow();
-		inputDamageInputFixedNumber.setSelection(damageInput.fixedNumber());
-		inputDamageInputDiceChooser.select(GuiFactory.mapDiceToComboSelection(damageInput.dice()));
-		inputDamageInputDice.setSelection(damageInput.diceQuantity());
+		inputDamageInputFixedNumber.setSelection(damageInput.getFixedNumber());
+		inputDamageInputDiceChooser.select(GuiFactory.mapDiceToComboSelection(damageInput.getDice()));
+		inputDamageInputDice.setSelection(damageInput.getDiceQuantity());
 	}
 	
 	private void _enableAttackInputFields(Weapon weapon) {
@@ -173,7 +173,7 @@ public class WeaponView extends BaseView {
 		boolean useDice = false;
 		if(attackInputIsPresent) {
 			UserNumberInput attackInput = weapon.getAttackInput().orElseThrow();
-			useDice = attackInput.useDice();
+			useDice = attackInput.isUseDice();
 		}
 		
 		//Enable based on selection
@@ -189,7 +189,7 @@ public class WeaponView extends BaseView {
 		boolean useDice = false;
 		if(damageInputIsPresent) {
 			UserNumberInput damageInput = weapon.getDamageInput().orElseThrow();
-			useDice = damageInput.useDice();
+			useDice = damageInput.isUseDice();
 		}
 		
 		//Enable based on selection

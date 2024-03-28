@@ -1,6 +1,9 @@
 package core;
 
 import core.Probability.Dice;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Setter;
 
 /**
  * We don't want the User to pick floats 
@@ -10,12 +13,13 @@ import core.Probability.Dice;
  * or B) using a number of dices to generate the
  * number of attacks 
  */
-public record UserNumberInput(
-		boolean useDice,
-		byte fixedNumber,
-		byte diceQuantity,
-		Probability.Dice dice
-) {
+@AllArgsConstructor @Data
+	public class UserNumberInput {
+	boolean useDice;
+	byte fixedNumber;
+	byte diceQuantity;
+	Probability.Dice dice;
+	
 	public static UserNumberInput withNumber(byte fixedNumber) {
 		return new UserNumberInput(false, fixedNumber, (byte)0, Dice.d3);
 	}

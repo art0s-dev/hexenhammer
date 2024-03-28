@@ -45,15 +45,15 @@ public class Weapon extends Model {
 		
 		UserNumberInput attackInput = this.attackInput.orElseThrow();
 		
-		if(attackInput.useDice()) {
-			val diceValue = attackInput.dice().equals(Dice.d3) 
+		if(attackInput.isUseDice()) {
+			val diceValue = attackInput.getDice().equals(Dice.d3) 
 					? Probability.MEDIAN_D3 
 					: Probability.MEDIAN_D6;
 			
-			return attackInput.diceQuantity() * diceValue;
+			return attackInput.getDiceQuantity() * diceValue;
 		}
 		
-		return attackInput.fixedNumber();
+		return attackInput.getFixedNumber();
 	}
 	
 	/**
@@ -69,15 +69,15 @@ public class Weapon extends Model {
 		
 		UserNumberInput damageInput = this.damageInput.orElseThrow();
 		
-		if(damageInput.useDice()) {
-			val diceValue = damageInput.dice().equals(Dice.d3) 
+		if(damageInput.isUseDice()) {
+			val diceValue = damageInput.getDice().equals(Dice.d3) 
 					? Probability.MEDIAN_D3 
 					: Probability.MEDIAN_D6;
 			
-			return damageInput.diceQuantity() * diceValue;
+			return damageInput.getDiceQuantity() * diceValue;
 		}
 		
-		return damageInput.fixedNumber();
+		return damageInput.getFixedNumber();
 	}
 	
 	/**

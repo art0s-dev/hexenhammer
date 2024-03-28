@@ -37,7 +37,7 @@ public class WeaponViewTest extends SWTEnd2EndTestcase {
 				.attackInput(Optional.of(UserNumberInput.withNumber((byte) 2)))
 				.strength((byte)4)
 				.toHit(Probability.THREE_UP)
-				.armorPenetration((byte) 0)
+				.armorPenetration((byte) 1)
 				.damageInput(Optional.of(UserNumberInput.withNumber((byte) 1)))
 				.range(Range.SHOOTING)
 				.build();
