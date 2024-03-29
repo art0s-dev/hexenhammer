@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.jupiter.api.BeforeEach;
 
-public class SWTGuiTestCase {
+public class SWTGuiTestCase{
 	
 	public Shell shell;
 	public Display display;

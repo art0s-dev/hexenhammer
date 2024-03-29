@@ -48,7 +48,7 @@ public final class Probability {
 	 * @param operator - char the operator - (+ OR -)
 	 */
 	public static float modifyRoll(float probability, Modifier modifier) {
-		float newProbability = (float) ((Math.ceil(probability * 6) + modifier.value ) / 6);
+		float newProbability = (float) ((StrictMath.ceil(probability * 6) + modifier.value ) / 6);
 		
 		if (newProbability <= 0) {
 			return Probability.SIX_UP;

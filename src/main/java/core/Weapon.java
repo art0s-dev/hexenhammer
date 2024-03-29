@@ -1,16 +1,12 @@
 package core;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 
 import arch.Model;
 import core.Probability.Dice;
-import core.Unit.Phase;
-import core.Unit.SpecialRuleUnit;
 import core.Unit.Type;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -23,7 +19,7 @@ import lombok.val;
 @Builder
 public class Weapon extends Model {
 	
-	@Getter @Setter @Builder.Default private String name;
+	@Getter @Setter @Builder.Default private String name = "";
 	@Getter @Setter @Builder.Default private Optional<UserNumberInput> attackInput = Optional.empty();
 	@Getter @Setter @Builder.Default private float toHit = Probability.SIX_UP;
 	@Getter @Setter @Builder.Default private byte strength = 1;

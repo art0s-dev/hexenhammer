@@ -1,14 +1,15 @@
 package unit;
 
-import arch.Repository;
+import java.util.ArrayList;
+
 import arch.ModelList;
+import arch.Repository;
 
 public class UnitRepository implements Repository {
 
 	@Override
 	public ModelList load() {
-		// TODO Auto-generated method stub
-		return null;
+		return new UnitList(new ArrayList<>());
 	}
 
 }

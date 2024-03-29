@@ -15,7 +15,6 @@ import core.Probability;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import core.Weapon;
-import core.Weapon.SpecialRuleWeapon;
 import lombok.val;
 
 /**

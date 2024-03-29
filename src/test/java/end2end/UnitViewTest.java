@@ -5,8 +5,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import core.Unit;

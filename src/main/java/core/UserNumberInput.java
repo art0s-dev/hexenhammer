@@ -3,7 +3,6 @@ package core;
 import core.Probability.Dice;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Setter;
 
 /**
  * We don't want the User to pick floats 

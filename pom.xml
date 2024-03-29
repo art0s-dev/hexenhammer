@@ -3,13 +3,16 @@
   <groupId>de.art0s.hexenhammer</groupId>
   <artifactId>hexenhammer</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <properties>
+    <maven.compiler.source>21</maven.compiler.source>
+	<maven.compiler.target>21</maven.compiler.target>
+  </properties>
   <dependencies>
 	 <dependency>
     	<groupId>org.eclipse.platform</groupId>
     	<artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
     	<version>3.124.200</version>
 	</dependency>
-	  
 	<dependency>
 		<groupId>org.junit.jupiter</groupId>
 		<artifactId>junit-jupiter-api</artifactId>

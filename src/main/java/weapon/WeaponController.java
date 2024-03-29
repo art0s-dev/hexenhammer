@@ -32,7 +32,6 @@ public class WeaponController implements Controller {
 	@Override
 	public void initView() {
 		view.draw();
-		view.drawEditor(list.getWeapons().get(0));
 		view.drawList(list);
 	}
 

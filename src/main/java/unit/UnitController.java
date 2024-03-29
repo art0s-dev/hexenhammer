@@ -3,7 +3,6 @@ package unit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -39,7 +38,7 @@ public class UnitController implements Controller {
 	public void initView() {
 		view.draw();
 		view.drawList(list);
-		view.drawEditor(list.getUnits().get(0));
+		view.drawEditor(null);
 	}
 
 	@Override
@@ -109,13 +108,12 @@ public class UnitController implements Controller {
 	}
 	
 	private void _injectNumberInputListeners() {
-		Unit unit = _getUnit();
 		HashMap<Spinner, Consumer<Byte>> spinnerToUnitAttributes = new HashMap<>();
-		spinnerToUnitAttributes.put(view.getInputMovement(), (value) -> unit.setMovement(value));
-		spinnerToUnitAttributes.put(view.getInputToughness(), (value) -> unit.setToughness(value));
-		spinnerToUnitAttributes.put(view.getInputHitPoints(), (value) -> unit.setHitPoints(value));
-		spinnerToUnitAttributes.put(view.getInputLeadership(), (value) -> unit.setLeadership(value));
-		spinnerToUnitAttributes.put(view.getInputObjectControl(), (value) -> unit.setObjectControl(value));
+		spinnerToUnitAttributes.put(view.getInputMovement(), (value) -> _getUnit().setMovement(value));
+		spinnerToUnitAttributes.put(view.getInputToughness(), (value) -> _getUnit().setToughness(value));
+		spinnerToUnitAttributes.put(view.getInputHitPoints(), (value) -> _getUnit().setHitPoints(value));
+		spinnerToUnitAttributes.put(view.getInputLeadership(), (value) -> _getUnit().setLeadership(value));
+		spinnerToUnitAttributes.put(view.getInputObjectControl(), (value) -> _getUnit().setObjectControl(value));
 		
 		spinnerToUnitAttributes.forEach((input, setter) -> input.addSelectionListener(Lambda.select(() -> {
 			setter.accept((byte) input.getSelection());

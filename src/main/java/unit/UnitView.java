@@ -1,6 +1,5 @@
 package unit;
 
-import java.util.HashMap;
 import java.util.function.Function;
 
 import org.eclipse.swt.SWT;
@@ -23,7 +22,7 @@ import lombok.val;
 import utils.GuiFactory;
 import utils.I18n;
 import utils.Theme;
-
+	
 public final class UnitView extends BaseView {
 
 	//Profile
