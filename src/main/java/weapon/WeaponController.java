@@ -15,6 +15,7 @@ import core.Weapon;
 import core.Weapon.Range;
 import lombok.Getter;
 import utils.GuiFactory;
+import utils.I18n;
 import utils.Lambda;
 
 public class WeaponController implements Controller {
@@ -75,7 +76,7 @@ public class WeaponController implements Controller {
 				_freezeForm(false);
 			}
 			
-			String nameOfWeapon = "New Weapon";
+			String nameOfWeapon = view.getI18n().get("weapon.WeaponView.newWeapon");
 			view.getSelectionList().add(nameOfWeapon);
 			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
 			

@@ -23,7 +23,6 @@ abstract public class BaseView implements View {
 	//Dependencys
 	protected final Composite parent;
 	protected final ImageServer imageServer;
-	protected final I18n i18n;
 	
 	//Internal Attributes
 	private Composite controllingComposite;
@@ -35,6 +34,7 @@ abstract public class BaseView implements View {
 	@Getter protected Button deleteButton;
 	@Getter protected List selectionList;
 	@Getter protected Text inputName;
+	@Getter protected final I18n i18n;
 
 	/**
 	 * You can use this to expand the editor.

@@ -18,18 +18,20 @@ import weapon.WeaponView;
 
 public class Main {
 	public static void main(String[] args) {
+		I18n i18n = new I18n();
+		i18n.setLanguage(I18n.german());
+		
 		Shell shell = before();
 		shell.setSize(1920, 1200);
 		shell.setLayout(new GridLayout(1, true));
-		I18n i18n = new I18n();
-		i18n.setLanguage(I18n.german());
+		shell.setText(i18n.get("general.slogan"));
 		
 		TabFolder folder = new TabFolder(shell, SWT.NONE);
 		folder.setLayout(new GridLayout(1, true));
 		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		TabItem unitTab = new TabItem(folder, SWT.NONE);
-		unitTab.setText("Units");
+		unitTab.setText(i18n.get("unit.UnitView"));
 		Composite unitComposite = new Composite(folder, SWT.NONE);
 		unitComposite.setLayout(new GridLayout(1, true));
 		unitComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -41,7 +43,7 @@ public class Main {
 		unitController.injectListener();
 		
 		TabItem weaponTab = new TabItem(folder, SWT.NONE);
-		weaponTab.setText("Weapons");
+		weaponTab.setText(i18n.get("weapon.WeaponView"));
 		Composite weaponComposite = new Composite(folder, SWT.NONE);
 		weaponComposite.setLayout(new GridLayout(1, true));
 		weaponComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -57,9 +59,6 @@ public class Main {
 	
 	public static Shell before() {
 		Shell shell = new Shell();
-		shell.setSize(1200, 900);
-		shell.setLayout(new GridLayout(1, true));
-		shell.setText("Hexenhammer 40K - Your statistic servitor");
 		return shell;
 	}
 	

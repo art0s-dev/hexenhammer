@@ -59,7 +59,6 @@ public final class UnitView extends BaseView {
 	private Label inputLabelType;
 	
 	
-	
 	public UnitView(Composite parent, I18n i18n) {
 		super(parent, i18n);
 	}

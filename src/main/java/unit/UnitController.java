@@ -86,7 +86,7 @@ public class UnitController implements Controller {
 				_freezeForm(false);
 			}
 			
-			String nameOfNewUnit = "New unit";
+			String nameOfNewUnit = view.getI18n().get("unit.UnitView.newUnit");
 			view.getSelectionList().add(nameOfNewUnit);
 			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
 			
