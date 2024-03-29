@@ -33,7 +33,6 @@ public class WeaponView extends BaseView {
 	@Getter private Combo inputToHit;
 	@Getter private Spinner inputStrenght;
 	@Getter private Spinner inputArmorPenetration;
-	@Getter private Spinner inputDamage;
 	@Getter private Spinner inputSustainedHits;
 	@Getter private Spinner inputMelter;
 	@Getter private Button checkBoxTorrent;

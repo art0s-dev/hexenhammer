@@ -3,13 +3,17 @@ package weapon;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Spinner;
 
 import arch.Controller;
 import arch.Model;
 import core.Probability.Dice;
 import core.Weapon;
 import core.Weapon.Range;
+import lombok.Getter;
 import utils.GuiFactory;
 import utils.Lambda;
 
@@ -33,6 +37,10 @@ public class WeaponController implements Controller {
 	public void initView() {
 		view.draw();
 		view.drawList(list);
+		
+		if(list.getWeapons().isEmpty()) {
+			_freezeForm(true);
+		}
 	}
 
 	@Override
@@ -42,10 +50,31 @@ public class WeaponController implements Controller {
 		_injectWeaponRangeListener();
 		_injectAttackInputSwitchListener();
 		_injectAttackInputListener();
+		
+		view.getDeleteButton().addSelectionListener(Lambda.select(() -> {
+			if(list.getWeapons().isEmpty()) {
+				return;
+			}
+			
+			int currentWeapon = _getIndex();
+			int weaponBeforeDeletedWeapon = currentWeapon - 1;
+			
+			list.getWeapons().remove(currentWeapon);
+			view.drawList(list);
+			view.getSelectionList().select(weaponBeforeDeletedWeapon);
+			
+			if(list.getWeapons().isEmpty()) {
+				_freezeForm(true);
+			}
+		}));
 	}
 
 	private void _injectAddListener() {
 		view.getAddButton().addSelectionListener(Lambda.select(() -> {
+			if(list.getWeapons().isEmpty()) {
+				_freezeForm(false);
+			}
+			
 			String nameOfWeapon = "New Weapon";
 			view.getSelectionList().add(nameOfWeapon);
 			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
@@ -140,6 +169,31 @@ public class WeaponController implements Controller {
 	
 	private Weapon _getWeapon() {
 		return list.getWeapons().get(_getIndex());
+	}
+	
+	private void _freezeForm(boolean freeze) {
+		view.getInputName().setEnabled(!freeze);
+		view.getInputToHit().setEnabled(!freeze);
+		view.getInputStrenght().setEnabled(!freeze);
+		view.getInputArmorPenetration().setEnabled(!freeze);
+		view.getInputSustainedHits().setEnabled(!freeze);
+		view.getInputMelter().setEnabled(!freeze);
+		view.getCheckBoxTorrent().setEnabled(!freeze);
+		view.getCheckBoxHeavyAndStationary().setEnabled(!freeze);
+		view.getWeaponRangeShooting().setEnabled(!freeze);
+		view.getWeaponRangeMeelee().setEnabled(!freeze);
+		view.getRadioAttackInputFixedNumber().setEnabled(!freeze);
+		view.getRadioAttackInputDice().setEnabled(!freeze);
+		view.getInputAttackInputFixedNumber().setEnabled(!freeze);
+		view.getInputAttackInputDice().setEnabled(!freeze);
+		view.getInputAttackInputDiceChooser().setEnabled(!freeze);
+		view.getRadioDamageInputFixedNumber().setEnabled(!freeze);
+		view.getRadioDamageInputDice().setEnabled(!freeze);
+		view.getInputDamageInputFixedNumber().setEnabled(!freeze);
+		view.getInputDamageInputDice().setEnabled(!freeze);
+		view.getInputDamageInputDiceChooser().setEnabled(!freeze);
+		view.getAntiTypeUnitTypeCombo().setEnabled(!freeze);
+		view.getAntiTypeProbabilityCombo().setEnabled(!freeze);
 	}
 
 }

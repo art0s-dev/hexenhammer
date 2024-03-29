@@ -14,6 +14,7 @@ import arch.Controller;
 import arch.Model;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
+import lombok.Getter;
 import lombok.val;
 import utils.GuiFactory;
 import utils.Lambda;
@@ -38,7 +39,10 @@ public class UnitController implements Controller {
 	public void initView() {
 		view.draw();
 		view.drawList(list);
-		view.drawEditor(null);
+		
+		if(list.getUnits().isEmpty()) {
+			_freezeForm(true);
+		}
 	}
 
 	@Override
@@ -78,6 +82,10 @@ public class UnitController implements Controller {
 	
 	private void _injectAddListener() {
 		view.getAddButton().addSelectionListener(Lambda.select(()->{
+			if(list.getUnits().isEmpty()) {
+				_freezeForm(false);
+			}
+			
 			String nameOfNewUnit = "New unit";
 			view.getSelectionList().add(nameOfNewUnit);
 			view.getSelectionList().setSelection(view.getSelectionList().getItemCount() - 1);
@@ -93,8 +101,7 @@ public class UnitController implements Controller {
 	
 	private void _injectRemoveListener() {
 		view.getDeleteButton().addSelectionListener(Lambda.select(()->{
-			val thereAreNoUnits = list.getUnits().isEmpty();
-			if(thereAreNoUnits) {
+			if(list.getUnits().isEmpty()) {
 				return;
 			}
 			
@@ -104,6 +111,10 @@ public class UnitController implements Controller {
 			list.getUnits().remove(currentUnit);
 			view.drawList(list);
 			view.getSelectionList().select(unitBeforeDeletedUnit);
+			
+			if(list.getUnits().isEmpty()) {
+				_freezeForm(true);
+			}
 		}));
 	}
 	
@@ -173,5 +184,26 @@ public class UnitController implements Controller {
 	
 	private Unit _getUnit() {
 		return list.getUnits().get(_getIndex());
+	}
+	
+	private void _freezeForm(boolean freeze) {
+		view.getInputName().setEnabled(!freeze);
+		view.getInputMovement().setEnabled(!freeze);
+		view.getInputToughness().setEnabled(!freeze);
+		view.getInputArmorSave().setEnabled(!freeze);
+		view.getInputHitPoints().setEnabled(!freeze);
+		view.getInputLeadership().setEnabled(!freeze);
+		view.getInputObjectControl().setEnabled(!freeze);
+		view.getInputInvulnerableSave().setEnabled(!freeze);
+		view.getInputFeelNoPain().setEnabled(!freeze);
+		view.getInputType().setEnabled(!freeze);
+		view.getCheckBoxAddOneToHit().setEnabled(!freeze);
+		view.getCheckBoxLethalHits().setEnabled(!freeze);
+		view.getCheckBoxRerollOnesToHit().setEnabled(!freeze);
+		view.getCheckBoxRerollHitRoll().setEnabled(!freeze);
+		view.getCheckBoxAddOneToWound().setEnabled(!freeze);
+		view.getCheckBoxRerollOnesToWound().setEnabled(!freeze);
+		view.getCheckBoxRerollWound().setEnabled(!freeze);
+		view.getCheckBoxIgnoreCover().setEnabled(!freeze);
 	}
 }

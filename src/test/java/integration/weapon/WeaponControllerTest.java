@@ -86,12 +86,8 @@ class WeaponControllerTest extends SWTGuiTestCase{
 		assertEquals(armorPenetration, chainsword.getArmorPenetration());
 	}
 	
-	@Test @Disabled
+	@Test
 	void testSwitchingBetweenMeeleeAndShooting() {
-		//The bolter is a shooting weapon
-		assert view.getWeaponRangeShooting().getSelection();
-		assert !view.getWeaponRangeMeelee().getSelection(); //Then it's not a meelee weapon
-		
 		view.getWeaponRangeMeelee().notifyListeners(SWT.Selection, new Event());//now it should me a meelee weapon.
 		view.getWeaponRangeShooting().notifyListeners(SWT.Selection, new Event()); //now a shooting weapon
 		assertTrue(view.getWeaponRangeShooting().getSelection());
@@ -143,6 +139,13 @@ class WeaponControllerTest extends SWTGuiTestCase{
 		view.getInputAttackInputDiceChooser().notifyListeners(SWT.Selection, new Event());
 		_switchWeapons();
 		assertEquals(index, view.getInputAttackInputDiceChooser().getSelectionIndex());
+	}
+	
+	@Test
+	void testDeleteAllItems() {
+		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
+		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
+		assertEquals(0, view.getSelectionList().getItemCount());
 	}
 	
 	private void _switchWeapons() {

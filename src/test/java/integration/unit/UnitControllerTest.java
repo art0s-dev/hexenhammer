@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
@@ -54,11 +55,22 @@ class UnitControllerTest extends SWTGuiTestCase {
 				.leadership((byte) 6)
 				.objectControl((byte) 1)
 				.build();
+		
+		ArrayList<Unit> list = new ArrayList<>();
+		list.add(unit1);
+		list.add(unit2);	
+		unitList = new UnitList(list);
+		unitRepo = mock(UnitRepository.class);
+		when(unitRepo.load()).thenReturn(unitList);
+		
+		controller = new UnitController(view,unitRepo);
+		controller.loadModels();
+		controller.initView();
+		controller.injectListener();
 	}
 	
 	@Test
 	void userCanEnterUnitName() {
-		refresh();
 		view.getInputName().setText(wraithGuard.getName());
 		switchUnits();
 		assertEquals(wraithGuard.getName(), view.getInputName().getText());
@@ -66,7 +78,6 @@ class UnitControllerTest extends SWTGuiTestCase {
 	
 	@Test
 	void userCanEnterUnitMovement() {
-		refresh();
 		view.getInputMovement().setSelection(wraithGuard.getMovement());
 		switchUnits();
 		assertEquals(wraithGuard.getMovement(), (byte) view.getInputMovement().getSelection());
@@ -74,7 +85,6 @@ class UnitControllerTest extends SWTGuiTestCase {
 	
 	@Test 
 	void userCanEnterUnitsToghness() {
-		refresh();
 		view.getInputToughness().setSelection(wraithGuard.getToughness());
 		switchUnits();
 		assertEquals(wraithGuard.getToughness(), (byte) view.getInputToughness().getSelection());
@@ -82,7 +92,6 @@ class UnitControllerTest extends SWTGuiTestCase {
 	
 	@Test
 	void userCanEnterArmorSave() {
-		refresh();
 		view.getInputArmorSave().select(GuiFactory.mapProbabilityToComboSelection(wraithGuard.getArmorSave()));
 		switchUnits();
 		assertEquals(wraithGuard.getArmorSave(), 
@@ -91,7 +100,6 @@ class UnitControllerTest extends SWTGuiTestCase {
 	
 	@Test 
 	void userCanEnterHitPoins() {
-		refresh();
 		view.getInputHitPoints().setSelection(wraithGuard.getHitPoints());
 		switchUnits();
 		assertEquals(wraithGuard.getHitPoints(), (byte) view.getInputHitPoints().getSelection());
@@ -99,7 +107,6 @@ class UnitControllerTest extends SWTGuiTestCase {
 	
 	@Test 
 	void userCanEnterLeadership() {
-		refresh();
 		view.getInputLeadership().setSelection(wraithGuard.getLeadership());
 		switchUnits();
 		assertEquals(wraithGuard.getLeadership(), (byte) view.getInputLeadership().getSelection());
@@ -107,14 +114,12 @@ class UnitControllerTest extends SWTGuiTestCase {
 	
 	@Test 
 	void userCanEnterObjectiveControl() {
-		refresh();
 		view.getInputObjectControl().setSelection(wraithGuard.getObjectControl());
 		assertEquals(wraithGuard.getObjectControl(), (byte) view.getInputObjectControl().getSelection());
 	}
 	
 	@Test
 	void userCanUseComboBox() {
-		refresh();
 		view.getSelectionList().select(1);
 		view.getInputInvulnerableSave().select(1);
 		view.getInputInvulnerableSave().notifyListeners(SWT.Selection, new Event());
@@ -123,79 +128,87 @@ class UnitControllerTest extends SWTGuiTestCase {
 		assertEquals(Probability.SIX_UP, invulSaveProbability);
 	}
 
-	@Test @Disabled
+	@Test
 	void testSwitchingUnitsInUnitsList() {
 		String nameUnit1 = "My new favorite unit";
 		when(unit1.getName()).thenReturn(nameUnit1);
 		String nameUnit2 = "AnotherUnit";
 		when(unit2.getName()).thenReturn(nameUnit2);
 		
-		refresh();
-		
 		List selectionList = view.getSelectionList();
-		selectionList.select(0);
-		assertTrue(view.getInputName().getText().equals(nameUnit1));
-		selectionList.setSelection(1);
+		selectionList.select(1);
 		selectionList.notifyListeners(SWT.Selection, new Event());
 		assertTrue(view.getInputName().getText().equals(nameUnit2));
 	}
 	
-	@Test @Disabled
+	@Test
 	void testCanEnterNewUnitName() {
 		String nameUnit1 = "My new unit";
 		unit1 = Unit.builder().build();
 		unit1.setName(nameUnit1);
 		String nameUnit2 = "AnotherUnit";
 		when(unit2.getName()).thenReturn(nameUnit2);
-		
-		refresh();
-		
 		String newUnitName = "My new testable unit";
-		List selectionList = view.getSelectionList();
-		selectionList.select(0);
-		assertTrue(view.getInputName().getText().equals(nameUnit1));
 		view.getInputName().setText(newUnitName);
 		view.getInputName().notifyListeners(SWT.Modify, new Event());
-		
 		switchUnits();
 		assertTrue(view.getInputName().getText().equals(newUnitName));
 	}
-
+	
 	@Test
-	void testCheckBoxesStayCheckedAfterSwitching() {
-		unit1 = Unit.builder().build();
-		refresh();
-		List selectionList = view.getSelectionList();
-
-		Function<Button, Boolean> testToggler = (btn) -> {
-			selectionList.select(0);
-			btn.setSelection(true);
-			btn.notifyListeners(SWT.Selection, new Event());
-			
-			//Switch units forth and back to the original unit
-			selectionList.setSelection(1);
-			selectionList.select(1);
-			selectionList.notifyListeners(SWT.Selection, new Event());
-			
-			btn.setSelection(false);
-			btn.notifyListeners(SWT.Selection, new Event());
-			
-			selectionList.setSelection(0);
-			selectionList.select(0);
-			selectionList.notifyListeners(SWT.Selection, new Event());
-			
-			//Checkbox still has to be checked
-			return btn.getSelection();
-		};
-		
-		assertTrue(testToggler.apply(view.getCheckBoxAddOneToHit()));
-		assertTrue(testToggler.apply(view.getCheckBoxLethalHits()));
-		assertTrue(testToggler.apply(view.getCheckBoxRerollOnesToHit()));
-		assertTrue(testToggler.apply(view.getCheckBoxRerollHitRoll()));
-		assertTrue(testToggler.apply(view.getCheckBoxAddOneToWound()));
-		assertTrue(testToggler.apply(view.getCheckBoxRerollOnesToWound()));
-		assertTrue(testToggler.apply(view.getCheckBoxRerollWound()));
-		assertTrue(testToggler.apply(view.getCheckBoxIgnoreCover()));
+	void testCheckBoxAddOneToHits() {
+		view.getCheckBoxAddOneToHit().setSelection(true);
+		switchUnits();
+		assertTrue(view.getCheckBoxAddOneToHit().getSelection());
+	}
+	
+	@Test
+	void testCheckBoxLethalHits() {
+		view.getCheckBoxLethalHits().setSelection(true);
+		switchUnits();
+		assertTrue(view.getCheckBoxLethalHits().getSelection());
+	}
+	
+	@Test
+	void testCheckBoxRerollOnes() {
+		view.getCheckBoxRerollOnesToHit().setSelection(true);
+		switchUnits();
+		assertTrue(view.getCheckBoxRerollOnesToHit().getSelection());
+	}
+	
+	@Test
+	void testCheckBoxRerollHit() {
+		view.getCheckBoxRerollHitRoll().setSelection(true);
+		switchUnits();
+		assertTrue(view.getCheckBoxRerollHitRoll().getSelection());
+	}
+	
+	@Test
+	void testCheckBoxAddOneToWound() {
+		view.getCheckBoxAddOneToWound().setSelection(true);
+		switchUnits();
+		assertTrue(view.getCheckBoxAddOneToWound().getSelection());
+	}
+	
+	@Test
+	void testCheckBoxRerollOnesToWound() {
+		view.getCheckBoxRerollOnesToWound().setSelection(true);
+		switchUnits();
+		assertTrue(view.getCheckBoxRerollOnesToWound().getSelection());
+	}
+	
+	@Test
+	void testCheckBoxRerollWound() {
+		view.getCheckBoxRerollWound().setSelection(true);
+		switchUnits();
+		assertTrue(view.getCheckBoxRerollWound().getSelection());
+	}
+	
+	@Test
+	void testCheckBoxIgnoreCover() {
+		view.getCheckBoxIgnoreCover().setSelection(true);
+		switchUnits();
+		assertTrue(view.getCheckBoxIgnoreCover().getSelection());
 	}
 
 	@Test
@@ -204,8 +217,6 @@ class UnitControllerTest extends SWTGuiTestCase {
 		when(unit1.getName()).thenReturn(nameUnit1);
 		String nameUnit2 = "AnotherUnit";
 		when(unit2.getName()).thenReturn(nameUnit2);
-		
-		refresh();
 		
 		view.getSelectionList().select(0); //That would be unit1
 		view.getAddButton().notifyListeners(SWT.Selection, new Event());
@@ -226,7 +237,6 @@ class UnitControllerTest extends SWTGuiTestCase {
 		String nameUnit2 = "AnotherUnit";
 		when(unit2.getName()).thenReturn(nameUnit2);
 		
-		refresh();
 		view.getSelectionList().select(1);
 		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
 		
@@ -239,27 +249,8 @@ class UnitControllerTest extends SWTGuiTestCase {
 		when(unit1.getName()).thenReturn(nameUnit1);
 		String nameUnit2 = "AnotherUnit";
 		when(unit2.getName()).thenReturn(nameUnit2);
-		
-		refresh();
 		switchUnits();
-		
 		assertEquals(0, view.getSelectionList().getItemCount());
-	}
-	
-	
-	
-	private void refresh() {
-		ArrayList<Unit> list = new ArrayList<>();
-		list.add(unit1);
-		list.add(unit2);	
-		unitList = new UnitList(list);
-		unitRepo = mock(UnitRepository.class);
-		when(unitRepo.load()).thenReturn(unitList);
-		
-		controller = new UnitController(view,unitRepo);
-		controller.loadModels();
-		controller.initView();
-		controller.injectListener();
 	}
 	
 	private void switchUnits() {
