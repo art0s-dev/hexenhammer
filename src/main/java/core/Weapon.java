@@ -21,12 +21,12 @@ public class Weapon extends Model {
 	
 	@Getter @Setter @Builder.Default private String name = "";
 	@Getter @Setter @Builder.Default private Optional<UserNumberInput> 
-	attackInput = Optional.of(UserNumberInput.withNumber((byte) 1));
+	attackInput = Optional.of(UserNumberInput.withNumber((byte) 0));
 	@Getter @Setter @Builder.Default private float toHit = Probability.SIX_UP;
 	@Getter @Setter @Builder.Default private byte strength = 1;
 	@Getter @Setter @Builder.Default private byte armorPenetration = 0;
 	@Getter @Setter @Builder.Default private Optional<UserNumberInput> 
-	damageInput = Optional.of(UserNumberInput.withNumber((byte) 1));
+	damageInput = Optional.of(UserNumberInput.withNumber((byte) 0));
 	@Getter @Setter @Builder.Default private byte sustainedHits = 0;
 	@Getter @Setter @Builder.Default private byte melter = 0;
 	@Getter @Setter @Builder.Default private Range range = Range.SHOOTING;  
