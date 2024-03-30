@@ -14,8 +14,6 @@ import arch.Controller;
 import arch.Model;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
-import lombok.Getter;
-import lombok.val;
 import utils.GuiFactory;
 import utils.Lambda;
 

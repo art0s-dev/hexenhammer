@@ -3,10 +3,33 @@
   <groupId>de.art0s.hexenhammer</groupId>
   <artifactId>hexenhammer</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  
   <properties>
     <maven.compiler.source>21</maven.compiler.source>
 	<maven.compiler.target>21</maven.compiler.target>
+	<swt.version>3.124.200</swt.version>
+    <swt.platform>linux</swt.platform> <!-- Plattform: linux, windows, macos -->
+    <swt.arch>x86_64</swt.arch> <!-- Architektur: x86, x86_64, etc. -->
   </properties>
+  
+  <build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.0</version>
+            <configuration>
+                <archive>
+                    <manifest>
+						<addClasspath>true</addClasspath>
+                        <mainClass>main.Main</mainClass>
+                    </manifest>
+                </archive>
+            </configuration>
+        </plugin>
+    </plugins>
+  </build>
+  
   <dependencies>
 	 <dependency>
     	<groupId>org.eclipse.platform</groupId>
@@ -31,6 +54,6 @@
     	<version>5.7.0</version>
     	<scope>test</scope>
 	</dependency>
-	
   </dependencies>
+  
 </project>

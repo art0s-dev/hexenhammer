@@ -17,6 +17,8 @@ import org.junit.jupiter.api.Test;
 
 import core.Probability;
 import core.Probability.Dice;
+import core.Unit;
+import core.Unit.Type;
 import core.UserNumberInput;
 import core.Weapon;
 import core.Weapon.Range;
@@ -146,6 +148,87 @@ class WeaponControllerTest extends SWTGuiTestCase{
 		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
 		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
 		assertEquals(0, view.getSelectionList().getItemCount());
+	}
+	
+	@Test
+	void testDamageInputSwitchBetweenFixedNumberAndDice() {
+		view.getRadioDamageInputDice().setSelection(true);
+		view.getRadioDamageInputDice().notifyListeners(SWT.Selection, new Event());
+		_switchWeapons();
+		assertTrue(view.getRadioDamageInputDice().getSelection());
+	}
+	
+	@Test
+	void testDamageInputSwitchBetweenDiceAndFixedNumber() {
+		view.getRadioDamageInputFixedNumber().setSelection(true);
+		view.getRadioDamageInputFixedNumber().notifyListeners(SWT.Selection, new Event());
+		_switchWeapons();
+		assertTrue(view.getRadioDamageInputFixedNumber().getSelection());
+	}
+	
+	@Test
+	void testDamageInputFixedNumber() {
+		view.getInputDamageInputFixedNumber().setSelection(15);
+		view.getInputDamageInputFixedNumber().notifyListeners(SWT.Selection, new Event());
+		_switchWeapons();
+		assertEquals(15, view.getInputDamageInputFixedNumber().getSelection());
+	}
+	
+	@Test
+	void testDamageInputDiceQuantity() {
+		view.getInputDamageInputDice().setSelection(15);
+		view.getInputDamageInputDice().notifyListeners(SWT.Selection, new Event());
+		_switchWeapons();
+		assertEquals(15, view.getInputDamageInputDice().getSelection());
+	}
+	
+	@Test
+	void testDamageInputChangingDice() {
+		int index = GuiFactory.mapDiceToComboSelection(Dice.d6);
+		view.getInputDamageInputDiceChooser().select(index);
+		view.getInputDamageInputDiceChooser().notifyListeners(SWT.Selection, new Event());
+		_switchWeapons();
+		assertEquals(index, view.getInputDamageInputDiceChooser().getSelectionIndex());
+	}
+	
+	@Test
+	void testToHitCombo() {
+		view.getInputToHit().select(GuiFactory.mapProbabilityToComboSelection(Probability.TWO_UP));
+		view.getInputToHit().notifyListeners(SWT.Selection, new Event());
+		_switchWeapons();
+		int index = view.getInputToHit().getSelectionIndex();
+		float selectedProbability = GuiFactory.mapComboSelectionToProbability(index);
+		assertEquals(Probability.TWO_UP, selectedProbability);
+	}
+	
+	@Test 
+	void testStrengthInput() {
+		view.getInputStrenght().setSelection(12);
+		view.getInputStrenght().notifyListeners(SWT.Selection, new Event());
+		_switchWeapons();
+		assertEquals(12, view.getInputStrenght().getSelection());
+	}
+	
+	@Test
+	void testSwitchAntiTypeProbability() {
+		float selectedProbability = Probability.TWO_UP;
+		view.getAntiTypeProbabilityCombo().select(GuiFactory.mapProbabilityToComboSelection(selectedProbability));
+		view.getAntiTypeProbabilityCombo().notifyListeners(SWT.Selection, new Event());
+		assert view.getAntiTypeProbabilityCombo().getSelectionIndex() > 4;
+		_switchWeapons();
+		int index = view.getAntiTypeProbabilityCombo().getSelectionIndex();
+		float probability = GuiFactory.mapComboSelectionToProbability(index);
+		assertEquals(selectedProbability, probability);
+	}
+	
+	@Test
+	void testSwitchAntiType() {
+		view.getAntiTypeUnitTypeCombo().select(GuiFactory.mapTypeEnumToComboSelection(Unit.Type.MONSTER));
+		view.getAntiTypeUnitTypeCombo().notifyListeners(SWT.Selection, new Event());
+		_switchWeapons();
+		int index = view.getAntiTypeUnitTypeCombo().getSelectionIndex();
+		Type unitType = GuiFactory.mapUnitTypeComboSelectionToEnum(index);
+		assertEquals(Unit.Type.MONSTER, unitType);
 	}
 	
 	private void _switchWeapons() {

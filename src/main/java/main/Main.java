@@ -21,8 +21,8 @@ public class Main {
 		I18n i18n = new I18n();
 		i18n.setLanguage(I18n.german());
 		
-		Shell shell = before();
-		shell.setSize(1920, 1200);
+		Shell shell = new Shell();
+		shell.setSize(1980, 1200);
 		shell.setLayout(new GridLayout(1, true));
 		shell.setText(i18n.get("general.slogan"));
 		
@@ -54,15 +54,6 @@ public class Main {
 		weaponController.initView();
 		weaponController.injectListener();
 		
-		after(shell);
-	}
-	
-	public static Shell before() {
-		Shell shell = new Shell();
-		return shell;
-	}
-	
-	public static void after(Shell shell) {
 		shell.open();
 		while (!shell.isDisposed ()) {
 			if (!shell.getDisplay().readAndDispatch ()) {

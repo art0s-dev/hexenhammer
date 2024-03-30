@@ -201,8 +201,6 @@ public final class UnitView extends BaseView {
 		placeholder.setLayoutData(placeholderGridData);
 	}
 	
-	
-	
 	private void _initializeCheckBoxes() {
 		unitSpecialRules = new Group(entityEditorGroup, SWT.NONE);
 		unitSpecialRules.setLayoutData(Theme.FULL_WIDTH_GROUP);

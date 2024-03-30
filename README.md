@@ -26,7 +26,7 @@ From there on we will implement the most useful features step by step to deliver
 - [x] - Core
 - [x] - architecture
 - [x] - Units form
-- [ ] - Weapons form
+- [x] - Weapons form
 - [ ] - Weapon "arsenal" (attaching weapons to units)
 - [ ] - Statistic Module (MVP) - Early alpha possible
 - [ ] - Save & Load Mechanism
