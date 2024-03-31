@@ -1,6 +1,7 @@
 package integration.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,17 +30,23 @@ import unit.UnitView;
 import unittests.gui.SWTGuiTestCase;
 import utils.GuiFactory;
 import utils.I18n;
+import weapon.WeaponController;
+import weapon.WeaponList;
+import weapon.WeaponRepository;
+import weapon.WeaponView;
 
 @TestMethodOrder(MethodOrderer.Random.class)
 class UnitControllerTest extends SWTGuiTestCase {
 	
-	static UnitView view;
+	UnitView view;
 	Unit unit1;
 	Unit unit2;
 	UnitList unitList;
 	UnitController controller;
 	UnitRepository unitRepo;
 	Unit wraithGuard;
+	Weapon bolter;
+	Weapon chainsword;
 
 	@BeforeEach
 	void setupEach() {
@@ -56,13 +63,33 @@ class UnitControllerTest extends SWTGuiTestCase {
 				.objectControl((byte) 1)
 				.build();
 		
+		bolter = Weapon.builder()
+				.name("bolter")
+				.attackInput(Optional.of(UserNumberInput.withNumber((byte) 2)))
+				.toHit(Probability.THREE_UP)
+				.strength((byte)4)
+				.armorPenetration((byte) 1)
+				.damageInput(Optional.of(UserNumberInput.withNumber((byte) 1)))
+				.range(Range.SHOOTING)
+				.build();
+		
+		chainsword = Weapon.builder()
+				.name("chainsword")
+				.attackInput(Optional.of(UserNumberInput.withNumber((byte) 2)))
+				.toHit(Probability.FOUR_UP)
+				.strength((byte)4)
+				.armorPenetration((byte) 0)
+				.range(Range.MELEE)
+				.damageInput(Optional.of(UserNumberInput.withNumber((byte) 1)))
+				.build();
+		
 		ArrayList<Unit> list = new ArrayList<>();
 		list.add(unit1);
-		list.add(unit2);	
+		list.add(unit2);	 
 		unitList = new UnitList(list);
 		unitRepo = mock(UnitRepository.class);
 		when(unitRepo.load()).thenReturn(unitList);
-		
+
 		controller = new UnitController(view,unitRepo);
 		controller.loadModels();
 		controller.initView();
@@ -251,6 +278,43 @@ class UnitControllerTest extends SWTGuiTestCase {
 		when(unit2.getName()).thenReturn(nameUnit2);
 		switchUnits();
 		assertEquals(0, view.getSelectionList().getItemCount());
+	}
+	
+	@Test
+	void testWeaponControllerHasNotBeenSetMeansWeaponryIsNotEnabled() {
+		assertFalse(view.getEquipButton().isEnabled());
+	}
+	
+	@Test
+	void testWeaponControllerHasBeenSetAndWeaponsAreEmptyMeansWeaponryIsStillNotEnabled() {
+		WeaponView weaponView = new WeaponView(shell, new I18n());
+		WeaponController weaponController = new WeaponController(weaponView, new WeaponRepository());
+		weaponController.loadModels();
+		weaponController.initView();
+		weaponController.injectListener();
+		controller.setWeaponController(weaponController);
+		
+		assertFalse(view.getEquipButton().isEnabled());
+	}
+	
+	@Test
+	void testWeaponControllerHasBeenSetAndWeaponsAreSetMeansWeaponryIsEnabled() {
+		ArrayList<Weapon> list = new ArrayList<>();
+		list.add(bolter);
+		list.add(chainsword);	 
+		WeaponList weaponList = new WeaponList(list);
+		
+		WeaponView weaponView = new WeaponView(shell, new I18n());
+		WeaponRepository weaponRepository = mock(WeaponRepository.class);
+		when(weaponRepository.load()).thenReturn(weaponList);
+		WeaponController weaponController = new WeaponController(weaponView, weaponRepository);
+		weaponController.loadModels();
+		weaponController.initView();
+		weaponController.injectListener();
+		controller.setWeaponController(weaponController);
+		controller.initView();
+		
+		assertTrue(view.getEquipButton().isEnabled());
 	}
 	
 	private void switchUnits() {

@@ -22,6 +22,9 @@ import core.Unit.Type;
 import core.UserNumberInput;
 import core.Weapon;
 import core.Weapon.Range;
+import unit.UnitController;
+import unit.UnitRepository;
+import unit.UnitView;
 import unittests.gui.SWTGuiTestCase;
 import utils.GuiFactory;
 import utils.I18n;
@@ -68,8 +71,13 @@ class WeaponControllerTest extends SWTGuiTestCase{
 		
 		when(repo.load()).thenReturn(new WeaponList(list));
 		WeaponController controller = new WeaponController(view, repo);
-		unitEditorWeaponList = new List(shell, SWT.NONE);
-		controller.setUnitEditorWeaponList(unitEditorWeaponList);
+		UnitView view = new UnitView(shell, new I18n());
+		UnitController unitController = new UnitController(view, new UnitRepository());
+		unitController.loadModels();
+		unitController.initView();
+		unitController.injectListener();
+		unitEditorWeaponList = view.getAllWeaponsList();
+		controller.setUnitController(unitController);
 		
 		controller.loadModels();
 		controller.initView();
@@ -258,8 +266,5 @@ class WeaponControllerTest extends SWTGuiTestCase{
 		view.getSelectionList().select(0);
 		view.getSelectionList().notifyListeners(SWT.Selection, new Event());
 	}
-	
-	
-	
-	
+
 }

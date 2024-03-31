@@ -21,15 +21,16 @@ public class Main {
 		I18n i18n = new I18n();
 		i18n.setLanguage(I18n.german());
 		
+		//Set GUI
 		Shell shell = new Shell();
 		shell.setSize(1980, 1200);
 		shell.setLayout(new GridLayout(1, true));
 		shell.setText(i18n.get("general.slogan"));
-		
 		TabFolder folder = new TabFolder(shell, SWT.NONE);
 		folder.setLayout(new GridLayout(1, true));
 		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
+		//Set Unit Tab
 		TabItem unitTab = new TabItem(folder, SWT.NONE);
 		unitTab.setText(i18n.get("unit.UnitView"));
 		Composite unitComposite = new Composite(folder, SWT.NONE);
@@ -42,6 +43,7 @@ public class Main {
 		unitController.initView();
 		unitController.injectListener();
 		
+		//Set Weapon Tab
 		TabItem weaponTab = new TabItem(folder, SWT.NONE);
 		weaponTab.setText(i18n.get("weapon.WeaponView"));
 		Composite weaponComposite = new Composite(folder, SWT.NONE);
@@ -50,11 +52,13 @@ public class Main {
 		WeaponView weaponView = new WeaponView(weaponComposite, i18n);
 		weaponTab.setControl(weaponComposite);
 		WeaponController weaponController = new WeaponController(weaponView, new WeaponRepository());
-		weaponController.setUnitEditorWeaponList(unitController.getAllWeaponsList());
+		weaponController.setUnitController(unitController);
 		weaponController.loadModels();
 		weaponController.initView();
 		weaponController.injectListener();
+		unitController.setWeaponController(weaponController);
 		
+		//Main Loop
 		shell.open();
 		while (!shell.isDisposed ()) {
 			if (!shell.getDisplay().readAndDispatch ()) {

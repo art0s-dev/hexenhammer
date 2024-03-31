@@ -8,22 +8,25 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Spinner;
 
 import arch.Controller;
 import arch.Model;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
-import lombok.Getter;
+import core.Weapon;
+import lombok.Setter;
 import utils.GuiFactory;
 import utils.Lambda;
+import weapon.WeaponController;
 
 public class UnitController implements Controller {
 	
 	private final UnitView view;
 	private final UnitRepository unitRepository;
-	private UnitList list;
+	private UnitList unitList;
+	
+	@Setter private WeaponController weaponController;
 	
 	public UnitController(UnitView view, UnitRepository unitRepository) {
 		this.view = view;
@@ -32,17 +35,19 @@ public class UnitController implements Controller {
 
 	@Override
 	public void loadModels() {
-		list = (UnitList) unitRepository.load();
+		unitList = (UnitList) unitRepository.load();
 	}
 	
 	@Override
 	public void initView() {
 		view.draw();
-		view.drawList(list);
+		view.drawList(unitList);
 		
-		if(list.getUnits().isEmpty()) {
+		if(unitList.getUnits().isEmpty()) {
 			_freezeForm(true);
 		}
+		
+		freezeWeaponChamber();
 	}
 
 	@Override
@@ -64,34 +69,60 @@ public class UnitController implements Controller {
 	}
 	
 	/**
-	 * This shall be used by the weapon controller
-	 * it updated the weapon list as soon as the weapon list changes
-	 * it also initializes it
+	 * This Method is generally used to enable/freeze the weapon chamber
+	 * this is called either through this class or through the weapon controller
+	 * after updating the weapon
 	 */
-	public List getAllWeaponsList() {
-		return view.getAllWeaponsList();
+	public void freezeWeaponChamber() {
+		boolean weaponControllerWasNotInjected = weaponController == null;
+		if(weaponControllerWasNotInjected) {
+			view.getAllWeaponsList().setEnabled(false);
+			view.getWeaponQuantityInput().setEnabled(false);
+			view.getEquipButton().setEnabled(false);
+			view.getUnequipButton().setEnabled(false);
+			view.getEquipmentList().setEnabled(false);
+		} else {
+			boolean weaponListIsNotEmpty = !weaponController.getWeaponList()
+					.getWeapons().isEmpty();
+					
+			view.getAllWeaponsList().setEnabled(weaponListIsNotEmpty);
+			view.getWeaponQuantityInput().setEnabled(weaponListIsNotEmpty);
+			view.getEquipButton().setEnabled(weaponListIsNotEmpty);
+			view.getUnequipButton().setEnabled(weaponListIsNotEmpty);
+			view.getEquipmentList().setEnabled(weaponListIsNotEmpty);
+		}
+	}
+	
+	/**
+	 * This method shall be used by the weapon controller to update
+	 * the weaponList
+	 */
+	public void updateWeaponry() {
+		view.getAllWeaponsList().removeAll();
+		weaponController.getWeaponList().getWeapons()
+		.forEach(weapon -> view.getAllWeaponsList().add(weapon.getName()));
 	}
 
 	private void _injectSelectionListListener() {
 		view.getSelectionList().addSelectionListener(Lambda.select(()->{
-			view.drawEditor(list.getUnits().get(_getIndex()));
+			view.drawEditor(unitList.getUnits().get(_getIndex()));
 		}));
 	}
 	
 	private void _injectNameInputListener() {
 		view.getInputName().addModifyListener(Lambda.modify(()->{
-			Unit selectedUnit = list.getUnits().get(_getIndex());
+			Unit selectedUnit = unitList.getUnits().get(_getIndex());
 			String newName = view.getInputName().getText();
 			
 			selectedUnit.setName(newName);
-			list.getUnits().set(_getIndex(), selectedUnit);
+			unitList.getUnits().set(_getIndex(), selectedUnit);
 			view.getSelectionList().setItem(_getIndex(), newName);
 		}));
 	}
 	
 	private void _injectAddListener() {
 		view.getAddButton().addSelectionListener(Lambda.select(()->{
-			if(list.getUnits().isEmpty()) {
+			if(unitList.getUnits().isEmpty()) {
 				_freezeForm(false);
 			}
 			
@@ -103,25 +134,25 @@ public class UnitController implements Controller {
 					.name(nameOfNewUnit)
 					.build();
 			
-			list.getUnits().add(unit);
+			unitList.getUnits().add(unit);
 			view.getSelectionList().notifyListeners(SWT.Selection, new Event());
 		}));
 	}
 	
 	private void _injectRemoveListener() {
 		view.getDeleteButton().addSelectionListener(Lambda.select(()->{
-			if(list.getUnits().isEmpty()) {
+			if(unitList.getUnits().isEmpty()) {
 				return;
 			}
 			
 			int currentUnit = _getIndex();
 			int unitBeforeDeletedUnit = currentUnit - 1;
 			
-			list.getUnits().remove(currentUnit);
-			view.drawList(list);
+			unitList.getUnits().remove(currentUnit);
+			view.drawList(unitList);
 			view.getSelectionList().select(unitBeforeDeletedUnit);
 			
-			if(list.getUnits().isEmpty()) {
+			if(unitList.getUnits().isEmpty()) {
 				_freezeForm(true);
 			}
 		}));
@@ -192,7 +223,7 @@ public class UnitController implements Controller {
 	}
 	
 	private Unit _getUnit() {
-		return list.getUnits().get(_getIndex());
+		return unitList.getUnits().get(_getIndex());
 	}
 	
 	private void _freezeForm(boolean freeze) {
@@ -214,10 +245,9 @@ public class UnitController implements Controller {
 		view.getCheckBoxRerollOnesToWound().setEnabled(!freeze);
 		view.getCheckBoxRerollWound().setEnabled(!freeze);
 		view.getCheckBoxIgnoreCover().setEnabled(!freeze);
-		view.getAllWeaponsList().setEnabled(!freeze);
-		view.getWeaponQuantityInput().setEnabled(!freeze);
-		view.getEquipButton().setEnabled(!freeze);
-		view.getUnequipButton().setEnabled(!freeze);
-		view.getEquipmentList().setEnabled(!freeze);
+		freezeWeaponChamber();
 	}
+
+
+	
 }

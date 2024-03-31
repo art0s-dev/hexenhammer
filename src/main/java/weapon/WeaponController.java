@@ -8,7 +8,6 @@ import java.util.function.Consumer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Spinner;
 
 import arch.Controller;
@@ -20,7 +19,9 @@ import core.Weapon;
 import core.Weapon.AntiType;
 import core.Weapon.Range;
 import core.Weapon.SpecialRuleWeapon;
+import lombok.Getter;
 import lombok.Setter;
+import unit.UnitController;
 import utils.GuiFactory;
 import utils.Lambda;
 
@@ -28,8 +29,20 @@ public class WeaponController implements Controller {
 
 	private final WeaponView view;
 	private final WeaponRepository repository;
-	private WeaponList list;
-	@Setter private List unitEditorWeaponList;
+	
+	/**
+	 * Exposes the Weapon List to the Unit Controller 
+	 * for example to read if the list is empty
+	 * this list holds all weapons added in the controller
+	 */
+	@Getter private WeaponList weaponList;
+	
+	/**
+	 * Holds a Reference to the unit controller,
+	 * so that when the weapons are updated, 
+	 * we can easily push messages to the controller
+	 */
+	@Setter private UnitController unitController;
 	
 	public WeaponController(WeaponView view, WeaponRepository repository) {
 		this.view = view;
@@ -38,16 +51,16 @@ public class WeaponController implements Controller {
 
 	@Override
 	public void loadModels() {
-		list = (WeaponList) repository.load();
+		weaponList = (WeaponList) repository.load();
 	}
 
 	@Override
 	public void initView() {
 		view.draw();
-		view.drawList(list);
-		_fillUnitEditorWeaponList();
+		view.drawList(weaponList);
+		_updateUnitEditorWeaponChamber();
 		
-		if(list.getWeapons().isEmpty()) {
+		if(weaponList.getWeapons().isEmpty()) {
 			_freezeForm(true);
 		}
 	}
@@ -71,7 +84,7 @@ public class WeaponController implements Controller {
 	
 	private void _injectAddListener() {
 		view.getAddButton().addSelectionListener(Lambda.select(() -> {
-			if(list.getWeapons().isEmpty()) {
+			if(weaponList.getWeapons().isEmpty()) {
 				_freezeForm(false);
 			}
 			
@@ -83,37 +96,37 @@ public class WeaponController implements Controller {
 					.name(nameOfWeapon)
 					.build();
 			
-			list.getWeapons().add(weapon);
+			weaponList.getWeapons().add(weapon);
 			view.getSelectionList().notifyListeners(SWT.Selection, new Event());
 			
-			_fillUnitEditorWeaponList();
+			_updateUnitEditorWeaponChamber();
 		}));
 	}
 	
 	private void _injectDeleteListener() {
 		view.getDeleteButton().addSelectionListener(Lambda.select(() -> {
-			if(list.getWeapons().isEmpty()) {
+			if(weaponList.getWeapons().isEmpty()) {
 				return;
 			}
 			
 			int currentWeapon = _getIndex();
 			int weaponBeforeDeletedWeapon = currentWeapon - 1;
 			
-			list.getWeapons().remove(currentWeapon);
-			view.drawList(list);
+			weaponList.getWeapons().remove(currentWeapon);
+			view.drawList(weaponList);
 			view.getSelectionList().select(weaponBeforeDeletedWeapon);
 			
-			if(list.getWeapons().isEmpty()) {
+			if(weaponList.getWeapons().isEmpty()) {
 				_freezeForm(true);
 			}
 			
-			_fillUnitEditorWeaponList();
+			_updateUnitEditorWeaponChamber();
 		}));
 	}
 	
 	private void _injectSelectionListListener() {
 		view.getSelectionList().addSelectionListener(Lambda.select(() -> {
-			view.drawEditor(list.getWeapons().get(_getIndex()));
+			view.drawEditor(weaponList.getWeapons().get(_getIndex()));
 		}));
 	}
 	
@@ -121,7 +134,7 @@ public class WeaponController implements Controller {
 		view.getWeaponRangeShooting().addSelectionListener(Lambda.select(() -> {
 			Weapon weapon = _getWeapon();
 			weapon.setRange(Range.SHOOTING);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 			view.getWeaponRangeMeelee().setSelection(false);
 			view.getWeaponRangeShooting().setSelection(true);
 		}));
@@ -129,7 +142,7 @@ public class WeaponController implements Controller {
 		view.getWeaponRangeMeelee().addSelectionListener(Lambda.select(() -> {
 			Weapon weapon = _getWeapon();
 			weapon.setRange(Range.MELEE);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 			view.getWeaponRangeMeelee().setSelection(true);
 			view.getWeaponRangeShooting().setSelection(false);
 		}));
@@ -143,7 +156,7 @@ public class WeaponController implements Controller {
 			view.getRadioAttackInputFixedNumber().setSelection(false);
 			Weapon weapon = _getWeapon();
 			weapon.getAttackInput().orElseThrow().setUseDice(true);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 		
 		view.getRadioAttackInputFixedNumber().addSelectionListener(Lambda.select(() -> {
@@ -153,7 +166,7 @@ public class WeaponController implements Controller {
 			view.getRadioAttackInputFixedNumber().setSelection(true);
 			Weapon weapon = _getWeapon();
 			weapon.getAttackInput().orElseThrow().setUseDice(false);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 	}
 	
@@ -162,14 +175,14 @@ public class WeaponController implements Controller {
 			Weapon weapon = _getWeapon();
 			byte attacks = (byte) view.getInputAttackInputFixedNumber().getSelection();
 			weapon.getAttackInput().orElseThrow().setFixedNumber(attacks);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 		
 		view.getInputAttackInputDice().addSelectionListener(Lambda.select(() -> {
 			Weapon weapon = _getWeapon();
 			byte diceQuantity = (byte) view.getInputAttackInputDice().getSelection();
 			weapon.getAttackInput().orElseThrow().setDiceQuantity(diceQuantity);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 		
 		view.getInputAttackInputDiceChooser().addSelectionListener(Lambda.select(() -> {
@@ -177,7 +190,7 @@ public class WeaponController implements Controller {
 			int index = view.getInputAttackInputDiceChooser().getSelectionIndex();
 			Dice dice = GuiFactory.mapComboSelectionToDice(index);
 			weapon.getAttackInput().orElseThrow().setDice(dice);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 	}
 	
@@ -189,7 +202,7 @@ public class WeaponController implements Controller {
 			view.getRadioDamageInputFixedNumber().setSelection(false);
 			Weapon weapon = _getWeapon();
 			weapon.getDamageInput().orElseThrow().setUseDice(true);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 		
 		view.getRadioDamageInputFixedNumber().addSelectionListener(Lambda.select(() -> {
@@ -199,7 +212,7 @@ public class WeaponController implements Controller {
 			view.getRadioDamageInputFixedNumber().setSelection(true);
 			Weapon weapon = _getWeapon();
 			weapon.getDamageInput().orElseThrow().setUseDice(false);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 	}
 	
@@ -208,14 +221,14 @@ public class WeaponController implements Controller {
 			Weapon weapon = _getWeapon();
 			byte attacks = (byte) view.getInputDamageInputFixedNumber().getSelection();
 			weapon.getDamageInput().orElseThrow().setFixedNumber(attacks);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 		
 		view.getInputDamageInputDice().addSelectionListener(Lambda.select(() -> {
 			Weapon weapon = _getWeapon();
 			byte diceQuantity = (byte) view.getInputDamageInputDice().getSelection();
 			weapon.getDamageInput().orElseThrow().setDiceQuantity(diceQuantity);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 		
 		view.getInputDamageInputDiceChooser().addSelectionListener(Lambda.select(() -> {
@@ -223,7 +236,7 @@ public class WeaponController implements Controller {
 			int index = view.getInputDamageInputDiceChooser().getSelectionIndex();
 			Dice dice = GuiFactory.mapComboSelectionToDice(index);
 			weapon.getDamageInput().orElseThrow().setDice(dice);
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 	}
 	
@@ -232,7 +245,7 @@ public class WeaponController implements Controller {
 			Weapon weapon = _getWeapon();
 			int index = view.getInputToHit().getSelectionIndex();
 			weapon.setToHit(GuiFactory.mapComboSelectionToProbability(index));
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 	}
 	
@@ -260,7 +273,7 @@ public class WeaponController implements Controller {
 			}
 			
 			weapon.setAntiType(Optional.of(new AntiType(type, probability)));
-			list.getWeapons().set(_getIndex(), weapon);	
+			weaponList.getWeapons().set(_getIndex(), weapon);	
 		}));
 	}
 
@@ -282,7 +295,7 @@ public class WeaponController implements Controller {
 				weapon.setAntiType(Optional.of(new AntiType(type, selectedProbability)));
 			}
 			
-			list.getWeapons().set(_getIndex(), weapon);
+			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 	}
 	
@@ -317,7 +330,7 @@ public class WeaponController implements Controller {
 	}
 	
 	private Weapon _getWeapon() {
-		return list.getWeapons().get(_getIndex());
+		return weaponList.getWeapons().get(_getIndex());
 	}
 	
 	private void _freezeForm(boolean freeze) {
@@ -345,14 +358,18 @@ public class WeaponController implements Controller {
 		view.getAntiTypeProbabilityCombo().setEnabled(!freeze);
 	}
 	
-	private void _fillUnitEditorWeaponList() {
-		boolean dependencyHasNotBeenInjected = unitEditorWeaponList == null;
-		if(dependencyHasNotBeenInjected) {
+	/**
+	 * Whenever a weapon is added or removed
+	 * the weapon chamber in the unit tab is also updated
+	 */
+	private void _updateUnitEditorWeaponChamber() {
+		boolean unitControllerHasBeenInjected = unitController == null;
+		if(unitControllerHasBeenInjected) {
 			return;
 		}
 		
-		unitEditorWeaponList.removeAll();
-		list.getWeapons().forEach(weapon -> unitEditorWeaponList.add(weapon.getName()));
+		unitController.updateWeaponry();
+		unitController.freezeWeaponChamber();
 	}
 
 }
