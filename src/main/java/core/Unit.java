@@ -1,9 +1,7 @@
 package core;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import arch.Model;
@@ -16,6 +14,7 @@ import core.combat.HitDiceRoll;
 import core.combat.SavingThrowDiceRoll;
 import core.combat.WoundDicePool;
 import core.combat.WoundDiceRoll;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,26 +43,37 @@ public class Unit extends Model {
 	@Getter @Setter @Builder.Default private Type type = Type.INFANTRY;
 	
 	/**
-	 * With this method we add, delete and edit the weapons of a unit. 
-	 * @param Weapon - The weapon we want to edit 
-	 * @param quantity - The quantity the weapns shall recieve   
-	 * @implNote Quantity negative or zero deletes the weapon 
+	 * This is the register of weapons a unit has.
+	 * This register can be edited via the equip method. 
+	 * It contains the signature of the object as a key 
+	 * and a quantity as the value. 
 	 */
+	@Getter @Builder.Default private ArrayList<Equipment> weapons = new ArrayList();
+	
+	@AllArgsConstructor
+	public class Equipment{
+		public Weapon weapon;
+		public byte quantity;
+	}
+	
+	public void updateEquipment(byte index, Weapon weapon, byte quantity) {
+		weapons.set(index, new Equipment(weapon, quantity));
+	}
+	
 	public void equip(byte quantity, Weapon weapon) {
+		weapons.add(new Equipment(weapon, quantity));
+	}
+	
+	public void unequip(byte index, byte quantity) {
+		int _index = (int) index;
+		boolean noEquipmentFound = weapons.size() <= _index;
 		
-		if(!weapons.containsKey(weapon)) {
-			weapons.put(weapon, quantity);
+		if(noEquipmentFound) {
 			return;
 		}
 		
-		val quantityWillBeNegative =  weapons.get(weapon) + quantity <= 0;
-		if(quantityWillBeNegative || quantity == 0) {
-			weapons.remove(weapon);
-			return;
-		}
-		
-		val oldQuantity = weapons.get(weapon);
-		weapons.put(weapon, (byte) (oldQuantity + quantity) );
+		Equipment equipment = weapons.get(_index);
+		equipment.quantity = quantity;
 	}
 	
 	/**
@@ -126,31 +136,25 @@ public class Unit extends Model {
 	 * @see Combat
 	 */
 	public float attack(Unit enemy) {
-		val filteredWeapons = _filter(weapons, phase);
+		val filteredWeapons = _filter(phase);
 		return filteredWeapons
 				.map(weaponAndQuantity -> _dealDamage(weaponAndQuantity, enemy))
 				.reduce(0f, (sum, damage) -> sum + damage);
 	}
 	
-	/**
-	 * This is the register of weapons a unit has.
-	 * This register can be edited via the equip method. 
-	 * It contains the signature of the object as a key 
-	 * and a quantity as the value. 
-	 */
-	@Builder.Default private HashMap<Weapon, Byte> weapons = new HashMap<>();
+	
 	
 	/**
 	 * Filters the weapons before attacking according to the phase
 	 * that is set. So when the fighting phase is set it ensures, 
 	 * that only close combat weapons are taken 
 	 */
-	private Stream<Entry<Weapon, Byte>> _filter
-	(Map<Weapon, Byte> weapons, Phase phase) {
-		val weaponStream = weapons.entrySet().parallelStream();
+	private Stream<Equipment> _filter(Phase phase) {
+		val weaponStream = weapons.parallelStream();
+		
 		val isForBothPhases = phase.equals(Phase.BOTH);
 		return isForBothPhases ? weaponStream 
-				: weaponStream.filter(entry -> _filterWeaponRange(entry.getKey(), phase));
+				: weaponStream.filter(entry -> _filterWeaponRange(entry.weapon, phase));
 	} 
 	
 	/**
@@ -188,9 +192,9 @@ public class Unit extends Model {
 	 * Calculates the damage of a single weapon against a given enemy
 	 * @implNote shall utilize the combat package
 	 */
-	private float _dealDamage(Entry<Weapon, Byte> weaponAndQuantity, Unit enemy) {
-		val weapon = weaponAndQuantity.getKey();
-		val quantity = weaponAndQuantity.getValue();
+	private float _dealDamage(Equipment weaponAndQuantity, Unit enemy) {
+		val weapon = weaponAndQuantity.weapon;
+		val quantity = weaponAndQuantity.quantity;
 		val rules = _setRules(weapon, enemy);
 		
 		//Create all the Dice Rolls and give them the necessary informations
@@ -211,7 +215,6 @@ public class Unit extends Model {
 		
 		return feelNoPain.getResult();
 	}
-	
 	
 	/**
 	 * Creates the feature flags for the battle sequence

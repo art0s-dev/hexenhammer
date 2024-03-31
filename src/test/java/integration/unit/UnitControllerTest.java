@@ -310,7 +310,6 @@ class UnitControllerTest extends SWTGuiTestCase {
 		
 		//When Choosing a weapon on the Repo List we then expect the selection to be set
 		view.getAllWeaponsList().select(0);
-		view.getAllWeaponsList().setSelection(0);
 		boolean somethingWasSelected = view.getAllWeaponsList().getSelectionIndex() > -1;
 		assert somethingWasSelected;
 		
@@ -320,6 +319,42 @@ class UnitControllerTest extends SWTGuiTestCase {
 		assert weaponGotInserted;
 		
 		assertEquals("10x bolter", view.getEquipmentList().getItem(0));
+	}
+	
+	@Test
+	void testUnequipWeapons() {
+		_addController();
+		controller.updateWeaponry();
+		
+		//Equip the weapon
+		view.getAllWeaponsList().select(0);
+		view.getWeaponQuantityInput().setSelection(10);
+		view.getEquipButton().notifyListeners(SWT.Selection, new Event());
+		
+		//Unequip weapon
+		view.getEquipmentList().select(0);
+		view.getWeaponQuantityInput().setSelection(5);
+		view.getUnequipButton().notifyListeners(SWT.Selection, new Event());
+		
+		assertEquals("5x bolter",view.getEquipmentList().getItem(0));
+	}
+	
+	@Test
+	void testDeleteWeapons() {
+		_addController();
+		controller.updateWeaponry();
+		
+		//Equip the weapon
+		view.getAllWeaponsList().select(0);
+		view.getWeaponQuantityInput().setSelection(10);
+		view.getEquipButton().notifyListeners(SWT.Selection, new Event());
+		
+		//Unequip weapon
+		view.getEquipmentList().select(0);
+		view.getWeaponQuantityInput().setSelection(0);
+		view.getUnequipButton().notifyListeners(SWT.Selection, new Event());
+		
+		assertEquals(0, view.getEquipmentList().getItemCount());
 	}
 	
 	private void switchUnits() {

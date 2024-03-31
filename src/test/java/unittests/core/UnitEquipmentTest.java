@@ -1,12 +1,10 @@
 package unittests.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -39,39 +37,42 @@ class UnitEquipmentTest {
 		when(guardsmen.getHitPoints()).thenReturn((byte)1);
 	}
 
-	@Test @DisplayName("Add Equipment") 
-	void GivenSpaceMarines_WhenEquippedWithBolter_ThenDamageIncreases(){	
+	@Test
+	void testAddEquipment() {
 		Unit unit = Unit.builder().build();
-		unit.equip((byte)5, bolter);
-		float damage = unit.attack(guardsmen);
-		
-		assertTrue(damage > 0);
+		float initialDamage = unit.attack(guardsmen);
+		unit.equip((byte) 5, bolter);
+		assertTrue(unit.attack(guardsmen) > initialDamage);
 	}
 	
-	@Test @DisplayName("No Equipment")
-	void GivenSpaceMarines_WhenNoEquipment_ThenThereIsNoDamage() {	
-		Unit unit = Unit.builder().build();
-		
-		assertEquals(0.00, unit.attack(guardsmen));
-	}
-	
-	@Test @DisplayName("Remove Equipment") 
-	void GivenSpaceMarines_WhenEquipmentIsRemoves_ThenThereIsNoDamage(){	
-		Unit unit = Unit.builder().build();
-		unit.equip((byte)9, bolter);
-		unit.equip((byte)-99, bolter);
-		
-		assertEquals(0.00, unit.attack(guardsmen));
-	}
-	
-	@Test @DisplayName("Increase Equipment") 
-	void GivenSpaceMarines_WhenEquipmentIsIncreased_ThenTheDamageIncreases(){	
+	@Test
+	void testDecreaseEquipment() {
 		Unit unit = Unit.builder().build();
 		unit.equip((byte) 5, bolter);
 		float initialDamage = unit.attack(guardsmen);
-		unit.equip((byte) 10, bolter);
-		
-		assertTrue(unit.attack(guardsmen) > initialDamage);
+		unit.unequip((byte)0,(byte) 4);
+		assertTrue(unit.attack(guardsmen) < initialDamage);
 	}
+	
+	@Test
+	void testDecreaseEquipmentThatIsNotThere() {
+		Unit unit = Unit.builder().build();
+		unit.equip((byte) 5, bolter);
+		float initialDamage = unit.attack(guardsmen);
+		unit.unequip((byte)1,(byte) 4);
+		assertTrue(unit.attack(guardsmen) == initialDamage);
+	}
+	
+	@Test
+	void deleteEquipment() {
+		Unit unit = Unit.builder().build();
+		unit.equip((byte) 5, bolter);
+		unit.unequip((byte)0,(byte) 0);
+		assertTrue(unit.attack(guardsmen) == 0);
+	}
+	
+	
+	
+
 
 }

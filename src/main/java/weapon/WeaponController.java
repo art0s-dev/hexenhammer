@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Spinner;
 import arch.Controller;
 import arch.Model;
 import core.Probability;
-import core.Unit;
 import core.Probability.Dice;
 import core.Unit.Type;
 import core.Weapon;

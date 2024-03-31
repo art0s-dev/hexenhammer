@@ -61,7 +61,10 @@ public class UnitController implements Controller {
 		_injectUnitTypeComboListener();
 		_injectCheckboxesListeners();
 		_injectAddEquipmentListener();
+		_injectUnequipListener();
 	}
+
+	
 	
 	@Override
 	public void save(ArrayList<Model> modelList) {
@@ -220,6 +223,7 @@ public class UnitController implements Controller {
 	
 	private void _injectAddEquipmentListener() {
 		view.getEquipButton().addSelectionListener(Lambda.select(() -> {
+
 			int selectionAllWeaponsList = view.getAllWeaponsList().getSelectionIndex();
 			boolean userHasNotSelectedAnything = selectionAllWeaponsList == -1;
 			if(userHasNotSelectedAnything) {
@@ -235,11 +239,36 @@ public class UnitController implements Controller {
 			Weapon weapon = weaponController.getWeaponList()
 					.getWeapons()
 					.get(selectionAllWeaponsList);
-			
+		
 			unit.equip(quantity, weapon);
-			unitList.getUnits().set(_getIndex(), unit);
 			view.getEquipmentList().add(quantity + "x " + weapon.getName());
+			unitList.getUnits().set(_getIndex(), unit);
 			freezeWeaponChamber();
+		}));
+	}
+	
+	private void _injectUnequipListener() {
+		view.getUnequipButton().addSelectionListener(Lambda.select(()-> {
+			byte selectionEquipment = (byte)view.getEquipmentList().getSelectionIndex();
+			boolean userHasNotSelectedAnything = selectionEquipment == -1;
+			if(userHasNotSelectedAnything) {
+				return;
+			}
+			
+			byte quantity = (byte) view.getWeaponQuantityInput().getSelection();
+			Unit unit = _getUnit();
+			unit.unequip(selectionEquipment, quantity);
+			unitList.getUnits().set(_getIndex(), unit);
+			
+			if(quantity == 0) {
+				view.getEquipmentList().remove(selectionEquipment);
+				return;
+			}
+			
+			String item = view.getEquipmentList().getItem(selectionEquipment);
+			int indexAndWhitespace = 2;
+			String name = item.substring(item.indexOf("x") + indexAndWhitespace);
+			view.getEquipmentList().setItem(selectionEquipment, quantity + "x " + name);
 		}));
 	}
 	
