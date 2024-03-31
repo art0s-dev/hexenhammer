@@ -8,29 +8,31 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Spinner;
 
 import arch.Controller;
 import arch.Model;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
+import lombok.Getter;
 import utils.GuiFactory;
 import utils.Lambda;
 
 public class UnitController implements Controller {
 	
 	private final UnitView view;
-	private final UnitRepository repository;
+	private final UnitRepository unitRepository;
 	private UnitList list;
 	
 	public UnitController(UnitView view, UnitRepository unitRepository) {
 		this.view = view;
-		this.repository = unitRepository;
+		this.unitRepository = unitRepository;
 	}
 
 	@Override
 	public void loadModels() {
-		list = (UnitList) repository.load();
+		list = (UnitList) unitRepository.load();
 	}
 	
 	@Override
@@ -59,6 +61,15 @@ public class UnitController implements Controller {
 	@Override
 	public void save(ArrayList<Model> modelList) {
 		// TODO Auto-generated method stub
+	}
+	
+	/**
+	 * This shall be used by the weapon controller
+	 * it updated the weapon list as soon as the weapon list changes
+	 * it also initializes it
+	 */
+	public List getAllWeaponsList() {
+		return view.getAllWeaponsList();
 	}
 
 	private void _injectSelectionListListener() {
@@ -203,5 +214,10 @@ public class UnitController implements Controller {
 		view.getCheckBoxRerollOnesToWound().setEnabled(!freeze);
 		view.getCheckBoxRerollWound().setEnabled(!freeze);
 		view.getCheckBoxIgnoreCover().setEnabled(!freeze);
+		view.getAllWeaponsList().setEnabled(!freeze);
+		view.getWeaponQuantityInput().setEnabled(!freeze);
+		view.getEquipButton().setEnabled(!freeze);
+		view.getUnequipButton().setEnabled(!freeze);
+		view.getEquipmentList().setEnabled(!freeze);
 	}
 }

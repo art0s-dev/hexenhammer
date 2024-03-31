@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Spinner;
 
 import arch.BaseView;
@@ -46,6 +47,13 @@ public final class UnitView extends BaseView {
 	@Getter private Button checkBoxRerollWound;
 	@Getter private Button checkBoxIgnoreCover;
 	
+	//Equipment
+	@Getter private List equipmentList;
+	@Getter private Button unequipButton;
+	@Getter private Button equipButton;
+	@Getter private Spinner weaponQuantityInput;
+	@Getter private List allWeaponsList;
+	
 	//Labels
 	private Group unitSpecialRules;
 	private Label inputLabelMovement;
@@ -57,8 +65,8 @@ public final class UnitView extends BaseView {
 	private Label inputLabelFeelNoPain;
 	private Label inputLabelArmorSave;
 	private Label inputLabelType;
-	
-	
+	private Group weaponEquipmentGroup;
+
 	public UnitView(Composite parent, I18n i18n) {
 		super(parent, i18n);
 	}
@@ -69,8 +77,11 @@ public final class UnitView extends BaseView {
 		_initializeProfileInputs();
 		_initializeUnitTypeCombo();
 		_initializeCheckBoxes();
+		_initializeEquipmentForm();
 		translate();
 	}
+
+	
 	
 	@Override
 	public void translate() {
@@ -136,6 +147,9 @@ public final class UnitView extends BaseView {
 		inputLabelType.setText(i18n.get(prefix + "labelUnitType"));
 		GuiFactory.UNIT_TYPES.forEach((key, value) -> inputType.add(i18n.get(value)));
 		inputType.select(0);
+		equipButton.setText(i18n.get(prefix + "equipButton"));
+		unequipButton.setText(i18n.get(prefix + "unequipButton"));
+		weaponEquipmentGroup.setText(i18n.get(prefix + "weaponEquipmentGroup"));
 	}
 
 	private void _drawInputValues(Unit unit) {
@@ -216,6 +230,29 @@ public final class UnitView extends BaseView {
 		checkBoxRerollOnesToWound = factory.createCheckBox();
 		checkBoxRerollWound = factory.createCheckBox();
 		checkBoxIgnoreCover = factory.createCheckBox();
+	}
+	
+	private void _initializeEquipmentForm() {
+		weaponEquipmentGroup = new Group(entityEditorGroup, SWT.NONE);
+		weaponEquipmentGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+		weaponEquipmentGroup.setLayout(new GridLayout(3, true));
+		allWeaponsList = new List(weaponEquipmentGroup, SWT.NONE);
+		allWeaponsList.setLayoutData(Theme.GRID_FILL);
+		
+		Composite modificationComposite = new Composite(weaponEquipmentGroup, SWT.NONE);
+		modificationComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+		modificationComposite.setLayout(new GridLayout(1, true));
+		
+		GuiFactory factory = new GuiFactory(modificationComposite);
+		weaponQuantityInput = factory.createNumberInput();
+		weaponQuantityInput.setLayoutData(Theme.GRID_CENTER);
+		equipButton = factory.createTextButton();
+		equipButton.setLayoutData(Theme.GRID_CENTER);
+		unequipButton = factory.createTextButton();
+		unequipButton.setLayoutData(Theme.GRID_CENTER);
+		
+		equipmentList = new List(weaponEquipmentGroup, SWT.NONE);
+		equipmentList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	}
 	
 	@Override

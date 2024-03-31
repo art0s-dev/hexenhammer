@@ -1,5 +1,16 @@
 package weapon;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.function.Consumer;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Spinner;
+
 import arch.Controller;
 import arch.Model;
 import core.Probability;
@@ -9,23 +20,16 @@ import core.Weapon;
 import core.Weapon.AntiType;
 import core.Weapon.Range;
 import core.Weapon.SpecialRuleWeapon;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Spinner;
+import lombok.Setter;
 import utils.GuiFactory;
 import utils.Lambda;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 public class WeaponController implements Controller {
 
 	private final WeaponView view;
 	private final WeaponRepository repository;
 	private WeaponList list;
+	@Setter private List unitEditorWeaponList;
 	
 	public WeaponController(WeaponView view, WeaponRepository repository) {
 		this.view = view;
@@ -41,6 +45,7 @@ public class WeaponController implements Controller {
 	public void initView() {
 		view.draw();
 		view.drawList(list);
+		_fillUnitEditorWeaponList();
 		
 		if(list.getWeapons().isEmpty()) {
 			_freezeForm(true);
@@ -80,6 +85,8 @@ public class WeaponController implements Controller {
 			
 			list.getWeapons().add(weapon);
 			view.getSelectionList().notifyListeners(SWT.Selection, new Event());
+			
+			_fillUnitEditorWeaponList();
 		}));
 	}
 	
@@ -99,6 +106,8 @@ public class WeaponController implements Controller {
 			if(list.getWeapons().isEmpty()) {
 				_freezeForm(true);
 			}
+			
+			_fillUnitEditorWeaponList();
 		}));
 	}
 	
@@ -334,6 +343,16 @@ public class WeaponController implements Controller {
 		view.getInputDamageInputDiceChooser().setEnabled(!freeze);
 		view.getAntiTypeUnitTypeCombo().setEnabled(!freeze);
 		view.getAntiTypeProbabilityCombo().setEnabled(!freeze);
+	}
+	
+	private void _fillUnitEditorWeaponList() {
+		boolean dependencyHasNotBeenInjected = unitEditorWeaponList == null;
+		if(dependencyHasNotBeenInjected) {
+			return;
+		}
+		
+		unitEditorWeaponList.removeAll();
+		list.getWeapons().forEach(weapon -> unitEditorWeaponList.add(weapon.getName()));
 	}
 
 }

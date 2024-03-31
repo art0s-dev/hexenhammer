@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -18,6 +19,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Probability;
 import core.Unit;
+import core.UserNumberInput;
+import core.Weapon;
+import core.Weapon.Range;
 import unit.UnitController;
 import unit.UnitList;
 import unit.UnitRepository;
@@ -36,7 +40,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 	UnitController controller;
 	UnitRepository unitRepo;
 	Unit wraithGuard;
-	
+
 	@BeforeEach
 	void setupEach() {
 		unit1 = mock(Unit.class);

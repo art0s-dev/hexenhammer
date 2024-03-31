@@ -50,6 +50,7 @@ public class Main {
 		WeaponView weaponView = new WeaponView(weaponComposite, i18n);
 		weaponTab.setControl(weaponComposite);
 		WeaponController weaponController = new WeaponController(weaponView, new WeaponRepository());
+		weaponController.setUnitEditorWeaponList(unitController.getAllWeaponsList());
 		weaponController.loadModels();
 		weaponController.initView();
 		weaponController.injectListener();

@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +35,7 @@ class WeaponControllerTest extends SWTGuiTestCase{
 	Weapon bolter;
 	Weapon chainsword;
 	WeaponView view;
+	private List unitEditorWeaponList;
 	
 	@BeforeEach
 	void setup() {
@@ -66,6 +68,8 @@ class WeaponControllerTest extends SWTGuiTestCase{
 		
 		when(repo.load()).thenReturn(new WeaponList(list));
 		WeaponController controller = new WeaponController(view, repo);
+		unitEditorWeaponList = new List(shell, SWT.NONE);
+		controller.setUnitEditorWeaponList(unitEditorWeaponList);
 		
 		controller.loadModels();
 		controller.initView();
@@ -228,6 +232,24 @@ class WeaponControllerTest extends SWTGuiTestCase{
 		int index = view.getAntiTypeUnitTypeCombo().getSelectionIndex();
 		Type unitType = GuiFactory.mapUnitTypeComboSelectionToEnum(index);
 		assertEquals(Unit.Type.MONSTER, unitType);
+	}
+	
+	@Test
+	void testWhenControllerIsLoadedThenUnitEditorWeaponListIsFilled() {
+		assertTrue(unitEditorWeaponList.getItemCount() > 0);
+	}
+	
+	@Test
+	void testWhenControllerAddsUnitsThenItsDirectlyLoadedToTheUnitList() {
+		view.getAddButton().notifyListeners(SWT.Selection, new Event());
+		assertEquals(3, unitEditorWeaponList.getItemCount());
+	}
+	
+	@Test
+	void testWhenControllerDeletesAUnitThenItsAlsoLoadedIntoTheUnitList() {
+		view.getSelectionList().select(0);
+		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
+		assertEquals(1, unitEditorWeaponList.getItemCount());
 	}
 	
 	private void _switchWeapons() {

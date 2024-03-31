@@ -48,6 +48,10 @@ public class GuiFactory {
 		return _createButton(SWT.CHECK);
 	}
 	
+	public Button createTextButton() {
+		return _createButton(SWT.NONE);
+	}
+	
 	public Text createTextInput(String label) {
 		Label inputLabel = createLabel();
 		inputLabel.setText(label);
