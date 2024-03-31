@@ -1,28 +1,25 @@
 package weapon;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.function.Consumer;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Spinner;
-
 import arch.Controller;
 import arch.Model;
 import core.Probability;
-import core.Unit;
 import core.Probability.Dice;
-import core.Unit.SpecialRuleUnit;
 import core.Unit.Type;
 import core.Weapon;
 import core.Weapon.AntiType;
 import core.Weapon.Range;
 import core.Weapon.SpecialRuleWeapon;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Spinner;
 import utils.GuiFactory;
 import utils.Lambda;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class WeaponController implements Controller {
 

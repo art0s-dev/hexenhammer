@@ -226,7 +226,7 @@ public class WeaponView extends BaseView {
 	private void _initializeWeaponRangeSwitch() {
 		weaponRange = new Group(entityEditorGroup, SWT.NONE);
 		weaponRange.setLayout(new GridLayout(2, true));
-		weaponRange.setLayoutData(Theme.FULL_WIDTH_GROUP);
+		weaponRange.setLayoutData(Theme.getFullWidthGroupWithOptimalComboHeight());
 		GuiFactory factory = new GuiFactory(weaponRange);
 		weaponRangeShooting = factory.createRadioButton();
 		weaponRangeMeelee = factory.createRadioButton();
@@ -289,7 +289,7 @@ public class WeaponView extends BaseView {
 	
 	private void _initializeCheckboxes() {
 		weaponSpecialRules = new Group(entityEditorGroup, SWT.NONE);
-		weaponSpecialRules.setLayoutData(Theme.FULL_WIDTH_GROUP);
+		weaponSpecialRules.setLayoutData(Theme.getFullWidthGroupWithOptimalComboHeight());
 		weaponSpecialRules.setLayout(new GridLayout(2, true));
 
 		GuiFactory factory = new GuiFactory(weaponSpecialRules);

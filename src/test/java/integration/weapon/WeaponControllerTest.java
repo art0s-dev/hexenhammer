@@ -12,7 +12,6 @@ import java.util.Optional;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import core.Probability;
