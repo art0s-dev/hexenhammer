@@ -60,8 +60,8 @@ public class UnitController implements Controller {
 		_injectComboListeners();
 		_injectUnitTypeComboListener();
 		_injectCheckboxesListeners();
+		_injectAddEquipmentListener();
 	}
-	
 	
 	@Override
 	public void save(ArrayList<Model> modelList) {
@@ -84,12 +84,17 @@ public class UnitController implements Controller {
 		} else {
 			boolean weaponListIsNotEmpty = !weaponController.getWeaponList()
 					.getWeapons().isEmpty();
+			boolean unitListIsNotEmpty = !unitList.getUnits().isEmpty();
+			boolean equimpemtListIsNotEmpty = view.getEquipmentList().getItemCount() > 0;
 					
-			view.getAllWeaponsList().setEnabled(weaponListIsNotEmpty);
-			view.getWeaponQuantityInput().setEnabled(weaponListIsNotEmpty);
-			view.getEquipButton().setEnabled(weaponListIsNotEmpty);
-			view.getUnequipButton().setEnabled(weaponListIsNotEmpty);
-			view.getEquipmentList().setEnabled(weaponListIsNotEmpty);
+			view.getAllWeaponsList().setEnabled(weaponListIsNotEmpty && unitListIsNotEmpty);
+			view.getWeaponQuantityInput().setEnabled(weaponListIsNotEmpty && unitListIsNotEmpty);
+			view.getEquipButton().setEnabled(weaponListIsNotEmpty && unitListIsNotEmpty);
+			view.getEquipmentList().setEnabled(weaponListIsNotEmpty && unitListIsNotEmpty);
+			
+			view.getUnequipButton().setEnabled(weaponListIsNotEmpty 
+					&& unitListIsNotEmpty 
+					&& equimpemtListIsNotEmpty);
 		}
 	}
 	
@@ -98,6 +103,11 @@ public class UnitController implements Controller {
 	 * the weaponList
 	 */
 	public void updateWeaponry() {
+		boolean weaponControllerHasNotBeenInjected = weaponController == null;
+		if(weaponControllerHasNotBeenInjected) {
+			return;
+		}
+		
 		view.getAllWeaponsList().removeAll();
 		weaponController.getWeaponList().getWeapons()
 		.forEach(weapon -> view.getAllWeaponsList().add(weapon.getName()));
@@ -136,6 +146,7 @@ public class UnitController implements Controller {
 			
 			unitList.getUnits().add(unit);
 			view.getSelectionList().notifyListeners(SWT.Selection, new Event());
+			freezeWeaponChamber();
 		}));
 	}
 	
@@ -205,6 +216,31 @@ public class UnitController implements Controller {
 		checkboxes.forEach((btn, rule) -> {
 			btn.addSelectionListener(Lambda.select(() -> _toggle(btn, rule)));
 		});
+	}
+	
+	private void _injectAddEquipmentListener() {
+		view.getEquipButton().addSelectionListener(Lambda.select(() -> {
+			int selectionAllWeaponsList = view.getAllWeaponsList().getSelectionIndex();
+			boolean userHasNotSelectedAnything = selectionAllWeaponsList == -1;
+			if(userHasNotSelectedAnything) {
+				return;
+			}
+			
+			byte quantity = (byte) view.getWeaponQuantityInput().getSelection();
+			if(quantity == 0) {
+				return;
+			}
+			
+			Unit unit = _getUnit();
+			Weapon weapon = weaponController.getWeaponList()
+					.getWeapons()
+					.get(selectionAllWeaponsList);
+			
+			unit.equip(quantity, weapon);
+			unitList.getUnits().set(_getIndex(), unit);
+			view.getEquipmentList().add(quantity + "x " + weapon.getName());
+			freezeWeaponChamber();
+		}));
 	}
 	
 	private void _toggle(Button btn, SpecialRuleUnit rule) {

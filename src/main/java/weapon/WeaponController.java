@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Spinner;
 import arch.Controller;
 import arch.Model;
 import core.Probability;
+import core.Unit;
 import core.Probability.Dice;
 import core.Unit.Type;
 import core.Weapon;
@@ -80,6 +81,7 @@ public class WeaponController implements Controller {
 		_injectAntiTypeProbabilityListener();
 		_injectAntiTypeUnitTypeListener();
 		_injectCheckboxesListeners();
+		_injectNameInputListener();
 	}
 	
 	private void _injectAddListener() {
@@ -121,6 +123,17 @@ public class WeaponController implements Controller {
 			}
 			
 			_updateUnitEditorWeaponChamber();
+		}));
+	}
+	
+	private void _injectNameInputListener() {
+		view.getInputName().addModifyListener(Lambda.modify(()->{
+			Weapon selectedWeapon = weaponList.getWeapons().get(_getIndex());
+			String newName = view.getInputName().getText();
+			
+			selectedWeapon.setName(newName);
+			weaponList.getWeapons().set(_getIndex(), selectedWeapon);
+			view.getSelectionList().setItem(_getIndex(), newName);
 		}));
 	}
 	

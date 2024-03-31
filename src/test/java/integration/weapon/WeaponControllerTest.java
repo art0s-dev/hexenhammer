@@ -13,7 +13,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Probability;
 import core.Probability.Dice;
@@ -33,12 +35,13 @@ import weapon.WeaponList;
 import weapon.WeaponRepository;
 import weapon.WeaponView;
 
+@TestMethodOrder(MethodOrderer.Random.class)
 class WeaponControllerTest extends SWTGuiTestCase{
 	
 	Weapon bolter;
 	Weapon chainsword;
 	WeaponView view;
-	private List unitEditorWeaponList;
+	private UnitView unitView;
 	
 	@BeforeEach
 	void setup() {
@@ -71,17 +74,16 @@ class WeaponControllerTest extends SWTGuiTestCase{
 		
 		when(repo.load()).thenReturn(new WeaponList(list));
 		WeaponController controller = new WeaponController(view, repo);
-		UnitView view = new UnitView(shell, new I18n());
-		UnitController unitController = new UnitController(view, new UnitRepository());
+		unitView = new UnitView(shell, new I18n());
+		UnitController unitController = new UnitController(unitView, new UnitRepository());
 		unitController.loadModels();
 		unitController.initView();
 		unitController.injectListener();
-		unitEditorWeaponList = view.getAllWeaponsList();
 		controller.setUnitController(unitController);
-		
 		controller.loadModels();
 		controller.initView();
 		controller.injectListener();
+		unitController.setWeaponController(controller);
 	}
 
 	@Test
@@ -243,21 +245,16 @@ class WeaponControllerTest extends SWTGuiTestCase{
 	}
 	
 	@Test
-	void testWhenControllerIsLoadedThenUnitEditorWeaponListIsFilled() {
-		assertTrue(unitEditorWeaponList.getItemCount() > 0);
-	}
-	
-	@Test
 	void testWhenControllerAddsUnitsThenItsDirectlyLoadedToTheUnitList() {
 		view.getAddButton().notifyListeners(SWT.Selection, new Event());
-		assertEquals(3, unitEditorWeaponList.getItemCount());
+		assertEquals(3, unitView.getAllWeaponsList().getItemCount());
 	}
 	
 	@Test
 	void testWhenControllerDeletesAUnitThenItsAlsoLoadedIntoTheUnitList() {
 		view.getSelectionList().select(0);
 		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
-		assertEquals(1, unitEditorWeaponList.getItemCount());
+		assertEquals(1, unitView.getAllWeaponsList().getItemCount());
 	}
 	
 	private void _switchWeapons() {

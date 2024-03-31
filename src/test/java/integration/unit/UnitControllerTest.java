@@ -299,6 +299,37 @@ class UnitControllerTest extends SWTGuiTestCase {
 	
 	@Test
 	void testWeaponControllerHasBeenSetAndWeaponsAreSetMeansWeaponryIsEnabled() {
+		_addController();
+		assertTrue(view.getEquipButton().isEnabled());
+	}
+	
+	@Test
+	void testWhenWeaponControllerAndListIsSetUserCanEquipWeapons() {
+		_addController();
+		controller.updateWeaponry();
+		
+		//When Choosing a weapon on the Repo List we then expect the selection to be set
+		view.getAllWeaponsList().select(0);
+		view.getAllWeaponsList().setSelection(0);
+		boolean somethingWasSelected = view.getAllWeaponsList().getSelectionIndex() > -1;
+		assert somethingWasSelected;
+		
+		view.getWeaponQuantityInput().setSelection(10);
+		view.getEquipButton().notifyListeners(SWT.Selection, new Event());
+		boolean weaponGotInserted = view.getEquipmentList().getItems().length > 0;
+		assert weaponGotInserted;
+		
+		assertEquals("10x bolter", view.getEquipmentList().getItem(0));
+	}
+	
+	private void switchUnits() {
+		view.getSelectionList().select(1);
+		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
+		view.getSelectionList().select(0);
+		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
+	}
+	
+	private void _addController() {
 		ArrayList<Weapon> list = new ArrayList<>();
 		list.add(bolter);
 		list.add(chainsword);	 
@@ -313,15 +344,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 		weaponController.injectListener();
 		controller.setWeaponController(weaponController);
 		controller.initView();
-		
-		assertTrue(view.getEquipButton().isEnabled());
-	}
-	
-	private void switchUnits() {
-		view.getSelectionList().select(1);
-		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
-		view.getSelectionList().select(0);
-		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
+		controller.injectListener();
 	}
 
 }
