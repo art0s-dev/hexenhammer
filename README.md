@@ -12,9 +12,7 @@ to give you the best-in-breed warhammer tool for your desktop.
 
 ### How does it work?
 Hexenhammer is a pure desktop application with a strong focus on easily accessible statistics.
-We belive that a user can benefit a lot from just getting the data of his favourite units visualized.
-In order to achieve this we use the simple input-process-output model. You enter your favorite units and 
-weapons into the editor and choose how the data is filtered and presented to you.
+You enter your Weapons and your units. After that you equip your units and under the tab "Statistics" you can calculate all units against all units you have previously chosen to be a foe
 
 ## Roadmap to Hexenhammer
 Here we have all our goals listed to get an MVP out to alpha. The MVP shall contain a usable program.
