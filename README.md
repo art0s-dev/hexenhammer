@@ -1,7 +1,5 @@
 # Hexenhammer 
-Your logical servitor
-
-<small>It is better to die for the Emperor than live for yourself.</small>
+* We have reached Alpha status *
 
 ## General
 Welcome to the Hexenhammer! A Warhammer 40k Battle Calculator for determining a unit's efficiency.
@@ -27,8 +25,8 @@ From there on we will implement the most useful features step by step to deliver
 - [x] - architecture
 - [x] - Units form
 - [x] - Weapons form
-- [ ] - Weapon "arsenal" (attaching weapons to units)
-- [ ] - Statistic Module (MVP) - Early alpha possible
+- [x] - Weapon "arsenal" (attaching weapons to units)
+- [x] - Statistic Module (MVP) - Early alpha possible - WE HAVE REACHED ALPHA
 - [ ] - Save & Load Mechanism
 - [ ] - Introducing Factions
 - [ ] - Quality of life improvements for the user interface

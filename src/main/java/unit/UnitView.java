@@ -17,6 +17,7 @@ import arch.BaseView;
 import arch.Model;
 import arch.ModelList;
 import core.Unit;
+import core.Unit.Equipment;
 import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
 import lombok.val;
@@ -27,6 +28,7 @@ import utils.Theme;
 public final class UnitView extends BaseView {
 
 	//Profile
+	@Getter private Button checkBoxUseAsEnemy;
 	@Getter private Spinner inputMovement;
 	@Getter private Spinner inputToughness;
 	@Getter private Combo inputArmorSave;
@@ -121,6 +123,14 @@ public final class UnitView extends BaseView {
 		_drawInputValues(unit);
 		_drawComboValues(unit);
 		_drawCheckboxValues(unit);
+		_drawEquipment(unit);
+	}
+
+	private void _drawEquipment(Unit unit) {
+		getEquipmentList().removeAll();
+		for(Equipment equipment: unit.getWeapons()) {
+			getEquipmentList().add(equipment.quantity +"x " + equipment.weapon.getName());
+		}
 	}
 
 	private void _translateCheckboxLabels(String prefix) {
@@ -133,6 +143,7 @@ public final class UnitView extends BaseView {
 		checkBoxRerollOnesToWound.setText(i18n.get(prefix + "checkBoxRerollOnesToWound"));
 		checkBoxRerollWound.setText(i18n.get(prefix + "checkBoxRerollWoundRoll"));
 		checkBoxIgnoreCover.setText(i18n.get(prefix + "checkBoxIgnoreCover"));
+		checkBoxUseAsEnemy.setText(i18n.get(prefix + "checkBoxUseAsEnemy"));
 	}
 
 	private void _translateInputFields(String prefix) {
@@ -179,10 +190,16 @@ public final class UnitView extends BaseView {
 		checkBoxRerollOnesToWound.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND));
 		checkBoxRerollWound.setSelection(unit.has(SpecialRuleUnit.REROLL_WOUND_ROLL));
 		checkBoxIgnoreCover.setSelection(unit.has(SpecialRuleUnit.IGNORE_COVER));
+		checkBoxUseAsEnemy.setSelection(unit.isUseAsEnemy());
 	}
 	
 	private void _initializeProfileInputs() {
 		GuiFactory factory = new GuiFactory(entityEditorGroup);
+		checkBoxUseAsEnemy = factory.createCheckBox();
+		factory.createLabel();
+		factory.createLabel();
+		factory.createLabel();
+		
 		inputLabelMovement = factory.createLabel();
 		inputMovement = factory.createNumberInput();
 		inputLabelToughness = factory.createLabel();

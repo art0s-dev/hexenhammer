@@ -41,6 +41,7 @@ public class Unit extends Model {
 	@Getter @Setter @Builder.Default private float invulnerableSave = Probability.NONE;
 	@Getter @Setter @Builder.Default private float feelNoPain = Probability.NONE;
 	@Getter @Setter @Builder.Default private Type type = Type.INFANTRY;
+	@Getter @Setter @Builder.Default private boolean useAsEnemy = false;
 	
 	/**
 	 * This is the register of weapons a unit has.
@@ -56,10 +57,6 @@ public class Unit extends Model {
 		public byte quantity;
 	}
 	
-	public void updateEquipment(byte index, Weapon weapon, byte quantity) {
-		weapons.set(index, new Equipment(weapon, quantity));
-	}
-	
 	public void equip(byte quantity, Weapon weapon) {
 		weapons.add(new Equipment(weapon, quantity));
 	}
@@ -69,6 +66,11 @@ public class Unit extends Model {
 		boolean noEquipmentFound = weapons.size() <= _index;
 		
 		if(noEquipmentFound) {
+			return;
+		}
+		
+		if(quantity == 0) {
+			weapons.remove(_index);
 			return;
 		}
 		

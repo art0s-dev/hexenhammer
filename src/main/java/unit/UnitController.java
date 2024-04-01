@@ -64,10 +64,9 @@ public class UnitController implements Controller {
 		_injectCheckboxesListeners();
 		_injectAddEquipmentListener();
 		_injectUnequipListener();
+		_injectUseAsEnemyListener();
 	}
 
-	
-	
 	@Override
 	public void save(ArrayList<Model> modelList) {
 		// TODO Auto-generated method stub
@@ -274,6 +273,14 @@ public class UnitController implements Controller {
 		}));
 	}
 	
+	private void _injectUseAsEnemyListener() {
+		view.getCheckBoxUseAsEnemy().addSelectionListener(Lambda.select(() -> {
+			Unit unit = _getUnit();
+			unit.setUseAsEnemy(view.getCheckBoxUseAsEnemy().getSelection());
+			unitList.getUnits().set(_getIndex(), unit);
+		}));
+	}
+	
 	private void _toggle(Button btn, SpecialRuleUnit rule) {
 		Unit selectedUnit = _getUnit();
 		boolean selected = btn.getSelection();
@@ -312,6 +319,7 @@ public class UnitController implements Controller {
 		view.getCheckBoxRerollOnesToWound().setEnabled(!freeze);
 		view.getCheckBoxRerollWound().setEnabled(!freeze);
 		view.getCheckBoxIgnoreCover().setEnabled(!freeze);
+		view.getCheckBoxUseAsEnemy().setEnabled(!freeze);
 		freezeWeaponChamber();
 	}
 

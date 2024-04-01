@@ -8,6 +8,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 
+import statistics.StatisticsController;
+import statistics.StatisticsView;
 import unit.UnitController;
 import unit.UnitRepository;
 import unit.UnitView;
@@ -57,6 +59,20 @@ public class Main {
 		weaponController.initView();
 		weaponController.injectListener();
 		unitController.setWeaponController(weaponController);
+		
+		//Set Statistics Tab
+		TabItem statisticsTab = new TabItem(folder, SWT.NONE);
+		statisticsTab.setText(i18n.get("statistics.StatisticsView"));
+		Composite statisticsComposite = new Composite(folder, SWT.NONE);
+		statisticsComposite.setLayout(new GridLayout(1, true));
+		statisticsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		StatisticsView statisticsView = new StatisticsView(statisticsComposite, i18n);
+		statisticsTab.setControl(statisticsComposite);
+		StatisticsController statisticsController = 
+				new StatisticsController(statisticsView, unitController);
+		statisticsController.loadModels();
+		statisticsController.initView();
+		statisticsController.injectListener();
 		
 		//Main Loop
 		shell.open();
