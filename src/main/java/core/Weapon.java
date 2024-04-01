@@ -19,6 +19,7 @@ import lombok.val;
 @Builder
 public class Weapon extends Model {
 	
+	@Getter private int id;
 	@Getter @Setter @Builder.Default private String name = "";
 	@Getter @Setter @Builder.Default private Optional<UserNumberInput> 
 	attackInput = Optional.of(UserNumberInput.withNumber((byte) 0));

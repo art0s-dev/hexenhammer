@@ -133,6 +133,8 @@ public class WeaponController implements Controller {
 			selectedWeapon.setName(newName);
 			weaponList.getWeapons().set(_getIndex(), selectedWeapon);
 			view.getSelectionList().setItem(_getIndex(), newName);
+			
+			_updateUnitEditorWeaponChamber();
 		}));
 	}
 	
@@ -374,13 +376,13 @@ public class WeaponController implements Controller {
 	 * Whenever a weapon is added or removed
 	 * the weapon chamber in the unit tab is also updated
 	 */
-	private void _updateUnitEditorWeaponChamber() {
+	public void _updateUnitEditorWeaponChamber() {
 		boolean unitControllerHasBeenInjected = unitController == null;
 		if(unitControllerHasBeenInjected) {
 			return;
 		}
 		
-		unitController.updateWeaponry();
+		unitController.updateWeaponry(weaponList);
 		unitController.freezeWeaponChamber();
 	}
 

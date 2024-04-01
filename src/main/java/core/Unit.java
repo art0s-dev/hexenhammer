@@ -51,7 +51,7 @@ public class Unit extends Model {
 	@Getter @Builder.Default private ArrayList<Equipment> weapons = new ArrayList();
 	
 	@AllArgsConstructor
-	public class Equipment{
+	static public class Equipment{
 		public Weapon weapon;
 		public byte quantity;
 	}

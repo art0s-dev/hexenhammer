@@ -15,16 +15,18 @@ import arch.Model;
 import core.Unit;
 import core.Unit.SpecialRuleUnit;
 import core.Weapon;
+import lombok.Getter;
 import lombok.Setter;
 import utils.GuiFactory;
 import utils.Lambda;
 import weapon.WeaponController;
+import weapon.WeaponList;
 
 public class UnitController implements Controller {
 	
 	private final UnitView view;
 	private final UnitRepository unitRepository;
-	private UnitList unitList;
+	@Getter private UnitList unitList;
 	
 	@Setter private WeaponController weaponController;
 	
@@ -105,14 +107,14 @@ public class UnitController implements Controller {
 	 * This method shall be used by the weapon controller to update
 	 * the weaponList
 	 */
-	public void updateWeaponry() {
+	public void updateWeaponry(WeaponList weaponList) {
 		boolean weaponControllerHasNotBeenInjected = weaponController == null;
 		if(weaponControllerHasNotBeenInjected) {
 			return;
 		}
 		
 		view.getAllWeaponsList().removeAll();
-		weaponController.getWeaponList().getWeapons()
+		weaponList.getWeapons()
 		.forEach(weapon -> view.getAllWeaponsList().add(weapon.getName()));
 	}
 

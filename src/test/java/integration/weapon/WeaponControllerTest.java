@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -41,6 +42,7 @@ class WeaponControllerTest extends SWTGuiTestCase{
 	Weapon chainsword;
 	WeaponView view;
 	private UnitView unitView;
+	private WeaponController controller;
 	
 	@BeforeEach
 	void setup() {
@@ -72,7 +74,7 @@ class WeaponControllerTest extends SWTGuiTestCase{
 		list.add(chainsword);
 		
 		when(repo.load()).thenReturn(new WeaponList(list));
-		WeaponController controller = new WeaponController(view, repo);
+		controller = new WeaponController(view, repo);
 		unitView = new UnitView(shell, new I18n());
 		UnitController unitController = new UnitController(unitView, new UnitRepository());
 		unitController.loadModels();

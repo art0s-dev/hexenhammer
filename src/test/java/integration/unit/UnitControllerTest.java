@@ -47,6 +47,8 @@ class UnitControllerTest extends SWTGuiTestCase {
 	Unit wraithGuard;
 	Weapon bolter;
 	Weapon chainsword;
+	private WeaponController weaponController;
+	private WeaponList weaponList;
 
 	@BeforeEach
 	void setupEach() {
@@ -64,6 +66,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 				.build();
 		
 		bolter = Weapon.builder()
+				.id(0)
 				.name("bolter")
 				.attackInput(Optional.of(UserNumberInput.withNumber((byte) 2)))
 				.toHit(Probability.THREE_UP)
@@ -74,6 +77,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 				.build();
 		
 		chainsword = Weapon.builder()
+				.id(1)
 				.name("chainsword")
 				.attackInput(Optional.of(UserNumberInput.withNumber((byte) 2)))
 				.toHit(Probability.FOUR_UP)
@@ -306,7 +310,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 	@Test
 	void testWhenWeaponControllerAndListIsSetUserCanEquipWeapons() {
 		_addController();
-		controller.updateWeaponry();
+		controller.updateWeaponry(weaponList);
 		
 		//When Choosing a weapon on the Repo List we then expect the selection to be set
 		view.getAllWeaponsList().select(0);
@@ -324,7 +328,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 	@Test
 	void testUnequipWeapons() {
 		_addController();
-		controller.updateWeaponry();
+		controller.updateWeaponry(weaponList);
 		
 		//Equip the weapon
 		view.getAllWeaponsList().select(0);
@@ -342,7 +346,7 @@ class UnitControllerTest extends SWTGuiTestCase {
 	@Test
 	void testDeleteWeapons() {
 		_addController();
-		controller.updateWeaponry();
+		controller.updateWeaponry(weaponList);
 		
 		//Equip the weapon
 		view.getAllWeaponsList().select(0);
@@ -357,6 +361,42 @@ class UnitControllerTest extends SWTGuiTestCase {
 		assertEquals(0, view.getEquipmentList().getItemCount());
 	}
 	
+	@Test
+	void testEquippingWeaponsMeansThatUnitEquippedWithItContainsIds() {
+		_addController();
+	
+		ArrayList<Unit> list = new ArrayList<>();
+		list.add(wraithGuard); 
+		unitList = new UnitList(list);
+		unitRepo = mock(UnitRepository.class);
+		when(unitRepo.load()).thenReturn(unitList);
+		
+		controller = new UnitController(view,unitRepo);
+		controller.setWeaponController(weaponController);
+		controller.loadModels();
+		controller.initView();
+		controller.injectListener();
+		controller.updateWeaponry(weaponList);
+
+		//Equip the weapon
+		view.getAllWeaponsList().select(0);
+		assert view.getAllWeaponsList().getSelectionIndex() != -1;
+		
+		view.getWeaponQuantityInput().setSelection(10);
+		view.getEquipButton().notifyListeners(SWT.Selection, new Event());
+		
+		boolean weaponGotInserted = view.getEquipmentList().getItems().length > 0;
+		assert weaponGotInserted;
+		
+		Unit unit = controller.getUnitList()
+				.getUnits().get(0);
+		
+		boolean userEquipmentContainsIdsOfWeapons = unit.getWeapons()
+				.get(0).weapon.getId() == bolter.getId();
+		
+		assertTrue(userEquipmentContainsIdsOfWeapons);
+	}
+	
 	private void switchUnits() {
 		view.getSelectionList().select(1);
 		view.getDeleteButton().notifyListeners(SWT.Selection, new Event());
@@ -368,12 +408,12 @@ class UnitControllerTest extends SWTGuiTestCase {
 		ArrayList<Weapon> list = new ArrayList<>();
 		list.add(bolter);
 		list.add(chainsword);	 
-		WeaponList weaponList = new WeaponList(list);
+		weaponList = new WeaponList(list);
 		
 		WeaponView weaponView = new WeaponView(shell, new I18n());
 		WeaponRepository weaponRepository = mock(WeaponRepository.class);
 		when(weaponRepository.load()).thenReturn(weaponList);
-		WeaponController weaponController = new WeaponController(weaponView, weaponRepository);
+		weaponController = new WeaponController(weaponView, weaponRepository);
 		weaponController.loadModels();
 		weaponController.initView();
 		weaponController.injectListener();
