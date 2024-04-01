@@ -1,5 +1,5 @@
 # Hexenhammer 
-- We have reached Alpha status - 
+We have reached Alpha !
 
 ## General
 Welcome to the Hexenhammer! A Warhammer 40k Battle Calculator for determining a unit's efficiency.
