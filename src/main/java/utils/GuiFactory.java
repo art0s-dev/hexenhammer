@@ -207,8 +207,8 @@ public class GuiFactory {
 		}
 		
 		return switch (type) {
-			case Unit.Type.MONSTER -> 1;
-			case Unit.Type.VEHICLE -> 2;
+			case MONSTER -> 1;
+			case VEHICLE -> 2;
 			default -> 0; //Infantry
 		};
 	}
