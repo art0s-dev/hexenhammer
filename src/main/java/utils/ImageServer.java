@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Display;
  */
 public class ImageServer {
 	private static final int DEFAULT_BUTTON_HEIGHT = 20;
-	private static final String BUTTON_PATH = "src/main/resources/";
 	private static final String BUTTON_FILE_TYPE = ".svg";
 	private static final ImageLoader LOADER = new ImageLoader();
 	

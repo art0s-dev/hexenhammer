@@ -5,10 +5,10 @@
   <version>0.0.1-SNAPSHOT</version>
   
   <properties>
-    <maven.compiler.source>21</maven.compiler.source>
-	<maven.compiler.target>21</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+	<maven.compiler.target>17</maven.compiler.target>
 	<swt.version>3.124.200</swt.version>
-    <swt.platform>linux</swt.platform>
+    <swt.platform>linux</swt.platform> 
     <swt.arch>x86_64</swt.arch> 
   </properties>
   
