@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Text;
 
 import lombok.Getter;
 import utils.I18n;
-import utils.ImageServer;
 
 /**
  * The Base View for all forms in the Software
@@ -22,7 +21,6 @@ abstract public class BaseView implements View {
 	
 	//Dependencys
 	protected final Composite parent;
-	protected final ImageServer imageServer;
 	
 	//Internal Attributes
 	private Composite controllingComposite;
@@ -47,7 +45,6 @@ abstract public class BaseView implements View {
 	protected BaseView(Composite parent, I18n i18n) {
 		this.i18n = i18n;
 		this.parent = parent;
-		this.imageServer = new ImageServer(parent.getShell().getDisplay());
 	}
 	
 	//The extending class shall implement the interface
@@ -89,10 +86,10 @@ abstract public class BaseView implements View {
 		menuBar.setLayout(new GridLayout(2, true));
 		
 		addButton = new Button(menuBar, SWT.PUSH);
-		addButton.setImage(imageServer.createImageForButton("plus"));
+		addButton.setText("+");
 		
 		deleteButton = new Button(menuBar, SWT.PUSH);
-		deleteButton.setImage(imageServer.createImageForButton("trash-can"));
+		deleteButton.setText("-");
 	}
 
 	private void _drawEntityList() {
