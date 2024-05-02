@@ -1,6 +1,7 @@
 package unittests.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,6 +19,7 @@ import core.Unit.SpecialRuleUnit;
 import core.Weapon;
 import core.Weapon.Range;
 import core.Weapon.SpecialRuleWeapon;
+import lombok.val;
 
 
 /**
@@ -278,6 +280,17 @@ class UnitAttackFeaturesTest {
 		float expectedDamage = wounds - (wounds * Probability.FIVE_UP);
 		
 		assertEquals(expectedDamage, damage);
+	}
+	
+	@Test
+	void testDamageAgainstUnitWithNoArmorSave() {
+		val unit = Unit.builder().build();
+		unit.equip((byte) 5, bolter);
+		float initialDamage = unit.attack(guardsmen);
+		assertTrue(initialDamage > 0);
+		
+		when(guardsmen.getArmorSave()).thenReturn(Probability.NONE);
+		assertTrue(initialDamage < unit.attack(guardsmen));
 	}
 	
 }

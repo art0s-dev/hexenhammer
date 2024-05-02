@@ -41,6 +41,7 @@ public final class SavingThrowDiceRoll extends DiceRoll {
 	 */
 	private static final HashMap<Float,Byte> ARMOR_SAVES = new HashMap<>();
 	static {
+		ARMOR_SAVES.put(Probability.NONE, (byte) 0);
 		ARMOR_SAVES.put(Probability.SIX_UP, (byte) 1);
 		ARMOR_SAVES.put(Probability.FIVE_UP, (byte) 2);
 		ARMOR_SAVES.put(Probability.FOUR_UP, (byte) 3);
