@@ -34,22 +34,22 @@ public class WeaponViewTest extends SWTEnd2EndTestcase {
 		
 		Weapon bolter = Weapon.builder()
 				.name("bolter")
-				.attackInput(Optional.of(UserNumberInput.withNumber((byte) 2)))
-				.strength((byte)4)
+				.attackInput(Optional.of(UserNumberInput.withNumber(2)))
+				.strength(4)
 				.toHit(Probability.THREE_UP)
-				.armorPenetration((byte) 1)
-				.damageInput(Optional.of(UserNumberInput.withNumber((byte) 1)))
+				.armorPenetration( 1)
+				.damageInput(Optional.of(UserNumberInput.withNumber(1)))
 				.range(Range.SHOOTING)
 				.build();
 		
 		Weapon chainsword = Weapon.builder()
 				.name("chainsword")
-				.attackInput(Optional.of(UserNumberInput.withNumber((byte) 2)))
-				.strength((byte)4)
+				.attackInput(Optional.of(UserNumberInput.withNumber(2)))
+				.strength(4)
 				.toHit(Probability.FOUR_UP)
-				.armorPenetration((byte) 0)
+				.armorPenetration(0)
 				.range(Range.MELEE)
-				.damageInput(Optional.of(UserNumberInput.withNumber((byte) 1)))
+				.damageInput(Optional.of(UserNumberInput.withNumber(1)))
 				.build();
 		
 		WeaponView view = new WeaponView(shell, new I18n());

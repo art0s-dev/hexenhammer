@@ -26,15 +26,15 @@ class UnitEquipmentTest {
 	void setup() {
 		bolter = mock(Weapon.class);
 		when(bolter.getAttacks()).thenReturn(2f);
-		when(bolter.getStrength()).thenReturn((byte)4);
-		when(bolter.getArmorPenetration()).thenReturn((byte)0);
+		when(bolter.getStrength()).thenReturn(4);
+		when(bolter.getArmorPenetration()).thenReturn(0);
 		when(bolter.getDamage()).thenReturn(1f);	
 		when(bolter.getToHit()).thenReturn(Probability.THREE_UP);
 		
 		guardsmen = mock(Unit.class);
-		when(guardsmen.getToughness()).thenReturn((byte)3);
+		when(guardsmen.getToughness()).thenReturn(3);
 		when(guardsmen.getArmorSave()).thenReturn(Probability.FIVE_UP);
-		when(guardsmen.getHitPoints()).thenReturn((byte)1);
+		when(guardsmen.getHitPoints()).thenReturn(1);
 	}
 
 	@Test

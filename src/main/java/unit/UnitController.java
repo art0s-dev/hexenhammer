@@ -174,7 +174,7 @@ public class UnitController implements Controller {
 	}
 	
 	private void _injectNumberInputListeners() {
-		HashMap<Spinner, Consumer<Byte>> spinnerToUnitAttributes = new HashMap<>();
+		HashMap<Spinner, Consumer<Integer>> spinnerToUnitAttributes = new HashMap<>();
 		spinnerToUnitAttributes.put(view.getInputMovement(), (value) -> _getUnit().setMovement(value));
 		spinnerToUnitAttributes.put(view.getInputToughness(), (value) -> _getUnit().setToughness(value));
 		spinnerToUnitAttributes.put(view.getInputHitPoints(), (value) -> _getUnit().setHitPoints(value));
@@ -182,7 +182,7 @@ public class UnitController implements Controller {
 		spinnerToUnitAttributes.put(view.getInputObjectControl(), (value) -> _getUnit().setObjectControl(value));
 		
 		spinnerToUnitAttributes.forEach((input, setter) -> input.addSelectionListener(Lambda.select(() -> {
-			setter.accept((byte) input.getSelection());
+			setter.accept(input.getSelection());
 		})));
 	}
 	
@@ -231,7 +231,7 @@ public class UnitController implements Controller {
 				return;
 			}
 			
-			byte quantity = (byte) view.getWeaponQuantityInput().getSelection();
+			int quantity = view.getWeaponQuantityInput().getSelection();
 			if(quantity == 0) {
 				return;
 			}

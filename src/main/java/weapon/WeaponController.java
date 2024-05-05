@@ -187,14 +187,14 @@ public class WeaponController implements Controller {
 	private void _injectAttackInputListener() {
 		view.getInputAttackInputFixedNumber().addSelectionListener(Lambda.select(() -> {
 			Weapon weapon = _getWeapon();
-			byte attacks = (byte) view.getInputAttackInputFixedNumber().getSelection();
+			int attacks = view.getInputAttackInputFixedNumber().getSelection();
 			weapon.getAttackInput().orElseThrow().setFixedNumber(attacks);
 			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 		
 		view.getInputAttackInputDice().addSelectionListener(Lambda.select(() -> {
 			Weapon weapon = _getWeapon();
-			byte diceQuantity = (byte) view.getInputAttackInputDice().getSelection();
+			int diceQuantity = view.getInputAttackInputDice().getSelection();
 			weapon.getAttackInput().orElseThrow().setDiceQuantity(diceQuantity);
 			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
@@ -233,14 +233,14 @@ public class WeaponController implements Controller {
 	private void _injectDamageInputListener() {
 		view.getInputDamageInputFixedNumber().addSelectionListener(Lambda.select(() -> {
 			Weapon weapon = _getWeapon();
-			byte attacks = (byte) view.getInputDamageInputFixedNumber().getSelection();
+			int attacks = view.getInputDamageInputFixedNumber().getSelection();
 			weapon.getDamageInput().orElseThrow().setFixedNumber(attacks);
 			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
 		
 		view.getInputDamageInputDice().addSelectionListener(Lambda.select(() -> {
 			Weapon weapon = _getWeapon();
-			byte diceQuantity = (byte) view.getInputDamageInputDice().getSelection();
+			int diceQuantity = view.getInputDamageInputDice().getSelection();
 			weapon.getDamageInput().orElseThrow().setDiceQuantity(diceQuantity);
 			weaponList.getWeapons().set(_getIndex(), weapon);
 		}));
@@ -264,14 +264,14 @@ public class WeaponController implements Controller {
 	}
 	
 	private void _injectNumberInputListeners() {
-		HashMap<Spinner, Consumer<Byte>> spinnerToWeaponAttributes = new HashMap<>();
+		HashMap<Spinner, Consumer<Integer>> spinnerToWeaponAttributes = new HashMap<>();
 		spinnerToWeaponAttributes.put(view.getInputStrenght(), (value) -> _getWeapon().setStrength(value));
 		spinnerToWeaponAttributes.put(view.getInputArmorPenetration(), (value) -> _getWeapon().setArmorPenetration(value));
 		spinnerToWeaponAttributes.put(view.getInputMelter(), (value) -> _getWeapon().setMelter(value));
 		spinnerToWeaponAttributes.put(view.getInputSustainedHits(), (value) -> _getWeapon().setSustainedHits(value));
 		
 		spinnerToWeaponAttributes.forEach((input, setter) -> input.addSelectionListener(Lambda.select(() -> {
-			setter.accept((byte) input.getSelection());
+			setter.accept(input.getSelection());
 		})));
 	}
 	

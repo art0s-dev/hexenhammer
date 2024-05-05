@@ -1,10 +1,13 @@
 package core;
 
+import static core.Probability.MEDIAN_D3;
+import static core.Probability.MEDIAN_D6;
+import static core.Probability.Dice.d3;
+
 import java.util.HashSet;
 import java.util.Optional;
 
 import arch.Model;
-import core.Probability.Dice;
 import core.Unit.Type;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,12 +27,12 @@ public class Weapon extends Model {
 	@Getter @Setter @Builder.Default private Optional<UserNumberInput> 
 	attackInput = Optional.of(UserNumberInput.withNumber((byte) 0));
 	@Getter @Setter @Builder.Default private float toHit = Probability.SIX_UP;
-	@Getter @Setter @Builder.Default private byte strength = 1;
-	@Getter @Setter @Builder.Default private byte armorPenetration = 0;
+	@Getter @Setter @Builder.Default private int strength = 1;
+	@Getter @Setter @Builder.Default private int armorPenetration = 0;
 	@Getter @Setter @Builder.Default private Optional<UserNumberInput> 
 	damageInput = Optional.of(UserNumberInput.withNumber((byte) 0));
-	@Getter @Setter @Builder.Default private byte sustainedHits = 0;
-	@Getter @Setter @Builder.Default private byte melter = 0;
+	@Getter @Setter @Builder.Default private int sustainedHits = 0;
+	@Getter @Setter @Builder.Default private int melter = 0;
 	@Getter @Setter @Builder.Default private Range range = Range.SHOOTING;  
 	
 	/**
@@ -45,9 +48,9 @@ public class Weapon extends Model {
 		UserNumberInput attackInput = this.attackInput.orElseThrow();
 		
 		if(attackInput.isUseDice()) {
-			val diceValue = attackInput.getDice().equals(Dice.d3) 
-					? Probability.MEDIAN_D3 
-					: Probability.MEDIAN_D6;
+			val diceValue = attackInput.getDice().equals(d3) 
+					? MEDIAN_D3 
+					: MEDIAN_D6;
 			
 			return attackInput.getDiceQuantity() * diceValue;
 		}
@@ -69,9 +72,9 @@ public class Weapon extends Model {
 		UserNumberInput damageInput = this.damageInput.orElseThrow();
 		
 		if(damageInput.isUseDice()) {
-			val diceValue = damageInput.getDice().equals(Dice.d3) 
-					? Probability.MEDIAN_D3 
-					: Probability.MEDIAN_D6;
+			val diceValue = damageInput.getDice().equals(d3) 
+					? MEDIAN_D3 
+					: MEDIAN_D6;
 			
 			return damageInput.getDiceQuantity() * diceValue;
 		}

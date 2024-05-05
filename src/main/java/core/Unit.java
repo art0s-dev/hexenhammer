@@ -1,17 +1,40 @@
 package core;
 
+import static core.Probability.FIVE_UP;
+import static core.Probability.FOUR_UP;
+import static core.Probability.NONE;
+import static core.Probability.SIX_UP;
+import static core.Probability.THREE_UP;
+import static core.Probability.TWO_UP;
+import static core.Probability.modifyRoll;
+import static core.Probability.Modifier.MINUS_ONE;
+import static core.Probability.Modifier.PLUS_ONE;
+import static core.Unit.Phase.BOTH;
+import static core.Unit.SpecialRuleUnit.ADD_ONE_TO_HIT;
+import static core.Unit.SpecialRuleUnit.ADD_ONE_TO_WOUND;
+import static core.Unit.SpecialRuleUnit.HAS_COVER;
+import static core.Unit.SpecialRuleUnit.IGNORE_COVER;
+import static core.Unit.SpecialRuleUnit.LETHAL_HITS;
+import static core.Unit.SpecialRuleUnit.REROLL_HIT_ROLL;
+import static core.Unit.SpecialRuleUnit.REROLL_ONES_TO_HIT;
+import static core.Unit.SpecialRuleUnit.REROLL_ONES_TO_WOUND;
+import static core.Unit.SpecialRuleUnit.REROLL_WOUND_ROLL;
+import static core.Unit.SpecialRuleUnit.SUBTRACT_ONE_FROM_HIT_ROLL;
+import static core.Unit.SpecialRuleUnit.SUBTRACT_ONE_FROM_WOUND_ROLL;
+import static core.Weapon.Range.SHOOTING;
+import static core.Weapon.SpecialRuleWeapon.DEVASTATING_WOUNDS;
+import static core.Weapon.SpecialRuleWeapon.TORRENT;
+import static java.util.Collections.unmodifiableMap;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
 import arch.Model;
-import core.Probability.Modifier;
 import core.Weapon.AntiType;
 import core.Weapon.Range;
-import core.Weapon.SpecialRuleWeapon;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,12 +53,12 @@ import lombok.val;
 @Builder
 public class Unit extends Model {
 	@Getter @Setter @Builder.Default private String name = "New Unit";
-	@Getter @Setter @Builder.Default private byte movement = 1;
-	@Getter @Setter @Builder.Default private byte toughness = 1;
+	@Getter @Setter @Builder.Default private int movement = 1;
+	@Getter @Setter @Builder.Default private int toughness = 1;
 	@Getter @Setter @Builder.Default private float armorSave = Probability.NONE;
-	@Getter @Setter @Builder.Default private byte hitPoints = 1;
-	@Getter @Setter @Builder.Default private byte leadership = 1;
-	@Getter @Setter @Builder.Default private byte objectControl = 1;
+	@Getter @Setter @Builder.Default private int hitPoints = 1;
+	@Getter @Setter @Builder.Default private int leadership = 1;
+	@Getter @Setter @Builder.Default private int objectControl = 1;
 	@Getter @Setter @Builder.Default private float invulnerableSave = Probability.NONE;
 	@Getter @Setter @Builder.Default private float feelNoPain = Probability.NONE;
 	@Getter @Setter @Builder.Default private Type type = Type.INFANTRY;
@@ -52,27 +75,26 @@ public class Unit extends Model {
 	@AllArgsConstructor
 	static public class Equipment{
 		public Weapon weapon;
-		public byte quantity;
+		public int quantity;
 	}
 	
-	public void equip(byte quantity, Weapon weapon) {
+	public void equip(int quantity, Weapon weapon) {
 		weapons.add(new Equipment(weapon, quantity));
 	}
 	
-	public void unequip(byte index, byte quantity) {
-		int _index = (int) index;
-		boolean noEquipmentFound = weapons.size() <= _index;
+	public void unequip(int index, int quantity) {
+		boolean noEquipmentFound = weapons.size() <= index;
 		
 		if(noEquipmentFound) {
 			return;
 		}
 		
 		if(quantity == 0) {
-			weapons.remove(_index);
+			weapons.remove(index);
 			return;
 		}
 		
-		Equipment equipment = weapons.get(_index);
+		Equipment equipment = weapons.get(index);
 		equipment.quantity = quantity;
 	}
 	
@@ -141,17 +163,17 @@ public class Unit extends Model {
 		
 		for(Equipment equipment: equipments) {
 			Weapon weapon = equipment.weapon;
-			byte quantity = equipment.quantity;
+			int quantity = equipment.quantity;
 			CombatRules rules = _setRules(weapon, enemy);
 			float attacks = weapon.getAttacks() * quantity;
 			float chanceToHit = weapon.getToHit();
 			
 			//Modify hit rolls
 			if(rules.addOneToHitRoll()) {
-				chanceToHit = Probability.modifyRoll(chanceToHit, Modifier.PLUS_ONE);
+				chanceToHit = modifyRoll(chanceToHit, PLUS_ONE);
 			}
 			if(rules.subtractOneFromHitRoll()) {
-				chanceToHit = Probability.modifyRoll(chanceToHit, Modifier.MINUS_ONE);
+				chanceToHit = modifyRoll(chanceToHit, MINUS_ONE);
 			}
 			
 			//Calculate hits
@@ -160,11 +182,11 @@ public class Unit extends Model {
 			//Lethal hits bypass the wound roll
 			//Subtract lethal hits from the hit pool 
 			float lethalHits = 0f;
-			float lethalHitsModifier = Probability.SIX_UP;
+			float lethalHitsModifier = SIX_UP;
 			
 			if(rules.lethalHits()) {
 				if(rules.addOneToHitRoll()) {
-					lethalHitsModifier = Probability.FIVE_UP;
+					lethalHitsModifier = FIVE_UP;
 				}
 				
 				lethalHits = attacks * lethalHitsModifier;
@@ -177,7 +199,7 @@ public class Unit extends Model {
 			float hitRerollPool = 0;
 			if(rules.rerollOnesToHit()) {
 				//Rolling ones has the same chance as rolling a Six
-				hitRerollPool = missedHits * Probability.SIX_UP; 
+				hitRerollPool = missedHits * SIX_UP; 
 				hitRollWasRerolled = true;
 			}
 			if(rules.rerollHitRoll()) {
@@ -204,8 +226,8 @@ public class Unit extends Model {
 			}
 			
 			//calculate the wound roll   
-			byte strength = weapon.getStrength();
-			byte toughness = enemy.getToughness();
+			int strength = weapon.getStrength();
+			int toughness = enemy.getToughness();
 			float probabilityToWound = compare(strength, toughness);
 			
 			//Anti Type weapons
@@ -221,10 +243,10 @@ public class Unit extends Model {
 			
 			//Modify wounds
 			if(rules.addOneToWoundRoll()) {
-				probabilityToWound = Probability.modifyRoll(probabilityToWound, Modifier.PLUS_ONE); 
+				probabilityToWound = modifyRoll(probabilityToWound, PLUS_ONE); 
 			}
 			if(rules.subtractOneFromWoundRoll()) {
-				probabilityToWound = Probability.modifyRoll(probabilityToWound, Modifier.MINUS_ONE);
+				probabilityToWound = modifyRoll(probabilityToWound, MINUS_ONE);
 			}
 			
 			//calculate wounds 
@@ -252,7 +274,7 @@ public class Unit extends Model {
 			byte modifiedArmourSave = (byte) (ARMOUR_SAVES.get(armourSave) - weapon.getArmorPenetration());
 			
 			//Take cover!
-			boolean weaponIsShooting = weapon.getRange() == Range.SHOOTING;
+			boolean weaponIsShooting = weapon.getRange() == SHOOTING;
 			boolean saveIsNotHighestPossible = modifiedArmourSave <= 5;
 			if(weaponIsShooting && rules.enemyHasCover() && !rules.ignoreCover() && saveIsNotHighestPossible) {
 				modifiedArmourSave++;
@@ -284,12 +306,12 @@ public class Unit extends Model {
 	/**
 	 * Determines a probability for a weapon to wound a target 
 	 */
-	private static float compare(byte weaponsStrength, byte enemyToughness) {
+	private static float compare(int weaponsStrength, int enemyToughness) {
 		float probabilityToWound = Probability.SIX_UP;
-		if(weaponsStrength >= enemyToughness * 2) { probabilityToWound = Probability.TWO_UP; }
-		if(weaponsStrength > enemyToughness) { probabilityToWound = Probability.THREE_UP;}
-		if(weaponsStrength == enemyToughness) { probabilityToWound = Probability.FOUR_UP;}
-		if(weaponsStrength < enemyToughness) { probabilityToWound = Probability.FIVE_UP; }
+		if(weaponsStrength >= enemyToughness * 2) { probabilityToWound = TWO_UP; }
+		if(weaponsStrength > enemyToughness) { probabilityToWound = THREE_UP;}
+		if(weaponsStrength == enemyToughness) { probabilityToWound = FOUR_UP;}
+		if(weaponsStrength < enemyToughness) { probabilityToWound = FIVE_UP; }
 		return probabilityToWound;
 	}
 	
@@ -301,7 +323,7 @@ public class Unit extends Model {
 	private Stream<Equipment> _filter(Phase phase) {
 		val weaponStream = weapons.parallelStream();
 		
-		val isForBothPhases = phase.equals(Phase.BOTH);
+		val isForBothPhases = phase.equals(BOTH);
 		return isForBothPhases ? weaponStream 
 				: weaponStream.filter(entry -> _filterWeaponRange(entry.weapon, phase));
 	} 
@@ -311,15 +333,15 @@ public class Unit extends Model {
 	 * tanky a unit is. This implementation subtracts the armour penetration value
 	 * from the weapon from the given values, until there is no armpur save left
 	 */
-	private static final HashMap<Float,Byte> ARMOUR_SAVES = new HashMap<>();
+	private static final HashMap<Float,Integer> ARMOUR_SAVES = new HashMap<>();
 	static {
-		ARMOUR_SAVES.put(Probability.NONE, (byte)0);
-		ARMOUR_SAVES.put(Probability.SIX_UP, (byte)1);
-		ARMOUR_SAVES.put(Probability.FIVE_UP, (byte)2);
-		ARMOUR_SAVES.put(Probability.FOUR_UP, (byte)3);
-		ARMOUR_SAVES.put(Probability.THREE_UP, (byte)4);
-		ARMOUR_SAVES.put(Probability.TWO_UP, (byte)5);
-		Collections.unmodifiableMap(ARMOUR_SAVES);
+		ARMOUR_SAVES.put(NONE, 0);
+		ARMOUR_SAVES.put(SIX_UP, 1);
+		ARMOUR_SAVES.put(FIVE_UP, 2);
+		ARMOUR_SAVES.put(FOUR_UP, 3);
+		ARMOUR_SAVES.put(THREE_UP, 4);
+		ARMOUR_SAVES.put(TWO_UP, 5);
+		unmodifiableMap(ARMOUR_SAVES);
 	}
 	
 	/**
@@ -359,22 +381,22 @@ public class Unit extends Model {
 	 */
 	private CombatRules _setRules(Weapon weapon, Unit enemy) {
 		return new CombatRules(
-			this.has(SpecialRuleUnit.ADD_ONE_TO_HIT),
-			enemy.has(SpecialRuleUnit.SUBTRACT_ONE_FROM_HIT_ROLL),
-			this.has(SpecialRuleUnit.LETHAL_HITS),
-			this.has(SpecialRuleUnit.REROLL_ONES_TO_HIT),
-			this.has(SpecialRuleUnit.REROLL_HIT_ROLL),
-			weapon.has(SpecialRuleWeapon.TORRENT),
-			this.has(SpecialRuleUnit.ADD_ONE_TO_WOUND),
-			enemy.has(SpecialRuleUnit.SUBTRACT_ONE_FROM_WOUND_ROLL),
-			this.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND),
-			this.has(SpecialRuleUnit.REROLL_WOUND_ROLL),
+			this.has(ADD_ONE_TO_HIT),
+			enemy.has(SUBTRACT_ONE_FROM_HIT_ROLL),
+			this.has(LETHAL_HITS),
+			this.has(REROLL_ONES_TO_HIT),
+			this.has(REROLL_HIT_ROLL),
+			weapon.has(TORRENT),
+			this.has(ADD_ONE_TO_WOUND),
+			enemy.has(SUBTRACT_ONE_FROM_WOUND_ROLL),
+			this.has(REROLL_ONES_TO_WOUND),
+			this.has(REROLL_WOUND_ROLL),
 			weapon.getAntiType().isPresent(),
-			enemy.has(SpecialRuleUnit.HAS_COVER),
-			this.has(SpecialRuleUnit.IGNORE_COVER),
+			enemy.has(HAS_COVER),
+			this.has(IGNORE_COVER),
 			weapon.getSustainedHits() > 0,
 			weapon.getMelter() > 0,
-			weapon.has(SpecialRuleWeapon.DEVASTATING_WOUNDS)
+			weapon.has(DEVASTATING_WOUNDS)
 		);
 	}
 

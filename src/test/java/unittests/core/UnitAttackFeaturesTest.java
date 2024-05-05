@@ -39,8 +39,8 @@ class UnitAttackFeaturesTest {
 	void setup() {
 		bolter = mock(Weapon.class);
 		when(bolter.getAttacks()).thenReturn(2f);
-		when(bolter.getStrength()).thenReturn((byte)4);
-		when(bolter.getArmorPenetration()).thenReturn((byte)0);
+		when(bolter.getStrength()).thenReturn(4);
+		when(bolter.getArmorPenetration()).thenReturn(0);
 		when(bolter.getDamage()).thenReturn(1f);	
 		when(bolter.getRange()).thenReturn(Range.SHOOTING);
 		when(bolter.getToHit()).thenReturn(Probability.THREE_UP);
@@ -48,25 +48,25 @@ class UnitAttackFeaturesTest {
 		heavyBolter = mock(Weapon.class);
 		when(heavyBolter.getAttacks()).thenReturn(3f);
 		when(heavyBolter.getToHit()).thenReturn(Probability.THREE_UP);
-		when(heavyBolter.getStrength()).thenReturn((byte)5);
+		when(heavyBolter.getStrength()).thenReturn(5);
 		when(heavyBolter.getRange()).thenReturn(Range.SHOOTING);
-		when(heavyBolter.getArmorPenetration()).thenReturn((byte)2);
+		when(heavyBolter.getArmorPenetration()).thenReturn(2);
 		
 		guardsmen = mock(Unit.class);
-		when(guardsmen.getToughness()).thenReturn((byte)3);
+		when(guardsmen.getToughness()).thenReturn(3);
 		when(guardsmen.getArmorSave()).thenReturn(Probability.FIVE_UP);
-		when(guardsmen.getHitPoints()).thenReturn((byte)1);
+		when(guardsmen.getHitPoints()).thenReturn(1);
 		
 		aberrants = mock(Unit.class);
-		when(aberrants.getToughness()).thenReturn((byte)6);
+		when(aberrants.getToughness()).thenReturn(6);
 		when(aberrants.getArmorSave()).thenReturn(Probability.FIVE_UP);
 		when(aberrants.getFeelNoPain()).thenReturn(Probability.FOUR_UP);
-		when(aberrants.getHitPoints()).thenReturn((byte)3);
+		when(aberrants.getHitPoints()).thenReturn(3);
 		
 		lemanRussTank = mock(Unit.class);
-		when(lemanRussTank.getToughness()).thenReturn((byte)11);
+		when(lemanRussTank.getToughness()).thenReturn(11);
 		when(lemanRussTank.getArmorSave()).thenReturn(Probability.TWO_UP);
-		when(lemanRussTank.getHitPoints()).thenReturn((byte)13);
+		when(lemanRussTank.getHitPoints()).thenReturn(13);
 	}
 	
 	/**
@@ -97,7 +97,7 @@ class UnitAttackFeaturesTest {
 	void GivenEldarRangerAsTarget_WhenArmorSaveIsLoweThanInvulSave_ThenTakeInvulSave() {
 
 		Unit eldarRangers = mock(Unit.class);
-		when(eldarRangers.getToughness()).thenReturn((byte)3);
+		when(eldarRangers.getToughness()).thenReturn(3);
 		when(eldarRangers.getArmorSave()).thenReturn(Probability.FIVE_UP);
 		when(eldarRangers.getInvulnerableSave()).thenReturn(Probability.FIVE_UP);
 		
@@ -145,7 +145,7 @@ class UnitAttackFeaturesTest {
 		Weapon combatKnife = mock(Weapon.class);
 		when(combatKnife.getAttacks()).thenReturn(2f);
 		when(combatKnife.getToHit()).thenReturn(Probability.THREE_UP);
-		when(combatKnife.getStrength()).thenReturn((byte)4);
+		when(combatKnife.getStrength()).thenReturn(4);
 		when(combatKnife.getRange()).thenReturn(Range.MELEE);
 		when(combatKnife.getDamage()).thenReturn(1f);
 		

@@ -1,5 +1,17 @@
 package weapon;
 
+import static core.Probability.NONE;
+import static core.Unit.Type.INFANTRY;
+import static core.Weapon.Range.MELEE;
+import static core.Weapon.Range.SHOOTING;
+import static core.Weapon.SpecialRuleWeapon.HEAVY_AND_UNIT_REMAINED_STATIONARY;
+import static core.Weapon.SpecialRuleWeapon.TORRENT;
+import static org.eclipse.swt.SWT.FILL;
+import static utils.GuiFactory.mapDiceToComboSelection;
+import static utils.GuiFactory.mapProbabilityToComboSelection;
+import static utils.GuiFactory.mapTypeEnumToComboSelection;
+import static utils.Theme.getFullWidthGroupWithOptimalComboHeight;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -135,8 +147,8 @@ public class WeaponView extends BaseView {
 		} 
 		
 		Range range = weapon.getRange();
-		weaponRangeShooting.setSelection(range.equals(Weapon.Range.SHOOTING));
-		weaponRangeMeelee.setSelection(range.equals(Weapon.Range.MELEE));
+		weaponRangeShooting.setSelection(range.equals(SHOOTING));
+		weaponRangeMeelee.setSelection(range.equals(MELEE));
 	}
 
 	private void _drawAttackInputValues(Weapon weapon) {
@@ -148,7 +160,7 @@ public class WeaponView extends BaseView {
 		
 		UserNumberInput attackInput = weapon.getAttackInput().orElseThrow();
 		inputAttackInputDice.setSelection(attackInput.getDiceQuantity());
-		inputAttackInputDiceChooser.select(GuiFactory.mapDiceToComboSelection(attackInput.getDice()));
+		inputAttackInputDiceChooser.select(mapDiceToComboSelection(attackInput.getDice()));
 		inputAttackInputFixedNumber.setSelection(attackInput.getFixedNumber());
 	}
 	
@@ -161,7 +173,7 @@ public class WeaponView extends BaseView {
 		
 		UserNumberInput damageInput = weapon.getDamageInput().orElseThrow();
 		inputDamageInputFixedNumber.setSelection(damageInput.getFixedNumber());
-		inputDamageInputDiceChooser.select(GuiFactory.mapDiceToComboSelection(damageInput.getDice()));
+		inputDamageInputDiceChooser.select(mapDiceToComboSelection(damageInput.getDice()));
 		inputDamageInputDice.setSelection(damageInput.getDiceQuantity());
 	}
 	
@@ -200,14 +212,14 @@ public class WeaponView extends BaseView {
 	private void _drawAntiType(Weapon weapon) {
 		boolean noAntiTypeWasEntered = weapon.getAntiType().isEmpty();
 		if(noAntiTypeWasEntered) {
-			antiTypeProbabilityCombo.select(GuiFactory.mapProbabilityToComboSelection(Probability.NONE));
-			antiTypeUnitTypeCombo.select(GuiFactory.mapTypeEnumToComboSelection(Type.INFANTRY));
+			antiTypeProbabilityCombo.select(mapProbabilityToComboSelection(NONE));
+			antiTypeUnitTypeCombo.select(mapTypeEnumToComboSelection(INFANTRY));
 			return;
 		} 
 		
 		AntiType antiType = weapon.getAntiType().orElseThrow();
-		antiTypeProbabilityCombo.select(GuiFactory.mapProbabilityToComboSelection(antiType.probability()));
-		antiTypeUnitTypeCombo.select(GuiFactory.mapTypeEnumToComboSelection(antiType.type()));
+		antiTypeProbabilityCombo.select(mapProbabilityToComboSelection(antiType.probability()));
+		antiTypeUnitTypeCombo.select(mapTypeEnumToComboSelection(antiType.type()));
 	}
 	
 	private void _drawInputValues(Weapon weapon) {
@@ -215,25 +227,25 @@ public class WeaponView extends BaseView {
 		inputName.setText(weaponHasNoName ? "" : weapon.getName());
 		inputStrenght.setSelection(weapon.getStrength());
 		inputArmorPenetration.setSelection(weapon.getArmorPenetration());
-		inputToHit.select(GuiFactory.mapProbabilityToComboSelection(weapon.getToHit()));
+		inputToHit.select(mapProbabilityToComboSelection(weapon.getToHit()));
 		inputMelter.setSelection(weapon.getMelter());
 		inputSustainedHits.setSelection(weapon.getSustainedHits());
-		checkBoxTorrent.setSelection(weapon.has(SpecialRuleWeapon.TORRENT));
+		checkBoxTorrent.setSelection(weapon.has(TORRENT));
 		checkBoxHeavyAndStationary
-		.setSelection(weapon.has(SpecialRuleWeapon.HEAVY_AND_UNIT_REMAINED_STATIONARY));
+		.setSelection(weapon.has(HEAVY_AND_UNIT_REMAINED_STATIONARY));
 	}
 
 	private void _initializeWeaponRangeSwitch() {
 		weaponRange = new Group(entityEditorGroup, SWT.NONE);
 		weaponRange.setLayout(new GridLayout(2, true));
-		weaponRange.setLayoutData(Theme.getFullWidthGroupWithOptimalComboHeight());
+		weaponRange.setLayoutData(getFullWidthGroupWithOptimalComboHeight());
 		GuiFactory factory = new GuiFactory(weaponRange);
 		weaponRangeShooting = factory.createRadioButton();
 		weaponRangeMeelee = factory.createRadioButton();
 	}
 	
 	private void _initializeAttackInputs() {
-		GridData groupGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1);
+		GridData groupGridData = new GridData(FILL, FILL, true, false, 4, 1);
 		groupGridData.heightHint = 60;
 		attacksGroup = new Group(entityEditorGroup, SWT.NONE);
 		attacksGroup.setLayoutData(groupGridData);
@@ -247,7 +259,7 @@ public class WeaponView extends BaseView {
 	}
 	
 	private void _initializeDamageInputs() {
-		GridData groupGridData = new GridData(SWT.FILL, SWT.FILL, true, false, 4, 1);
+		GridData groupGridData = new GridData(FILL, FILL, true, false, 4, 1);
 		groupGridData.heightHint = 60;
 		damageGroup = new Group(entityEditorGroup, SWT.NONE);
 		damageGroup.setLayoutData(groupGridData);
@@ -276,12 +288,12 @@ public class WeaponView extends BaseView {
 	
 	private void _initializeAntiType() {
 		antiTypeGroup = new Group(entityEditorGroup, SWT.NONE);
-		antiTypeGroup.setLayoutData(Theme.getFullWidthGroupWithOptimalComboHeight());
+		antiTypeGroup.setLayoutData(getFullWidthGroupWithOptimalComboHeight());
 		
 		antiTypeGroup.setLayout(new GridLayout(2, true));
 		GuiFactory factory = new GuiFactory(antiTypeGroup);
 		antiTypeUnitTypeCombo =  new Combo(antiTypeGroup, SWT.NONE);
-		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		GridData comboGridData = new GridData(FILL, FILL, true, false);
 		comboGridData.verticalIndent = 15;
 		antiTypeUnitTypeCombo.setLayoutData(comboGridData);
 		antiTypeProbabilityCombo = factory.createProbabilityCombo();
@@ -289,7 +301,7 @@ public class WeaponView extends BaseView {
 	
 	private void _initializeCheckboxes() {
 		weaponSpecialRules = new Group(entityEditorGroup, SWT.NONE);
-		weaponSpecialRules.setLayoutData(Theme.getFullWidthGroupWithOptimalComboHeight());
+		weaponSpecialRules.setLayoutData(getFullWidthGroupWithOptimalComboHeight());
 		weaponSpecialRules.setLayout(new GridLayout(2, true));
 
 		GuiFactory factory = new GuiFactory(weaponSpecialRules);

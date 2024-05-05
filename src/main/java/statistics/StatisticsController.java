@@ -1,5 +1,7 @@
 package statistics;
 
+import static utils.Lambda.select;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class StatisticsController implements Controller {
 
 	@Override
 	public void injectListener() {
-		view.getStartCalculationButton().addSelectionListener(Lambda.select(() -> {
+		view.getStartCalculationButton().addSelectionListener(select(() -> {
 			loadModels();
 			view.drawTableColumns(units, enemys);
 		}));

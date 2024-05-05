@@ -1,5 +1,7 @@
 package core;
 
+import static core.Probability.Dice.d3;
+
 import core.Probability.Dice;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,15 +17,15 @@ import lombok.Data;
 @AllArgsConstructor @Data
 	public class UserNumberInput {
 	boolean useDice;
-	byte fixedNumber;
-	byte diceQuantity;
+	int fixedNumber;
+	int diceQuantity;
 	Probability.Dice dice;
 	
-	public static UserNumberInput withNumber(byte fixedNumber) {
-		return new UserNumberInput(false, fixedNumber, (byte)0, Dice.d3);
+	public static UserNumberInput withNumber(int fixedNumber) {
+		return new UserNumberInput(false, fixedNumber, (byte)0, d3);
 	}
 	
-	public static UserNumberInput withDice(byte diceQuantity, Dice dice) {
-		return new UserNumberInput(true, (byte)0, diceQuantity, dice);
+	public static UserNumberInput withDice(int diceQuantity, Dice dice) {
+		return new UserNumberInput(true, 0, diceQuantity, dice);
 	}
 }

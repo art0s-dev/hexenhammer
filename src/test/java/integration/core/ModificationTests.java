@@ -41,15 +41,15 @@ class ModificationTests {
 		scorpionPulsar = mock(Weapon.class);
 		when(scorpionPulsar.getAttacks()).thenReturn(5f);
 		when(scorpionPulsar.getToHit()).thenReturn(Probability.THREE_UP);
-		when(scorpionPulsar.getStrength()).thenReturn((byte)18);
-		when(scorpionPulsar.getArmorPenetration()).thenReturn((byte)5);
+		when(scorpionPulsar.getStrength()).thenReturn(18);
+		when(scorpionPulsar.getArmorPenetration()).thenReturn(5);
 		when(scorpionPulsar.getDamage()).thenReturn(5f);
 		scorpionTank.add(SpecialRuleUnit.REROLL_WOUND_ROLL);
 		scorpionTank.equip((byte)1, scorpionPulsar);
 		
 		mortarion = mock(Unit.class);
-		when(mortarion.getToughness()).thenReturn((byte)12);
-		when(mortarion.getHitPoints()).thenReturn((byte)16);
+		when(mortarion.getToughness()).thenReturn(12);
+		when(mortarion.getHitPoints()).thenReturn(16);
 		when(mortarion.getArmorSave()).thenReturn(Probability.TWO_UP);
 		when(mortarion.getInvulnerableSave()).thenReturn(Probability.FOUR_UP);
 		when(mortarion.getFeelNoPain()).thenReturn(Probability.FIVE_UP);

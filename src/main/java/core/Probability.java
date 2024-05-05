@@ -1,5 +1,7 @@
 package core;
 
+import static java.lang.StrictMath.ceil;
+
 /**
  * Those are the Probs we use to calculate everything
  * the probabilities resemble a dice roll + determenistic constants
@@ -31,7 +33,7 @@ public final class Probability {
 	 * recreates a halved dice roll wih deterministic result
 	 * @param quantity the number of d3 that shall be rolled
 	 */
-	public final static float d3(byte quantity) {
+	public final static float d3(int quantity) {
 		return quantity * MEDIAN_D3;
 	}
 
@@ -48,14 +50,14 @@ public final class Probability {
 	 * @param operator - char the operator - (+ OR -)
 	 */
 	public static float modifyRoll(float probability, Modifier modifier) {
-		float newProbability = (float) ((StrictMath.ceil(probability * 6) + modifier.value ) / 6);
+		float newProbability = (float) ((ceil(probability * 6) + modifier.value ) / 6);
 		
 		if (newProbability <= 0) {
-			return Probability.SIX_UP;
+			return SIX_UP;
 		}
 		
-		if (newProbability > Probability.TWO_UP) {
-			return Probability.TWO_UP;
+		if (newProbability > TWO_UP) {
+			return TWO_UP;
 		}
 
 		return newProbability;
@@ -65,11 +67,11 @@ public final class Probability {
 	 * Modify a dice roll with +1 or -1
 	 */
 	public enum Modifier {
-		PLUS_ONE((byte)1),
-		MINUS_ONE((byte)-1);
+		PLUS_ONE(1),
+		MINUS_ONE(-1);
 
-		public final byte value;
-		private Modifier(byte value) {
+		public final int value;
+		private Modifier(int value) {
 			this.value = value;
 		}
 	}

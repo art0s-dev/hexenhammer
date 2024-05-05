@@ -1,5 +1,23 @@
 package unit;
 
+import static core.Unit.SpecialRuleUnit.ADD_ONE_TO_HIT;
+import static core.Unit.SpecialRuleUnit.ADD_ONE_TO_WOUND;
+import static core.Unit.SpecialRuleUnit.IGNORE_COVER;
+import static core.Unit.SpecialRuleUnit.LETHAL_HITS;
+import static core.Unit.SpecialRuleUnit.REROLL_HIT_ROLL;
+import static core.Unit.SpecialRuleUnit.REROLL_ONES_TO_HIT;
+import static core.Unit.SpecialRuleUnit.REROLL_ONES_TO_WOUND;
+import static core.Unit.SpecialRuleUnit.REROLL_WOUND_ROLL;
+import static org.eclipse.swt.SWT.CENTER;
+import static org.eclipse.swt.SWT.FILL;
+import static org.eclipse.swt.SWT.NONE;
+import static utils.GuiFactory.mapProbabilityToComboSelection;
+import static utils.GuiFactory.mapTypeEnumToComboSelection;
+import static utils.Theme.DEFAULT_VERTICAL_INDENT_COMBO;
+import static utils.Theme.FULL_WIDTH_GROUP;
+import static utils.Theme.GRID_CENTER;
+import static utils.Theme.GRID_FILL;
+
 import java.util.function.Function;
 
 import org.eclipse.swt.SWT;
@@ -174,22 +192,22 @@ public final class UnitView extends BaseView {
 	}
 	
 	private void _drawComboValues(Unit unit) {
-		Function<Float, Integer> map = (probability) -> GuiFactory.mapProbabilityToComboSelection(probability);
+		Function<Float, Integer> map = (probability) -> mapProbabilityToComboSelection(probability);
 		inputArmorSave.select(map.apply(unit.getArmorSave()));
 		inputFeelNoPain.select(map.apply(unit.getFeelNoPain()));
 		inputInvulnerableSave.select(map.apply(unit.getInvulnerableSave()));
-		inputType.select(GuiFactory.mapTypeEnumToComboSelection(unit.getType()));
+		inputType.select(mapTypeEnumToComboSelection(unit.getType()));
 	}
 	
 	private void _drawCheckboxValues(Unit unit) {
-		checkBoxAddOneToHit.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_HIT));
-		checkBoxLethalHits.setSelection(unit.has(SpecialRuleUnit.LETHAL_HITS));
-		checkBoxRerollOnesToHit.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_HIT));
-		checkBoxRerollHitRoll.setSelection(unit.has(SpecialRuleUnit.REROLL_HIT_ROLL));
-		checkBoxAddOneToWound.setSelection(unit.has(SpecialRuleUnit.ADD_ONE_TO_WOUND));
-		checkBoxRerollOnesToWound.setSelection(unit.has(SpecialRuleUnit.REROLL_ONES_TO_WOUND));
-		checkBoxRerollWound.setSelection(unit.has(SpecialRuleUnit.REROLL_WOUND_ROLL));
-		checkBoxIgnoreCover.setSelection(unit.has(SpecialRuleUnit.IGNORE_COVER));
+		checkBoxAddOneToHit.setSelection(unit.has(ADD_ONE_TO_HIT));
+		checkBoxLethalHits.setSelection(unit.has(LETHAL_HITS));
+		checkBoxRerollOnesToHit.setSelection(unit.has(REROLL_ONES_TO_HIT));
+		checkBoxRerollHitRoll.setSelection(unit.has(REROLL_HIT_ROLL));
+		checkBoxAddOneToWound.setSelection(unit.has(ADD_ONE_TO_WOUND));
+		checkBoxRerollOnesToWound.setSelection(unit.has(REROLL_ONES_TO_WOUND));
+		checkBoxRerollWound.setSelection(unit.has(REROLL_WOUND_ROLL));
+		checkBoxIgnoreCover.setSelection(unit.has(IGNORE_COVER));
 		checkBoxUseAsEnemy.setSelection(unit.isUseAsEnemy());
 	}
 	
@@ -219,22 +237,22 @@ public final class UnitView extends BaseView {
 	}
 
 	private void _initializeUnitTypeCombo() {
-		inputLabelType = new Label(entityEditorGroup, SWT.NONE);
-		inputType = new Combo(entityEditorGroup, SWT.NONE);
-		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
+		inputLabelType = new Label(entityEditorGroup, NONE);
+		inputType = new Combo(entityEditorGroup, NONE);
+		GridData comboGridData = new GridData(FILL, FILL, true, false);
 		comboGridData.verticalIndent = 15;
 		inputType.setLayoutData(comboGridData);
 
 		
-		Label placeholder = new Label(entityEditorGroup, SWT.NONE);
-		GridData placeholderGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		placeholderGridData.horizontalSpan = Theme.DEFAULT_VERTICAL_INDENT_COMBO;
+		Label placeholder = new Label(entityEditorGroup, NONE);
+		GridData placeholderGridData = new GridData(FILL, FILL, true, false);
+		placeholderGridData.horizontalSpan = DEFAULT_VERTICAL_INDENT_COMBO;
 		placeholder.setLayoutData(placeholderGridData);
 	}
 	
 	private void _initializeCheckBoxes() {
-		unitSpecialRules = new Group(entityEditorGroup, SWT.NONE);
-		unitSpecialRules.setLayoutData(Theme.FULL_WIDTH_GROUP);
+		unitSpecialRules = new Group(entityEditorGroup, NONE);
+		unitSpecialRules.setLayoutData(FULL_WIDTH_GROUP);
 		unitSpecialRules.setLayout(new GridLayout(2, true));
 
 		GuiFactory factory = new GuiFactory(unitSpecialRules);
@@ -250,26 +268,26 @@ public final class UnitView extends BaseView {
 	}
 	
 	private void _initializeEquipmentForm() {
-		weaponEquipmentGroup = new Group(entityEditorGroup, SWT.NONE);
-		weaponEquipmentGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+		weaponEquipmentGroup = new Group(entityEditorGroup, NONE);
+		weaponEquipmentGroup.setLayoutData(new GridData(FILL, FILL, true, true, 4, 1));
 		weaponEquipmentGroup.setLayout(new GridLayout(3, true));
-		allWeaponsList = new List(weaponEquipmentGroup, SWT.NONE);
-		allWeaponsList.setLayoutData(Theme.GRID_FILL);
+		allWeaponsList = new List(weaponEquipmentGroup, NONE);
+		allWeaponsList.setLayoutData(GRID_FILL);
 		
-		Composite modificationComposite = new Composite(weaponEquipmentGroup, SWT.NONE);
-		modificationComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+		Composite modificationComposite = new Composite(weaponEquipmentGroup, NONE);
+		modificationComposite.setLayoutData(new GridData(CENTER, CENTER, true, true));
 		modificationComposite.setLayout(new GridLayout(1, true));
 		
 		GuiFactory factory = new GuiFactory(modificationComposite);
 		weaponQuantityInput = factory.createNumberInput();
-		weaponQuantityInput.setLayoutData(Theme.GRID_CENTER);
+		weaponQuantityInput.setLayoutData(GRID_CENTER);
 		equipButton = factory.createTextButton();
-		equipButton.setLayoutData(Theme.GRID_CENTER);
+		equipButton.setLayoutData(GRID_CENTER);
 		unequipButton = factory.createTextButton();
-		unequipButton.setLayoutData(Theme.GRID_CENTER);
+		unequipButton.setLayoutData(GRID_CENTER);
 		
-		equipmentList = new List(weaponEquipmentGroup, SWT.NONE);
-		equipmentList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		equipmentList = new List(weaponEquipmentGroup, NONE);
+		equipmentList.setLayoutData(new GridData(FILL, FILL, true, true));
 	}
 	
 	@Override

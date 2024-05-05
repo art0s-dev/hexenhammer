@@ -1,5 +1,22 @@
 package utils;
 
+import static core.Probability.FIVE_UP;
+import static core.Probability.FOUR_UP;
+import static core.Probability.SIX_UP;
+import static core.Probability.THREE_UP;
+import static core.Probability.TWO_UP;
+import static core.Probability.Dice.d3;
+import static core.Probability.Dice.d6;
+import static core.Unit.Type.INFANTRY;
+import static core.Unit.Type.MONSTER;
+import static core.Unit.Type.VEHICLE;
+import static org.eclipse.swt.SWT.CHECK;
+import static org.eclipse.swt.SWT.FILL;
+import static org.eclipse.swt.SWT.NONE;
+import static org.eclipse.swt.SWT.RADIO;
+import static utils.Theme.DEFAULT_GRID_DATA;
+import static utils.Theme.DEFAULT_VERTICAL_INDENT_COMBO;
+
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
@@ -41,30 +58,30 @@ public class GuiFactory {
 	}
 	
 	public Button createRadioButton() {
-		return _createButton(SWT.RADIO);
+		return _createButton(RADIO);
 	}
 	
 	public Button createCheckBox() {
-		return _createButton(SWT.CHECK);
+		return _createButton(CHECK);
 	}
 	
 	public Button createTextButton() {
-		return _createButton(SWT.NONE);
+		return _createButton(NONE);
 	}
 	
 	public Text createTextInput(String label) {
 		Label inputLabel = createLabel();
 		inputLabel.setText(label);
 		
-		Text text = new Text(parent, SWT.NONE);
-		text.setLayoutData(Theme.DEFAULT_GRID_DATA);
+		Text text = new Text(parent, NONE);
+		text.setLayoutData(DEFAULT_GRID_DATA);
 		return text;
 	}
 	
 	public Spinner createNumberInput() {
-		Spinner spinner = new Spinner(parent, SWT.NONE);
-		GridData comboLayout = Theme.DEFAULT_GRID_DATA;
-		comboLayout.heightHint = 2 * Theme.DEFAULT_VERTICAL_INDENT_COMBO;
+		Spinner spinner = new Spinner(parent, NONE);
+		GridData comboLayout = DEFAULT_GRID_DATA;
+		comboLayout.heightHint = 2 * DEFAULT_VERTICAL_INDENT_COMBO;
 		spinner.setLayoutData(comboLayout);
 		spinner.setMaximum(INPUT_MAX);
 		spinner.setMinimum(INPUT_MIN);
@@ -72,9 +89,9 @@ public class GuiFactory {
 	}
 	
 	public Combo createProbabilityCombo() {
-		Combo probabilityCombo = new Combo(parent, SWT.NONE);
-		GridData comboLayout = Theme.DEFAULT_GRID_DATA;
-		comboLayout.verticalIndent = Theme.DEFAULT_VERTICAL_INDENT_COMBO;
+		Combo probabilityCombo = new Combo(parent, NONE);
+		GridData comboLayout = DEFAULT_GRID_DATA;
+		comboLayout.verticalIndent = DEFAULT_VERTICAL_INDENT_COMBO;
 		probabilityCombo.setLayoutData(comboLayout);
 		COMBO_PROBABILITY_LISTING.forEach((key, value) -> probabilityCombo.add(value, key));
 		probabilityCombo.select(0);
@@ -96,34 +113,34 @@ public class GuiFactory {
 	
 	public final static float mapComboSelectionToProbability(int index) {
 		return switch(index) {
-			case 1 -> Probability.SIX_UP;
-			case 2 -> Probability.FIVE_UP;
-			case 3 -> Probability.FOUR_UP;
-			case 4 -> Probability.THREE_UP;
-			case 5 -> Probability.TWO_UP;
+			case 1 -> SIX_UP;
+			case 2 -> FIVE_UP;
+			case 3 -> FOUR_UP;
+			case 4 -> THREE_UP;
+			case 5 -> TWO_UP;
 			default -> Probability.NONE;
 		};
 	}
 	
 	public final static int mapProbabilityToComboSelection(float probability) {
 		
-		if(probability == Probability.SIX_UP) {
+		if(probability == SIX_UP) {
 			return 1;
 		}
 		
-		if(probability == Probability.FIVE_UP) {
+		if(probability == FIVE_UP) {
 			return 2;
 		}
 		
-		if(probability == Probability.FOUR_UP) {
+		if(probability == FOUR_UP) {
 			return 3;
 		}
 		
-		if(probability == Probability.THREE_UP) {
+		if(probability == THREE_UP) {
 			return 4;
 		}
 		
-		if(probability == Probability.TWO_UP) {
+		if(probability == TWO_UP) {
 			return 5;
 		}
 		
@@ -133,8 +150,8 @@ public class GuiFactory {
 	public Combo createDiceCombo() {
 		Combo diceChooser = new Combo(parent, SWT.NONE);
 		COMBO_DICES.forEach((key, value) -> diceChooser.add(value));
-		GridData comboGridData = new GridData(SWT.FILL, SWT.FILL, true, false);
-		comboGridData.verticalIndent = Theme.DEFAULT_VERTICAL_INDENT_COMBO;
+		GridData comboGridData = new GridData(FILL, FILL, true, false);
+		comboGridData.verticalIndent = DEFAULT_VERTICAL_INDENT_COMBO;
 		diceChooser.setLayoutData(comboGridData);
 		return diceChooser;
 	}
@@ -157,14 +174,14 @@ public class GuiFactory {
 	
 	public final static Dice mapComboSelectionToDice(int index) {
 		return switch(index) {
-			case 1 -> Dice.d6;
-			default -> Dice.d3;
+			case 1 -> d6;
+			default -> d3;
 		};
 	}
 	
 	public Label createLabel() {
 		Label label = new Label(parent, SWT.NONE);
-		label.setLayoutData(Theme.DEFAULT_GRID_DATA);
+		label.setLayoutData(DEFAULT_GRID_DATA);
 		return label;
 	}
 	
@@ -191,9 +208,9 @@ public class GuiFactory {
 	 */
 	public static Unit.Type mapUnitTypeComboSelectionToEnum(int index) {
 		return switch (index) {
-			case 1 -> Unit.Type.MONSTER;
-			case 2 -> Unit.Type.VEHICLE;
-			default -> Unit.Type.INFANTRY;
+			case 1 -> MONSTER;
+			case 2 -> VEHICLE;
+			default -> INFANTRY;
 		};
 	}
 	
