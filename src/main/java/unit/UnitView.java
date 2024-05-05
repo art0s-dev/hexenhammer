@@ -15,7 +15,6 @@ import static utils.GuiFactory.mapProbabilityToComboSelection;
 import static utils.GuiFactory.mapTypeEnumToComboSelection;
 import static utils.Theme.DEFAULT_VERTICAL_INDENT_COMBO;
 import static utils.Theme.FULL_WIDTH_GROUP;
-import static utils.Theme.GRID_CENTER;
 import static utils.Theme.GRID_FILL;
 
 import java.util.function.Function;
@@ -277,14 +276,14 @@ public final class UnitView extends BaseView {
 		
 		GuiFactory factory = new GuiFactory(modificationComposite);
 		weaponQuantityInput = factory.createNumberInput();
-		weaponQuantityInput.setLayoutData(GRID_CENTER);
+		weaponQuantityInput.setLayoutData(new GridData(FILL, CENTER, true, false));
 		equipButton = factory.createTextButton();
-		equipButton.setLayoutData(GRID_CENTER);
+		equipButton.setLayoutData(new GridData(FILL, CENTER, true, false));
 		unequipButton = factory.createTextButton();
-		unequipButton.setLayoutData(GRID_CENTER);
+		unequipButton.setLayoutData(new GridData(FILL, CENTER, true, false));
 		
 		equipmentList = new List(weaponEquipmentGroup, NONE);
-		equipmentList.setLayoutData(new GridData(FILL, FILL, true, true));
+		equipmentList.setLayoutData(GRID_FILL);
 	}
 	
 	@Override

@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import core.Probability;
 import core.Unit;
 import core.Weapon;
 import lombok.val;
