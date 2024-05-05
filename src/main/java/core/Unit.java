@@ -157,9 +157,10 @@ public class Unit extends Model {
 	 * from that unit and uses the combat class for further calculations
 	 * @see Combat
 	 */
-	public float attack(Unit enemy) {
+	public List<CombatResult> attack(Unit enemy) {
 		List<Equipment> equipments = _filter(phase).toList();
-		float damage = 0;
+		List<CombatResult> results = new ArrayList<>();
+		
 		
 		for(Equipment equipment: equipments) {
 			Weapon weapon = equipment.weapon;
@@ -271,7 +272,7 @@ public class Unit extends Model {
 			
 			//determine Armour
 			float armourSave = enemy.getArmorSave();
-			byte modifiedArmourSave = (byte) (ARMOUR_SAVES.get(armourSave) - weapon.getArmorPenetration());
+			int modifiedArmourSave = ARMOUR_SAVES.get(armourSave) - weapon.getArmorPenetration();
 			
 			//Take cover!
 			boolean weaponIsShooting = weapon.getRange() == SHOOTING;
@@ -297,10 +298,31 @@ public class Unit extends Model {
 			//float damagePotential = (missedSaves + devastatingWounds) * damageMultiplier;
 			float damagePotential = missedSaves * damageMultiplier;
 			float woundsAfterFeelNoPain = damagePotential * enemy.getFeelNoPain();
-			damage += damagePotential - woundsAfterFeelNoPain;
+			float damage = damagePotential - woundsAfterFeelNoPain;
+			
+			//Save everythig in an object for later usage
+			CombatResult result = CombatResult.builder()
+				.weapon(weapon)
+				.quantity(quantity)
+				.attacks(attacks)
+				.chanceToHit(chanceToHit)
+				.hits(missedHits)
+				.lethalHits(lethalHitsModifier)
+				.missedHits(missedHits)
+				.probabilityToWound(probabilityToWound)
+				.wounds(wounds)
+				.probabilityToSave(probabilityToSave)
+				.missedSaves(missedSaves)
+				.damageMultiplier(damageMultiplier)
+				.damagePotential(damagePotential)
+				.woundsAfterFeelNoPain(woundsAfterFeelNoPain)
+				.damage(damage)
+				.build();
+
+			results.add(result);
 		}
 		
-		return damage;
+		return results;
 	}
 	
 	/**

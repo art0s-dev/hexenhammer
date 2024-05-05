@@ -1,5 +1,6 @@
 package statistics;
 
+import static core.CombatResult.getOverallDamage;
 import static org.eclipse.swt.SWT.NONE;
 import static utils.Theme.GRID_FILL;
 
@@ -51,7 +52,7 @@ public final class StatisticsView {
 			results.add(unit.getName());
 			
 			for(Unit enemy: enemys) {
-				results.add("" + unit.attack(enemy));
+				results.add("" + getOverallDamage(unit.attack(enemy)));
 			}
 			
 			TableItem unitRow = new TableItem(resultsTable, NONE);

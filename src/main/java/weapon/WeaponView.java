@@ -25,18 +25,14 @@ import org.eclipse.swt.widgets.Spinner;
 import arch.BaseView;
 import arch.Model;
 import arch.ModelList;
-import core.Probability;
-import core.Unit.Type;
 import core.UserNumberInput;
 import core.Weapon;
 import core.Weapon.AntiType;
 import core.Weapon.Range;
-import core.Weapon.SpecialRuleWeapon;
 import lombok.Getter;
 import lombok.val;
 import utils.GuiFactory;
 import utils.I18n;
-import utils.Theme;
 
 public class WeaponView extends BaseView {
 

@@ -1,5 +1,6 @@
 package unittests.core;
 
+import static core.CombatResult.getOverallDamage;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,35 +41,35 @@ class UnitEquipmentTest {
 	@Test
 	void testAddEquipment() {
 		Unit unit = Unit.builder().build();
-		float initialDamage = unit.attack(guardsmen);
-		unit.equip((byte) 5, bolter);
-		assertTrue(unit.attack(guardsmen) > initialDamage);
+		float initialDamage = getOverallDamage(unit.attack(guardsmen));
+		unit.equip(5, bolter);
+		assertTrue(getOverallDamage(unit.attack(guardsmen)) > initialDamage);
 	}
 	
 	@Test
 	void testDecreaseEquipment() {
 		Unit unit = Unit.builder().build();
-		unit.equip((byte) 5, bolter);
-		float initialDamage = unit.attack(guardsmen);
-		unit.unequip((byte)0,(byte) 4);
-		assertTrue(unit.attack(guardsmen) < initialDamage);
+		unit.equip(5, bolter);
+		float initialDamage = getOverallDamage(unit.attack(guardsmen));
+		unit.unequip(0, 4);
+		assertTrue(getOverallDamage(unit.attack(guardsmen)) < initialDamage);
 	}
 	
 	@Test
 	void testDecreaseEquipmentThatIsNotThere() {
 		Unit unit = Unit.builder().build();
-		unit.equip((byte) 5, bolter);
-		float initialDamage = unit.attack(guardsmen);
-		unit.unequip((byte)1,(byte) 4);
-		assertTrue(unit.attack(guardsmen) == initialDamage);
+		unit.equip(5, bolter);
+		float initialDamage = getOverallDamage(unit.attack(guardsmen));
+		unit.unequip(1, 4);
+		assertTrue(getOverallDamage(unit.attack(guardsmen)) == initialDamage);
 	}
 	
 	@Test
 	void deleteEquipment() {
 		Unit unit = Unit.builder().build();
-		unit.equip((byte) 5, bolter);
-		unit.unequip((byte)0,(byte) 0);
-		assertTrue(unit.attack(guardsmen) == 0);
+		unit.equip(5, bolter);
+		unit.unequip(0, 0);
+		assertTrue(getOverallDamage(unit.attack(guardsmen)) == 0);
 	}
 	
 	

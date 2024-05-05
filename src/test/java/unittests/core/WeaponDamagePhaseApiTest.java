@@ -1,17 +1,19 @@
 package unittests.core;
 
+import static core.CombatResult.getOverallDamage;
+import static core.Probability.FIVE_UP;
+import static core.Unit.Phase.FIGHT;
+import static core.UserNumberInput.withNumber;
+import static core.Weapon.Range.MELEE;
+import static java.util.Optional.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import core.Probability;
 import core.Unit;
 import core.Unit.Phase;
-import core.UserNumberInput;
 import core.Weapon;
 import core.Weapon.Range;
 
@@ -24,25 +26,25 @@ class WeaponDamagePhaseApiTest {
 	@BeforeEach
 	void setup() {
 		bolter = Weapon.builder()
-				.attackInput(Optional.of(UserNumberInput.withNumber((byte) 2)))
-				.strength((byte)4)
-				.armorPenetration((byte) 0)
-				.damageInput(Optional.of(UserNumberInput.withNumber((byte) 1)))
+				.attackInput(of(withNumber( 2)))
+				.strength(4)
+				.armorPenetration(0)
+				.damageInput(of(withNumber(1)))
 				.range(Range.SHOOTING)
 				.build();
 		
 		chainsword = Weapon.builder()
-				.attackInput(Optional.of(UserNumberInput.withNumber((byte) 2)))
-				.strength((byte)4)
-				.armorPenetration((byte) 0)
-				.range(Range.MELEE)
-				.damageInput(Optional.of(UserNumberInput.withNumber((byte) 1)))
+				.attackInput(of(withNumber(2)))
+				.strength(4)
+				.armorPenetration(0)
+				.range(MELEE)
+				.damageInput(of(withNumber(1)))
 				.build();
 		
 		enemyImperialGuard = Unit.builder()
-				.toughness((byte) 3)
-				.hitPoints((byte) 1)
-				.armorSave(Probability.FIVE_UP)
+				.toughness(3)
+				.hitPoints(1)
+				.armorSave(FIVE_UP)
 				.build();	
 	}
 	
@@ -51,9 +53,9 @@ class WeaponDamagePhaseApiTest {
 		Unit spaceMarines = Unit.builder()
 				.build();
 		
-		spaceMarines.equip((byte)5, bolter);
-		spaceMarines.usePhase(Phase.FIGHT);
-		assertEquals(0f, spaceMarines.attack(enemyImperialGuard));
+		spaceMarines.equip(5, bolter);
+		spaceMarines.usePhase(FIGHT);
+		assertEquals(0f, getOverallDamage(spaceMarines.attack(enemyImperialGuard)));
 	}
 	
 	@Test
@@ -61,9 +63,9 @@ class WeaponDamagePhaseApiTest {
 		Unit spaceMarines = Unit.builder()
 				.build();
 		
-		spaceMarines.equip((byte)5, chainsword);
+		spaceMarines.equip(5, chainsword);
 		spaceMarines.usePhase(Phase.SHOOTING);
-		assertEquals(0f, spaceMarines.attack(enemyImperialGuard));
+		assertEquals(0f, getOverallDamage(spaceMarines.attack(enemyImperialGuard)));
 	}
 	
 	@Test
@@ -71,9 +73,9 @@ class WeaponDamagePhaseApiTest {
 		Unit spaceMarines = Unit.builder()
 				.build();
 		
-		spaceMarines.equip((byte)5, chainsword);
-		spaceMarines.usePhase(Phase.FIGHT);
-		assertTrue(spaceMarines.attack(enemyImperialGuard) > 0f);
+		spaceMarines.equip(5, chainsword);
+		spaceMarines.usePhase(FIGHT);
+		assertTrue(getOverallDamage(spaceMarines.attack(enemyImperialGuard)) > 0f);
 	}
 
 }

@@ -94,10 +94,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <swt.arch>x86_64</swt.arch>
-    <maven.compiler.target>17</maven.compiler.target>
-    <maven.compiler.source>17</maven.compiler.source>
-    <swt.version>3.124.200</swt.version>
-    <swt.platform>linux</swt.platform>
+    <maven.compiler.target>21</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
   </properties>
 </project>

@@ -1,5 +1,20 @@
 package unittests.core;
 
+import static core.CombatResult.getOverallDamage;
+import static core.Probability.FIVE_UP;
+import static core.Probability.FOUR_UP;
+import static core.Probability.NONE;
+import static core.Probability.SIX_UP;
+import static core.Probability.THREE_UP;
+import static core.Probability.TWO_UP;
+import static core.Unit.Phase.FIGHT;
+import static core.Unit.SpecialRuleUnit.ADD_ONE_TO_HIT;
+import static core.Unit.SpecialRuleUnit.HAS_COVER;
+import static core.Unit.SpecialRuleUnit.LETHAL_HITS;
+import static core.Unit.SpecialRuleUnit.REROLL_WOUND_ROLL;
+import static core.Weapon.Range.MELEE;
+import static core.Weapon.Range.SHOOTING;
+import static core.Weapon.SpecialRuleWeapon.DEVASTATING_WOUNDS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -14,11 +29,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import core.Probability;
 import core.Unit;
-import core.Unit.Phase;
 import core.Unit.SpecialRuleUnit;
 import core.Weapon;
-import core.Weapon.Range;
-import core.Weapon.SpecialRuleWeapon;
 import lombok.val;
 
 
@@ -42,30 +54,30 @@ class UnitAttackFeaturesTest {
 		when(bolter.getStrength()).thenReturn(4);
 		when(bolter.getArmorPenetration()).thenReturn(0);
 		when(bolter.getDamage()).thenReturn(1f);	
-		when(bolter.getRange()).thenReturn(Range.SHOOTING);
-		when(bolter.getToHit()).thenReturn(Probability.THREE_UP);
+		when(bolter.getRange()).thenReturn(SHOOTING);
+		when(bolter.getToHit()).thenReturn(THREE_UP);
 		
 		heavyBolter = mock(Weapon.class);
 		when(heavyBolter.getAttacks()).thenReturn(3f);
-		when(heavyBolter.getToHit()).thenReturn(Probability.THREE_UP);
+		when(heavyBolter.getToHit()).thenReturn(THREE_UP);
 		when(heavyBolter.getStrength()).thenReturn(5);
-		when(heavyBolter.getRange()).thenReturn(Range.SHOOTING);
+		when(heavyBolter.getRange()).thenReturn(SHOOTING);
 		when(heavyBolter.getArmorPenetration()).thenReturn(2);
 		
 		guardsmen = mock(Unit.class);
 		when(guardsmen.getToughness()).thenReturn(3);
-		when(guardsmen.getArmorSave()).thenReturn(Probability.FIVE_UP);
+		when(guardsmen.getArmorSave()).thenReturn(FIVE_UP);
 		when(guardsmen.getHitPoints()).thenReturn(1);
 		
 		aberrants = mock(Unit.class);
 		when(aberrants.getToughness()).thenReturn(6);
-		when(aberrants.getArmorSave()).thenReturn(Probability.FIVE_UP);
-		when(aberrants.getFeelNoPain()).thenReturn(Probability.FOUR_UP);
+		when(aberrants.getArmorSave()).thenReturn(FIVE_UP);
+		when(aberrants.getFeelNoPain()).thenReturn(FOUR_UP);
 		when(aberrants.getHitPoints()).thenReturn(3);
 		
 		lemanRussTank = mock(Unit.class);
 		when(lemanRussTank.getToughness()).thenReturn(11);
-		when(lemanRussTank.getArmorSave()).thenReturn(Probability.TWO_UP);
+		when(lemanRussTank.getArmorSave()).thenReturn(TWO_UP);
 		when(lemanRussTank.getHitPoints()).thenReturn(13);
 	}
 	
@@ -74,16 +86,16 @@ class UnitAttackFeaturesTest {
 	 */
 	@Test @DisplayName("Base Mechanic - Base Case")
 	void GivenSpaceMarinesEquippedWithBolter_WhenAttackingGuardsmen_ThenDamageIsCalculatedCorrect() {
-		byte quantity = 5;
+		int quantity = 5;
 		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
-		float damage = spaceMarines.attack(guardsmen);
+		float damage = getOverallDamage(spaceMarines.attack(guardsmen));
 		
 		//Expectation
-		byte attacks = (byte) (quantity * 2);
-		float hits = attacks * Probability.THREE_UP;
-		float wounds = hits * Probability.THREE_UP;
-		float expectedDamage = wounds - (wounds * Probability.FIVE_UP);
+		int attacks =  quantity * 2;
+		float hits = attacks * THREE_UP;
+		float wounds = hits * THREE_UP;
+		float expectedDamage = wounds - (wounds * FIVE_UP);
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -98,17 +110,17 @@ class UnitAttackFeaturesTest {
 
 		Unit eldarRangers = mock(Unit.class);
 		when(eldarRangers.getToughness()).thenReturn(3);
-		when(eldarRangers.getArmorSave()).thenReturn(Probability.FIVE_UP);
-		when(eldarRangers.getInvulnerableSave()).thenReturn(Probability.FIVE_UP);
+		when(eldarRangers.getArmorSave()).thenReturn(FIVE_UP);
+		when(eldarRangers.getInvulnerableSave()).thenReturn(FIVE_UP);
 		
-		byte quantity = 4;
+		int quantity = 4;
 		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, heavyBolter);
-		float damage = spaceMarines.attack(eldarRangers);
+		float damage = getOverallDamage(spaceMarines.attack(eldarRangers));
 		
-		float hits = (quantity * heavyBolter.getAttacks()) * Probability.THREE_UP;
-		float wounds = hits * Probability.THREE_UP;
-		float missedSaves = wounds - (wounds * Probability.FIVE_UP); 
+		float hits = (quantity * heavyBolter.getAttacks()) * THREE_UP;
+		float wounds = hits * THREE_UP;
+		float missedSaves = wounds - (wounds * FIVE_UP); 
 		float expectedDamage = missedSaves * eldarRangers.getHitPoints();
 		
 		assertEquals(expectedDamage, damage);
@@ -124,13 +136,13 @@ class UnitAttackFeaturesTest {
 		byte quantity = 4;
 		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, heavyBolter);
-		float damage = spaceMarines.attack(aberrants);
+		float damage = getOverallDamage(spaceMarines.attack(aberrants));
 		
-		float hits = (quantity * heavyBolter.getAttacks()) * Probability.THREE_UP;
-		float wounds = hits * Probability.FIVE_UP;
+		float hits = (quantity * heavyBolter.getAttacks()) * THREE_UP;
+		float wounds = hits * FIVE_UP;
 		float damagePool = wounds * heavyBolter.getDamage();
 		//This is the FNP Step
-		float expectedDamage = damagePool - (damagePool * Probability.FOUR_UP); 
+		float expectedDamage = damagePool - (damagePool * FOUR_UP); 
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -141,24 +153,23 @@ class UnitAttackFeaturesTest {
 	 */
 	@Test @DisplayName("Base Mechanic - Combat")
 	void GivenSpaceMarinesWithKnifes_WhenAttack_OnlyCombarWeaponsGetCalculated() {
-		
 		Weapon combatKnife = mock(Weapon.class);
 		when(combatKnife.getAttacks()).thenReturn(2f);
-		when(combatKnife.getToHit()).thenReturn(Probability.THREE_UP);
+		when(combatKnife.getToHit()).thenReturn(THREE_UP);
 		when(combatKnife.getStrength()).thenReturn(4);
-		when(combatKnife.getRange()).thenReturn(Range.MELEE);
+		when(combatKnife.getRange()).thenReturn(MELEE);
 		when(combatKnife.getDamage()).thenReturn(1f);
 		
-		byte quantity = 5;
+		int quantity = 5;
 		Unit spaceMarines = Unit.builder().build();
-		spaceMarines.usePhase(Phase.FIGHT);
+		spaceMarines.usePhase(FIGHT);
 		spaceMarines.equip(quantity, combatKnife);
 		spaceMarines.equip(quantity, heavyBolter);
-		float damage = spaceMarines.attack(guardsmen);
+		float damage = getOverallDamage(spaceMarines.attack(guardsmen));
 		
-		float hits = (quantity * combatKnife.getAttacks())* Probability.THREE_UP;
-		float wounds = hits * Probability.THREE_UP;
-		float expectedDamage = wounds - (wounds * Probability.FIVE_UP);
+		float hits = (quantity * combatKnife.getAttacks())* THREE_UP;
+		float wounds = hits * THREE_UP;
+		float expectedDamage = wounds - (wounds * FIVE_UP);
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -169,11 +180,11 @@ class UnitAttackFeaturesTest {
 	 */
 	@Test @DisplayName("Rerolls - Reroll full hit")
 	void GivenSpaceMarinesWithRerollHitRoll_WhenAttack_ThenCalculateRerollCorrect() {
-		byte quantity = 5;
+		int quantity = 5;
 		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.add(SpecialRuleUnit.REROLL_HIT_ROLL);
 		spaceMarines.equip(quantity, bolter);
-		float damage = spaceMarines.attack(guardsmen);
+		float damage = getOverallDamage(spaceMarines.attack(guardsmen));
 		
 		float attacks = (quantity * bolter.getAttacks());
 		float hits = (attacks) * Probability.THREE_UP;
@@ -193,18 +204,18 @@ class UnitAttackFeaturesTest {
 	 */
 	@Test @DisplayName("Rerolls - Reroll full wound")
 	void GivenSpaceMarinesWithRerollWounds_WhenAttack_ThenCalculateRerollCorrect() {
-		byte quantity = 5;
+		int quantity = 5;
 		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
-		spaceMarines.add(SpecialRuleUnit.REROLL_WOUND_ROLL);
-		float damage = spaceMarines.attack(guardsmen);
+		spaceMarines.add(REROLL_WOUND_ROLL);
+		float damage = getOverallDamage(spaceMarines.attack(guardsmen));
 		
 		float attacks = (quantity * bolter.getAttacks());
-		float hits = (attacks) * Probability.THREE_UP;
-		float wounds = hits * Probability.THREE_UP;
+		float hits = (attacks) * THREE_UP;
+		float wounds = hits * THREE_UP;
 		float missedWounds = hits - wounds;
-		wounds += missedWounds * Probability.THREE_UP;
-		float expectedDamage = wounds - (wounds * Probability.FIVE_UP);
+		wounds += missedWounds * THREE_UP;
+		float expectedDamage = wounds - (wounds * FIVE_UP);
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -215,20 +226,17 @@ class UnitAttackFeaturesTest {
 	 */
 	@Test @DisplayName("Special Rules - Cover") 
 	void GivenSpaceMarines_WhenGuardsmenHaveCover_ThenSpaceMarinesDealLessDamage() {
-		//Weapon has to be shooting weapon
-		when(bolter.getRange()).thenReturn(Range.SHOOTING);
+		when(bolter.getRange()).thenReturn(SHOOTING);
+		when(guardsmen.has(HAS_COVER)).thenReturn(true);
 		
-		//Profile has to be in cover
-		when(guardsmen.has(SpecialRuleUnit.HAS_COVER)).thenReturn(true);
-		
-		byte quantity = 5;
+		int quantity = 5;
 		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
-		float damage = spaceMarines.attack(guardsmen);
+		float damage = getOverallDamage(spaceMarines.attack(guardsmen));
 		
-		float hits = (quantity * bolter.getAttacks()) * Probability.THREE_UP;
-		float wounds = hits * Probability.THREE_UP;
-		float expectedDamage = wounds - (wounds * Probability.FOUR_UP); 
+		float hits = (quantity * bolter.getAttacks()) * THREE_UP;
+		float wounds = hits * THREE_UP;
+		float expectedDamage = wounds - (wounds * FOUR_UP); 
 		
 		assertEquals(expectedDamage, damage);
 	}
@@ -239,17 +247,17 @@ class UnitAttackFeaturesTest {
 	 */
 	@Test @DisplayName("Special Rules - Devastating wounds") @Disabled("Gonna reimplement this later")
 	void GivenSpaceMarines_WhenAddingDevastaingWounds_TheDamageIsCalculatedCorrect() {
-		when(bolter.has(SpecialRuleWeapon.DEVASTATING_WOUNDS)).thenReturn(true);
+		when(bolter.has(DEVASTATING_WOUNDS)).thenReturn(true);
 		
-		byte quantity = 5;
+		int quantity = 5;
 		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
-		float damage = spaceMarines.attack(guardsmen);
+		float damage = getOverallDamage(spaceMarines.attack(guardsmen));
 		
-		float hits = (quantity * bolter.getAttacks()) * Probability.THREE_UP;
-		float wounds = hits * Probability.THREE_UP;
-		float devastatingWounds = hits * Probability.SIX_UP;
-		float expectedDamage = wounds - (wounds * Probability.FIVE_UP);
+		float hits = (quantity * bolter.getAttacks()) * THREE_UP;
+		float wounds = hits * THREE_UP;
+		float devastatingWounds = hits * SIX_UP;
+		float expectedDamage = wounds - (wounds * FIVE_UP);
 		expectedDamage += devastatingWounds;
 		
 		assertEquals(expectedDamage, damage);
@@ -261,14 +269,12 @@ class UnitAttackFeaturesTest {
 	 */ 
 	@Test @DisplayName("Special Rules - Lethal Hits on 5") @Disabled
 	void GivenSpaceMarinesWithLethalHitsWeapons_WhenAddOneToHit_ThenMoreLethalHitsAreProduced() {
-		
-		
-		byte quantity = 5;
+		int quantity = 5;
 		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(quantity, bolter);
-		spaceMarines.add(SpecialRuleUnit.ADD_ONE_TO_HIT);
-		when(spaceMarines.has(SpecialRuleUnit.LETHAL_HITS)).thenReturn(true);
-		float damage = spaceMarines.attack(guardsmen);
+		spaceMarines.add(ADD_ONE_TO_HIT);
+		when(spaceMarines.has(LETHAL_HITS)).thenReturn(true);
+		float damage = getOverallDamage(spaceMarines.attack(guardsmen));
 		
 		float hitPool = quantity * bolter.getAttacks();
 		float hits = hitPool * Probability.TWO_UP;
@@ -285,12 +291,12 @@ class UnitAttackFeaturesTest {
 	@Test @DisplayName("Regression - Test no Armor Sa") 
 	void testDamageAgainstUnitWithNoArmorSave() {
 		val unit = Unit.builder().build();
-		unit.equip((byte) 5, bolter);
-		float initialDamage = unit.attack(guardsmen);
+		unit.equip(5, bolter);
+		float initialDamage = getOverallDamage(unit.attack(guardsmen));
 		assertTrue(initialDamage > 0);
 		
-		when(guardsmen.getArmorSave()).thenReturn(Probability.NONE);
-		assertTrue(initialDamage < unit.attack(guardsmen));
+		when(guardsmen.getArmorSave()).thenReturn(NONE);
+		assertTrue(initialDamage < getOverallDamage(unit.attack(guardsmen)));
 	}
 	
 }

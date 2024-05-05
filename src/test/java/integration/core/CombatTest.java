@@ -1,5 +1,6 @@
 package integration.core;
 
+import static core.CombatResult.getOverallDamage;
 import static core.Probability.FIVE_UP;
 import static core.Probability.THREE_UP;
 import static core.UserNumberInput.withNumber;
@@ -25,19 +26,19 @@ class CombatTest {
 				.build();
 		
 		Unit guardsmen = Unit.builder()
-				.toughness((byte)3)
+				.toughness(3)
 				.armorSave(FIVE_UP)
 				.build();
 		
-		val total = (byte) 5;
+		int total = 5;
 		Unit spaceMarines = Unit.builder().build();
 		spaceMarines.equip(total, bolter);
 		
 		val hits = (bolter.getAttacks() * total) * bolter.getToHit();
-		val wounds = hits * Probability.THREE_UP;
+		val wounds = hits * THREE_UP;
 		val expectedDamage = wounds - (wounds * guardsmen.getArmorSave());
 		
-		assertEquals(expectedDamage, spaceMarines.attack(guardsmen));
+		assertEquals(expectedDamage, getOverallDamage(spaceMarines.attack(guardsmen)));
 	}
 
 }

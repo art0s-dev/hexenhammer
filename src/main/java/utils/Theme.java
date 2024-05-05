@@ -3,7 +3,6 @@ package utils;
 import static org.eclipse.swt.SWT.CENTER;
 import static org.eclipse.swt.SWT.FILL;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 
 public final class Theme {

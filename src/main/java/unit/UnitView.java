@@ -20,7 +20,6 @@ import static utils.Theme.GRID_FILL;
 
 import java.util.function.Function;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -36,12 +35,10 @@ import arch.Model;
 import arch.ModelList;
 import core.Unit;
 import core.Unit.Equipment;
-import core.Unit.SpecialRuleUnit;
 import lombok.Getter;
 import lombok.val;
 import utils.GuiFactory;
 import utils.I18n;
-import utils.Theme;
 	
 public final class UnitView extends BaseView {
 

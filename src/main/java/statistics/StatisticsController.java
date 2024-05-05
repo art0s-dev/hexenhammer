@@ -9,7 +9,6 @@ import arch.Controller;
 import arch.Model;
 import core.Unit;
 import unit.UnitController;
-import utils.Lambda;
 
 public class StatisticsController implements Controller {
 	
