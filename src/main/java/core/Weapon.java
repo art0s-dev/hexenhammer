@@ -3,6 +3,9 @@ package core;
 import static core.Probability.MEDIAN_D3;
 import static core.Probability.MEDIAN_D6;
 import static core.Probability.Dice.d3;
+import static core.UserNumberInput.withNumber;
+import static java.util.Optional.of;
+import static java.util.Optional.empty;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -18,19 +21,17 @@ import lombok.val;
  * The Weapons should just contain values
  * and be attached to units. This entity will be used for comparation 
  * against the Profile entity.  
- */
+ */ 
 @Builder
 public class Weapon extends Model {
 	
 	@Getter private int id;
 	@Getter @Setter @Builder.Default private String name = "";
-	@Getter @Setter @Builder.Default private Optional<UserNumberInput> 
-	attackInput = Optional.of(UserNumberInput.withNumber((byte) 0));
+	@Getter @Setter @Builder.Default private Optional<UserNumberInput> attackInput = of(withNumber(0));
 	@Getter @Setter @Builder.Default private float toHit = Probability.SIX_UP;
 	@Getter @Setter @Builder.Default private int strength = 1;
 	@Getter @Setter @Builder.Default private int armorPenetration = 0;
-	@Getter @Setter @Builder.Default private Optional<UserNumberInput> 
-	damageInput = Optional.of(UserNumberInput.withNumber((byte) 0));
+	@Getter @Setter @Builder.Default private Optional<UserNumberInput> damageInput = of(withNumber(0));
 	@Getter @Setter @Builder.Default private int sustainedHits = 0;
 	@Getter @Setter @Builder.Default private int melter = 0;
 	@Getter @Setter @Builder.Default private Range range = Range.SHOOTING;  
@@ -87,7 +88,7 @@ public class Weapon extends Model {
 	 * against a certain profile type.
 	 */
 	public record AntiType(Type type, Float probability) {}
-	@Getter @Setter @Builder.Default private Optional<AntiType> antiType = Optional.empty();
+	@Getter @Setter @Builder.Default private Optional<AntiType> antiType = empty();
 	
 	/**
 	 * Defines a range on the weapon, which decides how the weapon is used

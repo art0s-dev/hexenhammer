@@ -19,10 +19,10 @@ import lombok.Data;
 	boolean useDice;
 	int fixedNumber;
 	int diceQuantity;
-	Probability.Dice dice;
+	Dice dice;
 	
 	public static UserNumberInput withNumber(int fixedNumber) {
-		return new UserNumberInput(false, fixedNumber, (byte)0, d3);
+		return new UserNumberInput(false, fixedNumber, 0, d3);
 	}
 	
 	public static UserNumberInput withDice(int diceQuantity, Dice dice) {

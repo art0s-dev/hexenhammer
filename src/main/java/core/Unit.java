@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import arch.Model;
@@ -160,7 +161,6 @@ public class Unit extends Model {
 	public List<CombatResult> attack(Unit enemy) {
 		List<Equipment> equipments = _filter(phase).toList();
 		List<CombatResult> results = new ArrayList<>();
-		
 		
 		for(Equipment equipment: equipments) {
 			Weapon weapon = equipment.weapon;
@@ -301,23 +301,23 @@ public class Unit extends Model {
 			float damage = damagePotential - woundsAfterFeelNoPain;
 			
 			//Save everythig in an object for later usage
-			CombatResult result = CombatResult.builder()
-				.weapon(weapon)
-				.quantity(quantity)
-				.attacks(attacks)
-				.chanceToHit(chanceToHit)
-				.hits(missedHits)
-				.lethalHits(lethalHitsModifier)
-				.missedHits(missedHits)
-				.probabilityToWound(probabilityToWound)
-				.wounds(wounds)
-				.probabilityToSave(probabilityToSave)
-				.missedSaves(missedSaves)
-				.damageMultiplier(damageMultiplier)
-				.damagePotential(damagePotential)
-				.woundsAfterFeelNoPain(woundsAfterFeelNoPain)
-				.damage(damage)
-				.build();
+			CombatResult result = new CombatResult(
+				weapon,
+				quantity,
+				attacks,
+				chanceToHit,
+				missedHits,
+				lethalHitsModifier,
+				missedHits,
+				probabilityToWound,
+				wounds,
+				probabilityToSave,
+				missedSaves,
+				damageMultiplier,
+				damagePotential,
+				woundsAfterFeelNoPain,
+				damage
+			);
 
 			results.add(result);
 		}
@@ -344,10 +344,14 @@ public class Unit extends Model {
 	 */
 	private Stream<Equipment> _filter(Phase phase) {
 		val weaponStream = weapons.parallelStream();
+		Function<Equipment,Boolean> isFight = (equipment) -> phase.equals(Phase.FIGHT) 
+				&& equipment.weapon.getRange().equals(Range.MELEE);
 		
-		val isForBothPhases = phase.equals(BOTH);
-		return isForBothPhases ? weaponStream 
-				: weaponStream.filter(entry -> _filterWeaponRange(entry.weapon, phase));
+		if(phase.equals(BOTH)) {
+			return weaponStream;
+		} 
+
+		return weaponStream.filter(equipment -> isFight.apply(equipment));
 	} 
 	
 	/**
@@ -365,28 +369,7 @@ public class Unit extends Model {
 		ARMOUR_SAVES.put(TWO_UP, 5);
 		unmodifiableMap(ARMOUR_SAVES);
 	}
-	
-	/**
-	 * evaluates the range of a weapon and the picked phase
-	 * so that only the user can "just use shooting weapons" and such 
-	 */
-	private static boolean _filterWeaponRange(Weapon weapon, Phase phase) {
-		boolean shootingIsPickedAndRangeIsShooting = phase.equals(Phase.SHOOTING) 
-				&& weapon.getRange().equals(Range.SHOOTING);
-		if(shootingIsPickedAndRangeIsShooting) {
-			return true;
-		}
-		
-		boolean meeleIsPickedAndRangeIsMelee = phase.equals(Phase.FIGHT) 
-				&& weapon.getRange().equals(Range.MELEE);
 
-		if(meeleIsPickedAndRangeIsMelee) {
-			return true;
-		}
-		
-		return false;
-	}
-	
 	/**
 	 * The Set of special rules each unit has.
 	 * @see SpecialRuleUnit
