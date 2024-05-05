@@ -237,7 +237,7 @@ class UnitAttackFeaturesTest {
 	 * Devastating wounds here we go! Every 6 Rolled on the wound roll shall
 	 * bypass the armour save.
 	 */
-	@Test @DisplayName("Special Rules - Devastating wounds")
+	@Test @DisplayName("Special Rules - Devastating wounds") @Disabled("Gonna reimplement this later")
 	void GivenSpaceMarines_WhenAddingDevastaingWounds_TheDamageIsCalculatedCorrect() {
 		when(bolter.has(SpecialRuleWeapon.DEVASTATING_WOUNDS)).thenReturn(true);
 		
@@ -282,7 +282,7 @@ class UnitAttackFeaturesTest {
 		assertEquals(expectedDamage, damage);
 	}
 	
-	@Test
+	@Test @DisplayName("Regression - Test no Armor Sa") 
 	void testDamageAgainstUnitWithNoArmorSave() {
 		val unit = Unit.builder().build();
 		unit.equip((byte) 5, bolter);

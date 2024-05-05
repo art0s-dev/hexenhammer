@@ -1,4 +1,4 @@
-package core.combat;
+package core;
 
 /**
  * These are the Features that can occure during a combat sequence
