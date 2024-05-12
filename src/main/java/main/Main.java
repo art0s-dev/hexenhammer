@@ -3,7 +3,10 @@ package main;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -14,6 +17,7 @@ import unit.UnitController;
 import unit.UnitRepository;
 import unit.UnitView;
 import utils.I18n;
+import utils.Lambda;
 import weapon.WeaponController;
 import weapon.WeaponRepository;
 import weapon.WeaponView;
@@ -27,7 +31,32 @@ public class Main {
 		Shell shell = new Shell();
 		shell.setSize(1980, 1200);
 		shell.setLayout(new GridLayout(1, true));
+		shell.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		shell.setText(i18n.get("general.slogan"));
+		
+		Menu bar = new Menu(shell, SWT.BAR);
+		shell.setMenuBar(bar);
+		
+		Menu helpMenu = new Menu(shell, SWT.DROP_DOWN);
+		
+		MenuItem fileItem = new MenuItem (bar, SWT.CASCADE);
+		fileItem.setText(i18n.get("menu.HelpMenu.title"));
+		fileItem.setMenu(helpMenu);
+		
+		MenuItem helpItem = new MenuItem(helpMenu, SWT.PUSH);
+		helpItem.setText(i18n.get("menu.HelpMenu.wiki"));
+		helpItem.addSelectionListener(Lambda.select(() -> {
+			Program.launch("https://github.com/art0s-dev/hexenhammer/wiki");
+		}));
+		
+		MenuItem issueItem = new MenuItem(helpMenu, SWT.PUSH);
+		issueItem.setText(i18n.get("menu.HelpMenu.issue"));
+		issueItem.addSelectionListener(Lambda.select(() -> {
+			Program.launch("https://github.com/art0s-dev/hexenhammer/issues");
+		}));
+
+		
+		//Set the Tabs
 		TabFolder folder = new TabFolder(shell, SWT.NONE);
 		folder.setLayout(new GridLayout(1, true));
 		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
