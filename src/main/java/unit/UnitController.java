@@ -28,6 +28,7 @@ public class UnitController implements Controller {
 	private final UnitRepository unitRepository;
 	@Getter private UnitList unitList;
 	
+	
 	@Setter private WeaponController weaponController;
 	
 	public UnitController(UnitView view, UnitRepository unitRepository) {
